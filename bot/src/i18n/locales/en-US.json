@@ -1,0 +1,104 @@
+{
+  "commands": {
+    "ban": {
+      "success": "🔨 **{{user}}** has been banned.",
+      "reason": "Reason: {{reason}}",
+      "dm": "You have been banned from **{{guild}}**.\nReason: {{reason}}",
+      "no_dm": "⚠️ Could not send DM to the user."
+    },
+    "kick": {
+      "success": "👢 **{{user}}** has been kicked.",
+      "dm": "You have been kicked from **{{guild}}**.\nReason: {{reason}}"
+    },
+    "mute": {
+      "success": "🔇 **{{user}}** has been muted for **{{duration}}**.",
+      "dm": "You have been muted in **{{guild}}** for **{{duration}}**.\nReason: {{reason}}"
+    },
+    "warn": {
+      "success": "⚠️ **{{user}}** has been warned. (Warning #{{count}})",
+      "dm": "You have been warned in **{{guild}}**.\nReason: {{reason}}\nTotal Warnings: {{count}}",
+      "escalation": "📈 Auto-escalation triggered: **{{action}}** for **{{user}}** ({{count}} warnings)"
+    },
+    "warnings": {
+      "title": "⚠️ Warnings for {{user}}",
+      "no_warnings": "This user has no warnings.",
+      "entry": "#{{id}} — By {{moderator}} — {{date}}\n{{reason}}"
+    },
+    "clearwarns": {
+      "success": "✅ Cleared {{count}} warning(s) for **{{user}}**.",
+      "single": "✅ Warning #{{id}} has been removed."
+    },
+    "purge": {
+      "success": "🗑️ Deleted **{{count}}** message(s).",
+      "failed": "❌ Could not delete messages. They may be older than 14 days."
+    },
+    "slowmode": {
+      "success": "🐌 Slowmode set to **{{duration}}** in {{channel}}.",
+      "disabled": "🐌 Slowmode disabled in {{channel}}."
+    },
+    "lockdown": {
+      "locked": "🔒 {{channel}} has been locked.",
+      "unlocked": "🔓 {{channel}} has been unlocked."
+    },
+    "ticket": {
+      "panel_title": "📩 Support Tickets",
+      "panel_description": "Click the button below to open a support ticket.\nOur team will respond as soon as possible.",
+      "created": "📩 Ticket created: {{channel}}",
+      "closed": "🔒 Ticket closed by {{user}}.",
+      "claimed": "👋 Ticket claimed by {{user}}.",
+      "reopened": "🔓 Ticket reopened by {{user}}.",
+      "already_open": "❌ You already have an open ticket.",
+      "not_found": "❌ This is not a ticket channel.",
+      "transcript_saved": "📄 Transcript saved to {{channel}}."
+    },
+    "setup": {
+      "title": "⚙️ LumigiaBOT Setup",
+      "description": "Welcome! Let's configure your server.\nUse the commands below to set up each module."
+    },
+    "settings": {
+      "title": "⚙️ Server Settings",
+      "language_set": "🌐 Language set to **{{language}}**."
+    },
+    "help": {
+      "title": "📖 LumigiaBOT Commands",
+      "description": "Here are all available commands grouped by category."
+    },
+    "ping": {
+      "response": "🏓 Pong! Latency: **{{latency}}ms** | API: **{{api}}ms**"
+    },
+    "serverinfo": {
+      "title": "📊 Server Info — {{server}}"
+    },
+    "userinfo": {
+      "title": "👤 User Info — {{user}}"
+    }
+  },
+  "automod": {
+    "spam_detected": "⚠️ Spam detected from {{user}}.",
+    "link_blocked": "🔗 Blocked link from {{user}}.",
+    "word_blocked": "🚫 Blocked word from {{user}}.",
+    "caps_blocked": "🔠 Excessive caps from {{user}}.",
+    "emoji_blocked": "😤 Emoji spam from {{user}}.",
+    "mention_blocked": "📢 Mass mention from {{user}}.",
+    "action_taken": "Action: **{{action}}**",
+    "whitelisted": "✅ {{type}} {{target}} has been whitelisted.",
+    "removed_whitelist": "❌ {{type}} {{target}} removed from whitelist."
+  },
+  "antiraid": {
+    "alert_title": "🚨 Raid Detected!",
+    "alert_description": "**{{count}}** users joined in the last **{{seconds}}** seconds.",
+    "lockdown_activated": "🔒 Auto-lockdown has been activated.",
+    "lockdown_deactivated": "🔓 Lockdown has been deactivated.",
+    "young_account": "⚠️ New member {{user}} has an account younger than {{days}} days."
+  },
+  "errors": {
+    "no_permission": "❌ You don't have permission to use this command.",
+    "hierarchy": "❌ Cannot moderate a user with a higher or equal role.",
+    "bot_hierarchy": "❌ My role is not high enough to moderate this user.",
+    "self_target": "❌ You cannot use this command on yourself.",
+    "bot_target": "❌ You cannot use this command on me.",
+    "owner_target": "❌ You cannot moderate the server owner.",
+    "cooldown": "⏳ Please wait **{{seconds}}s** before using this command again.",
+    "unknown": "❌ An unexpected error occurred. Please try again."
+  }
+}

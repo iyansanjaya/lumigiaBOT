@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Database
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# Logs
+logs/
+*.log
+
+# Next.js
+web/.next/
+web/out/
+
+# Build
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml

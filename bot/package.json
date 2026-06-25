@@ -1,0 +1,23 @@
+{
+  "name": "lumigiabot",
+  "version": "1.0.0",
+  "description": "LumigiaBOT — Discord Bot All-in-One: Moderation, Auto-Mod, Ticketing, Anti-Raid",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "deploy": "node deploy-commands.js",
+    "dev": "node --watch src/index.js",
+    "lint": "eslint src/"
+  },
+  "keywords": ["discord", "bot", "moderation", "ticketing"],
+  "author": "LumigiaBOT Team",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "better-sqlite3": "^11.7.0",
+    "dotenv": "^16.4.7",
+    "i18next": "^24.2.2",
+    "ms": "^2.1.3"
+  }
+}

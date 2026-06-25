@@ -1,0 +1,104 @@
+{
+  "commands": {
+    "ban": {
+      "success": "🔨 **{{user}}** telah dibanned.",
+      "reason": "Alasan: {{reason}}",
+      "dm": "Anda telah dibanned dari **{{guild}}**.\nAlasan: {{reason}}",
+      "no_dm": "⚠️ Tidak bisa mengirim DM ke pengguna."
+    },
+    "kick": {
+      "success": "👢 **{{user}}** telah dikick.",
+      "dm": "Anda telah dikick dari **{{guild}}**.\nAlasan: {{reason}}"
+    },
+    "mute": {
+      "success": "🔇 **{{user}}** telah dimute selama **{{duration}}**.",
+      "dm": "Anda telah dimute di **{{guild}}** selama **{{duration}}**.\nAlasan: {{reason}}"
+    },
+    "warn": {
+      "success": "⚠️ **{{user}}** telah diperingatkan. (Peringatan #{{count}})",
+      "dm": "Anda mendapat peringatan di **{{guild}}**.\nAlasan: {{reason}}\nTotal Peringatan: {{count}}",
+      "escalation": "📈 Auto-eskalasi dipicu: **{{action}}** untuk **{{user}}** ({{count}} peringatan)"
+    },
+    "warnings": {
+      "title": "⚠️ Peringatan untuk {{user}}",
+      "no_warnings": "Pengguna ini tidak memiliki peringatan.",
+      "entry": "#{{id}} — Oleh {{moderator}} — {{date}}\n{{reason}}"
+    },
+    "clearwarns": {
+      "success": "✅ Menghapus {{count}} peringatan untuk **{{user}}**.",
+      "single": "✅ Peringatan #{{id}} telah dihapus."
+    },
+    "purge": {
+      "success": "🗑️ Menghapus **{{count}}** pesan.",
+      "failed": "❌ Tidak bisa menghapus pesan. Pesan mungkin lebih dari 14 hari."
+    },
+    "slowmode": {
+      "success": "🐌 Slowmode diatur ke **{{duration}}** di {{channel}}.",
+      "disabled": "🐌 Slowmode dinonaktifkan di {{channel}}."
+    },
+    "lockdown": {
+      "locked": "🔒 {{channel}} telah dikunci.",
+      "unlocked": "🔓 {{channel}} telah dibuka."
+    },
+    "ticket": {
+      "panel_title": "📩 Tiket Dukungan",
+      "panel_description": "Klik tombol di bawah untuk membuka tiket dukungan.\nTim kami akan merespons sesegera mungkin.",
+      "created": "📩 Tiket dibuat: {{channel}}",
+      "closed": "🔒 Tiket ditutup oleh {{user}}.",
+      "claimed": "👋 Tiket diambil oleh {{user}}.",
+      "reopened": "🔓 Tiket dibuka kembali oleh {{user}}.",
+      "already_open": "❌ Anda sudah memiliki tiket yang terbuka.",
+      "not_found": "❌ Ini bukan channel tiket.",
+      "transcript_saved": "📄 Transkrip disimpan ke {{channel}}."
+    },
+    "setup": {
+      "title": "⚙️ Pengaturan LumigiaBOT",
+      "description": "Selamat datang! Mari konfigurasikan server Anda.\nGunakan perintah di bawah untuk mengatur setiap modul."
+    },
+    "settings": {
+      "title": "⚙️ Pengaturan Server",
+      "language_set": "🌐 Bahasa diatur ke **{{language}}**."
+    },
+    "help": {
+      "title": "📖 Perintah LumigiaBOT",
+      "description": "Berikut semua perintah yang tersedia dikelompokkan berdasarkan kategori."
+    },
+    "ping": {
+      "response": "🏓 Pong! Latensi: **{{latency}}ms** | API: **{{api}}ms**"
+    },
+    "serverinfo": {
+      "title": "📊 Info Server — {{server}}"
+    },
+    "userinfo": {
+      "title": "👤 Info Pengguna — {{user}}"
+    }
+  },
+  "automod": {
+    "spam_detected": "⚠️ Spam terdeteksi dari {{user}}.",
+    "link_blocked": "🔗 Tautan diblokir dari {{user}}.",
+    "word_blocked": "🚫 Kata terlarang dari {{user}}.",
+    "caps_blocked": "🔠 Huruf kapital berlebihan dari {{user}}.",
+    "emoji_blocked": "😤 Spam emoji dari {{user}}.",
+    "mention_blocked": "📢 Mention massal dari {{user}}.",
+    "action_taken": "Aksi: **{{action}}**",
+    "whitelisted": "✅ {{type}} {{target}} telah dimasukkan whitelist.",
+    "removed_whitelist": "❌ {{type}} {{target}} dihapus dari whitelist."
+  },
+  "antiraid": {
+    "alert_title": "🚨 Raid Terdeteksi!",
+    "alert_description": "**{{count}}** pengguna bergabung dalam **{{seconds}}** detik terakhir.",
+    "lockdown_activated": "🔒 Auto-lockdown telah diaktifkan.",
+    "lockdown_deactivated": "🔓 Lockdown telah dinonaktifkan.",
+    "young_account": "⚠️ Anggota baru {{user}} memiliki akun yang lebih muda dari {{days}} hari."
+  },
+  "errors": {
+    "no_permission": "❌ Anda tidak memiliki izin untuk menggunakan perintah ini.",
+    "hierarchy": "❌ Tidak bisa memoderasi pengguna dengan role yang lebih tinggi atau setara.",
+    "bot_hierarchy": "❌ Role saya tidak cukup tinggi untuk memoderasi pengguna ini.",
+    "self_target": "❌ Anda tidak bisa menggunakan perintah ini pada diri sendiri.",
+    "bot_target": "❌ Anda tidak bisa menggunakan perintah ini pada saya.",
+    "owner_target": "❌ Anda tidak bisa memoderasi pemilik server.",
+    "cooldown": "⏳ Mohon tunggu **{{seconds}} detik** sebelum menggunakan perintah ini lagi.",
+    "unknown": "❌ Terjadi kesalahan yang tidak terduga. Silakan coba lagi."
+  }
+}

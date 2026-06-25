@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: lumigiabot
+    restart: always
+    volumes:
+      - ./data:/app/data
+    env_file: .env
+    depends_on:
+      - web
+    networks:
+      - lumigiabot-network
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: lumigiabot-web
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data:ro
+    env_file: .env
+    networks:
+      - lumigiabot-network
+
+networks:
+  lumigiabot-network:
+    driver: bridge
