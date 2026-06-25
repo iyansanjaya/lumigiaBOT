@@ -12,21 +12,23 @@
 ## ✨ Fitur
 
 ### 🛡️ Moderasi
+
 Perangkat moderasi lengkap dengan pemeriksaan hierarki role, notifikasi DM, dan auto-eskalasi.
 
-| Perintah | Deskripsi | Izin |
-|----------|-----------|------|
-| `/ban` | Banned anggota | `BanMembers` |
-| `/kick` | Kick anggota | `KickMembers` |
-| `/mute` | Timeout anggota (1m–28h) | `ModerateMembers` |
-| `/warn` | Beri peringatan | `ModerateMembers` |
-| `/warnings` | Lihat riwayat peringatan | `ModerateMembers` |
-| `/clearwarns` | Hapus peringatan | `ModerateMembers` |
-| `/purge` | Hapus pesan massal (1–100) | `ManageMessages` |
-| `/slowmode` | Atur slowmode channel | `ManageChannels` |
-| `/lockdown` | Kunci/buka kunci channel | `ManageChannels` |
+| Perintah      | Deskripsi                  | Izin              |
+| ------------- | -------------------------- | ----------------- |
+| `/ban`        | Banned anggota             | `BanMembers`      |
+| `/kick`       | Kick anggota               | `KickMembers`     |
+| `/mute`       | Timeout anggota (1m–28h)   | `ModerateMembers` |
+| `/warn`       | Beri peringatan            | `ModerateMembers` |
+| `/warnings`   | Lihat riwayat peringatan   | `ModerateMembers` |
+| `/clearwarns` | Hapus peringatan           | `ModerateMembers` |
+| `/purge`      | Hapus pesan massal (1–100) | `ManageMessages`  |
+| `/slowmode`   | Atur slowmode channel      | `ManageChannels`  |
+| `/lockdown`   | Kunci/buka kunci channel   | `ManageChannels`  |
 
 ### 🤖 Auto Moderasi
+
 Enam filter yang bisa dikonfigurasi dengan pengaturan per-guild dan dukungan whitelist.
 
 - **Filter Spam** — Deteksi pesan beruntun & konten duplikat
@@ -37,6 +39,7 @@ Enam filter yang bisa dikonfigurasi dengan pengaturan per-guild dan dukungan whi
 - **Filter Mention** — Deteksi mention massal (>5 mention)
 
 ### 🎫 Sistem Tiket
+
 Sistem tiket profesional dengan manajemen siklus hidup lengkap.
 
 - 📩 Pembuatan tiket satu klik dengan pemilihan kategori
@@ -47,12 +50,14 @@ Sistem tiket profesional dengan manajemen siklus hidup lengkap.
 - 📊 Dashboard statistik tiket
 
 ### 🛡️ Perlindungan Anti-Raid
+
 - Pemantauan kecepatan join dengan ambang batas yang bisa dikonfigurasi
 - Verifikasi umur akun
 - Lockdown server otomatis
 - Notifikasi peringatan untuk staff
 
 ### 🎨 Web Dashboard
+
 Dashboard modern dan cantik dibuat dengan Next.js 15 + Tailwind CSS + Coss UI.
 
 - **Halaman Landing** — Halaman marketing memukau dengan animasi
@@ -60,6 +65,7 @@ Dashboard modern dan cantik dibuat dengan Next.js 15 + Tailwind CSS + Coss UI.
 - **Manajemen Server** — Moderasi, AutoMod, Tiket, Log, Pengaturan
 
 ### 🌐 Dukungan Dua Bahasa
+
 Dukungan penuh Bahasa Indonesia 🇮🇩 dan Bahasa Inggris 🇬🇧, bisa dikonfigurasi per server.
 
 ---
@@ -67,6 +73,7 @@ Dukungan penuh Bahasa Indonesia 🇮🇩 dan Bahasa Inggris 🇬🇧, bisa dikon
 ## 🚀 Mulai Cepat
 
 ### Prasyarat
+
 - [Node.js 22+](https://nodejs.org/)
 - [Docker](https://www.docker.com/) (direkomendasikan untuk produksi)
 - Sebuah [Aplikasi Discord](https://discord.com/developers/applications) dengan Bot Token
@@ -74,12 +81,13 @@ Dukungan penuh Bahasa Indonesia 🇮🇩 dan Bahasa Inggris 🇬🇧, bisa dikon
 ### 1. Clone & Konfigurasi
 
 ```bash
-git clone https://github.com/your-username/lumigiabot.git
+git clone https://github.com/iyansanjaya/lumigiabot.git
 cd lumigiabot
 cp .env.example .env
 ```
 
 Edit `.env` dengan kredensial Anda:
+
 ```env
 DISCORD_TOKEN=token_bot_anda
 DISCORD_CLIENT_ID=client_id_anda
@@ -188,6 +196,7 @@ lumigiabot/
 ## ⚙️ Konfigurasi
 
 ### Pengaturan Per-Server
+
 Gunakan `/setup` di Discord untuk menjalankan wizard konfigurasi interaktif, atau gunakan command individual:
 
 ```
@@ -200,7 +209,9 @@ Gunakan `/setup` di Discord untuk menjalankan wizard konfigurasi interaktif, ata
 ```
 
 ### Dashboard
+
 Akses web dashboard untuk mengatur pengaturan secara visual:
+
 1. Kunjungi URL dashboard Anda
 2. Login dengan Discord
 3. Pilih server yang Anda kelola
@@ -217,6 +228,7 @@ Akses web dashboard untuk mengatur pengaturan secara visual:
 5. Buka Pull Request
 
 ### Panduan Pengembangan
+
 - Gunakan ES Modules (`import/export`)
 - Ikuti struktur kode yang sudah ada
 - Tambahkan terjemahan i18n untuk kedua bahasa `en-US` dan `id`
