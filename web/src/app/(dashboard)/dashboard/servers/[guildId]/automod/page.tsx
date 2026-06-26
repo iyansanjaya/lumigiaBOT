@@ -15,13 +15,13 @@ const defaultFilters = [
     icon: MessageSquare,
   },
   {
-    key: 'links',
+    key: 'link',
     name: 'Link Filter',
     description: 'Block or restrict links from being posted.',
     icon: Link2,
   },
   {
-    key: 'words',
+    key: 'word',
     name: 'Word Filter',
     description: 'Filter messages containing banned words or phrases.',
     icon: Type,
@@ -39,7 +39,7 @@ const defaultFilters = [
     icon: SmilePlus,
   },
   {
-    key: 'mentions',
+    key: 'mention',
     name: 'Mention Spam Filter',
     description: 'Prevent mass mention abuse.',
     icon: AtSign,

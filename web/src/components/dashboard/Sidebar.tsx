@@ -52,7 +52,8 @@ export function Sidebar() {
     : mainNavItems;
 
   const isActive = (href: string) => {
-    if (isGuildContext && href === `/dashboard/servers/${guildId}`) {
+    // Overview items (baik main nav maupun guild nav) harus exact match saja
+    if (href === '/dashboard' || (isGuildContext && href === `/dashboard/servers/${guildId}`)) {
       return pathname === href;
     }
     return pathname === href || pathname.startsWith(href + '/');

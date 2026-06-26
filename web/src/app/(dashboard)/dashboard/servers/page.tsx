@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Server, AlertCircle } from 'lucide-react';
 import { auth } from '@/lib/auth';
 import { getUserGuilds, getManageableGuilds, getGuildIconUrl } from '@/lib/discord-api';
@@ -63,9 +64,11 @@ export default async function ServersPage() {
             <Card key={guild.id}>
               <CardContent className="flex flex-col items-center gap-4 text-center">
                 {iconUrl ? (
-                  <img
+                  <Image
                     src={iconUrl}
                     alt={guild.name}
+                    width={64}
+                    height={64}
                     className="h-16 w-16 rounded-full ring-2 ring-border"
                   />
                 ) : (
