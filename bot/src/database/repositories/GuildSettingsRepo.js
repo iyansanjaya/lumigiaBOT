@@ -12,10 +12,6 @@ export default class GuildSettingsRepo {
       INSERT INTO guild_settings (guild_id) VALUES (?)
       ON CONFLICT(guild_id) DO NOTHING
     `);
-    this._update = db.prepare(`
-      UPDATE guild_settings SET {{field}} = ?, updated_at = datetime('now')
-      WHERE guild_id = ?
-    `);
     this._delete = db.prepare('DELETE FROM guild_settings WHERE guild_id = ?');
   }
 

@@ -4,8 +4,8 @@ import Discord from 'next-auth/providers/discord';
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Discord({
-      clientId: process.env.DISCORD_CLIENT_ID!,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+      clientId: process.env.DISCORD_CLIENT_ID ?? process.env.AUTH_DISCORD_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET ?? process.env.AUTH_DISCORD_SECRET!,
       authorization: {
         params: {
           scope: 'identify guilds',
@@ -32,4 +32,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: 'jwt',
   },
+  trustHost: true,
 });

@@ -92,8 +92,9 @@ Edit `.env` dengan kredensial Anda:
 DISCORD_TOKEN=token_bot_anda
 DISCORD_CLIENT_ID=client_id_anda
 DISCORD_CLIENT_SECRET=client_secret_anda
-NEXTAUTH_SECRET=secret_acak_anda
-NEXTAUTH_URL=http://localhost:3412
+AUTH_SECRET=secret_acak_anda
+AUTH_TRUST_HOST=true
+AUTH_URL=https://bot.lumigia.com
 DATABASE_PATH=./data/lumigiabot.db
 DEFAULT_LANGUAGE=id
 BOT_OWNER_ID=id_discord_anda
