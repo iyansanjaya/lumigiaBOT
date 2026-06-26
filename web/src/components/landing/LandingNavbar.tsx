@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Shield, Menu, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useSession, signIn } from 'next-auth/react';
+import { Shield, Menu, X, LayoutDashboard } from 'lucide-react';
 
 const navLinks = [
   { label: 'Features', href: '/features' },
@@ -12,6 +12,8 @@ const navLinks = [
 
 export function LandingNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === 'authenticated' && !!session;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/90 backdrop-blur-lg">
@@ -36,12 +38,23 @@ export function LandingNavbar() {
             </Link>
           ))}
           <div className="ml-3 h-5 w-px bg-border" />
-          <Link
-            href="/api/auth/signin"
-            className="ml-3 bg-primary hover:bg-primary-hover text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors"
-          >
-            Login
-          </Link>
+
+          {isLoggedIn ? (
+            <Link
+              href="/dashboard"
+              className="ml-3 inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              Dashboard
+            </Link>
+          ) : (
+            <button
+              onClick={() => signIn('discord', { callbackUrl: '/dashboard' })}
+              className="ml-3 bg-primary hover:bg-primary-hover text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors"
+            >
+              Login
+            </button>
+          )}
         </div>
 
         {/* Tombol Menu Mobile */}
@@ -69,13 +82,27 @@ export function LandingNavbar() {
               </Link>
             ))}
             <div className="h-px bg-border my-2" />
-            <Link
-              href="/api/auth/signin"
-              className="bg-primary hover:bg-primary-hover text-white rounded-lg px-4 py-2.5 text-sm font-medium text-center transition-colors"
-              onClick={() => setMobileOpen(false)}
-            >
-              Login
-            </Link>
+
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  signIn('discord', { callbackUrl: '/dashboard' });
+                }}
+                className="bg-primary hover:bg-primary-hover text-white rounded-lg px-4 py-2.5 text-sm font-medium text-center transition-colors w-full"
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
       )}

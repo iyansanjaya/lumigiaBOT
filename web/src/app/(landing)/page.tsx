@@ -141,7 +141,7 @@ export default function LandingPage() {
           {/* CTA */}
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
             <Link
-              href="https://discord.com/oauth2/authorize"
+              href="/api/invite"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -350,7 +350,7 @@ export default function LandingPage() {
             Tambahkan LumigiaBOT sekarang. Gratis, tanpa batasan.
           </p>
           <Link
-            href="https://discord.com/oauth2/authorize"
+            href="/api/invite"
             style={{
               display: 'inline-flex',
               alignItems: 'center',

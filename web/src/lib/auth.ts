@@ -11,8 +11,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           scope: 'identify guilds',
         },
       },
-      // Matikan PKCE — Discord tidak memerlukannya
-      // dan menyebabkan error di balik reverse proxy
       checks: ['state'],
     }),
   ],
@@ -27,6 +25,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Setelah login, arahkan ke dashboard
+      if (url === baseUrl || url === `${baseUrl}/`) {
+        return `${baseUrl}/dashboard`;
+      }
+      // Jika URL internal, izinkan
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      return `${baseUrl}/dashboard`;
     },
   },
   session: {
