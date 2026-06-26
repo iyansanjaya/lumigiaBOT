@@ -124,7 +124,8 @@ export function updateGuildSetting(guildId: string, field: string, value: string
     // Update field — safe karena field sudah divalidasi dari whitelist
     db.prepare(`UPDATE guild_settings SET ${field} = ?, updated_at = datetime('now') WHERE guild_id = ?`).run(value, guildId);
     return true;
-  } catch {
+  } catch (err) {
+    console.error('[DB] updateGuildSetting failed:', err);
     return false;
   }
 }
@@ -156,7 +157,8 @@ export function updateAutoModFilter(
         action = excluded.action
     `).run(guildId, filterName, enabled ? 1 : 0, action);
     return true;
-  } catch {
+  } catch (err) {
+    console.error('[DB] updateAutoModFilter failed:', err);
     return false;
   }
 }
