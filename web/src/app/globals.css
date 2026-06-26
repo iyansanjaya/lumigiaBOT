@@ -1,25 +1,35 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-background: #0a0a0f;
-  --color-background-secondary: #12121a;
-  --color-background-tertiary: #1a1a2e;
-  --color-foreground: #e2e8f0;
-  --color-foreground-muted: #94a3b8;
+  /* Latar belakang */
+  --color-background: #0b0d13;
+  --color-background-secondary: #111318;
+  --color-background-tertiary: #191c24;
+
+  /* Teks */
+  --color-foreground: #e1e4eb;
+  --color-foreground-muted: #7c8197;
+
+  /* Warna utama */
   --color-primary: #7C3AED;
-  --color-primary-hover: #8B5CF6;
+  --color-primary-hover: #6D28D9;
   --color-primary-light: #A78BFA;
+
+  /* Warna aksen */
   --color-accent: #06B6D4;
-  --color-accent-hover: #22D3EE;
+
+  /* Status */
   --color-destructive: #EF4444;
   --color-success: #10B981;
   --color-warning: #F59E0B;
-  --color-border: #1e293b;
-  --color-border-hover: #334155;
-  --color-card: oklch(from #12121a l c h / 0.8);
-  --color-card-hover: oklch(from #1a1a2e l c h / 0.9);
-  --color-glass: oklch(from #12121a l c h / 0.6);
-  --color-glass-border: oklch(from #7C3AED l c h / 0.15);
+
+  /* Border */
+  --color-border: #1f2231;
+  --color-border-hover: #2d3148;
+
+  /* Komponen */
+  --color-card: #13151c;
+  --color-card-hover: #191c24;
 }
 
 * {
@@ -35,19 +45,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-background); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-border-hover); }
 
-::-webkit-scrollbar-track {
-  background: var(--color-background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-hover);
+/* Seleksi teks */
+::selection {
+  background-color: var(--color-primary);
+  color: white;
 }

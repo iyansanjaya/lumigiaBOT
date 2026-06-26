@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { Shield, Heart, ExternalLink } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Shield } from 'lucide-react';
 
 interface FooterLink {
   label: string;
@@ -8,16 +7,14 @@ interface FooterLink {
   external?: boolean;
 }
 
-const footerLinks: Record<string, FooterLink[]> = {
+const footerSections: Record<string, FooterLink[]> = {
   Product: [
     { label: 'Features', href: '/features' },
     { label: 'Commands', href: '/commands' },
     { label: 'Dashboard', href: '/dashboard' },
   ],
   Resources: [
-    { label: 'Docs', href: '/docs' },
     { label: 'Support Server', href: 'https://discord.gg/lumigiabot', external: true },
-    { label: 'Status', href: '/status' },
   ],
   Legal: [
     { label: 'Privacy', href: '/privacy' },
@@ -27,30 +24,25 @@ const footerLinks: Record<string, FooterLink[]> = {
 
 export function LandingFooter() {
   return (
-    <footer className={cn('border-t border-border bg-background-secondary')}>
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-          {/* Logo + Slogan */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4 group">
-              <Shield className="h-7 w-7 text-primary transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                LumigiaBOT
-              </span>
+    <footer className="border-t border-border bg-background-secondary">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {/* Logo & Deskripsi */}
+          <div className="col-span-2 md:col-span-1">
+            <Link href="/" className="flex items-center gap-2 mb-3">
+              <Shield className="h-5 w-5 text-primary" />
+              <span className="font-bold text-foreground">LumigiaBOT</span>
             </Link>
-            <p className="text-foreground-muted text-sm leading-relaxed max-w-xs">
-              The all-in-one Discord bot for moderation, auto-mod, ticketing, and
-              anti-raid protection. Keep your community safe and thriving.
+            <p className="text-foreground-muted text-sm leading-relaxed">
+              Bot Discord all-in-one untuk moderasi, auto-mod, tiket, dan proteksi anti-raid.
             </p>
           </div>
 
           {/* Kolom Tautan */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="text-foreground font-semibold mb-4 text-sm uppercase tracking-wider">
-                {category}
-              </h3>
-              <ul className="space-y-3">
+          {Object.entries(footerSections).map(([title, links]) => (
+            <div key={title}>
+              <h4 className="text-sm font-semibold text-foreground mb-3">{title}</h4>
+              <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.label}>
                     {link.external ? (
@@ -58,15 +50,14 @@ export function LandingFooter() {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-foreground-muted hover:text-foreground text-sm transition-colors duration-200 flex items-center gap-1"
+                        className="text-sm text-foreground-muted hover:text-foreground transition-colors"
                       >
-                        {link.label}
-                        <ExternalLink className="h-3 w-3" />
+                        {link.label} ↗
                       </a>
                     ) : (
                       <Link
                         href={link.href}
-                        className="text-foreground-muted hover:text-foreground text-sm transition-colors duration-200"
+                        className="text-sm text-foreground-muted hover:text-foreground transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -78,13 +69,10 @@ export function LandingFooter() {
           ))}
         </div>
 
-        {/* Bilah Bawah */}
-        <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-foreground-muted text-sm">
-            © 2025 LumigiaBOT. All rights reserved.
-          </p>
-          <p className="text-foreground-muted text-sm flex items-center gap-1">
-            Made with <Heart className="h-3.5 w-3.5 text-destructive fill-destructive" /> for Discord communities
+        {/* Garis Bawah */}
+        <div className="mt-10 pt-6 border-t border-border">
+          <p className="text-foreground-muted text-xs text-center">
+            © {new Date().getFullYear()} LumigiaBOT. All rights reserved.
           </p>
         </div>
       </div>
