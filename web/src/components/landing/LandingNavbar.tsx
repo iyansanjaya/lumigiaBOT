@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useSession, signIn } from 'next-auth/react';
-import { Shield, Menu, X, LayoutDashboard } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import { useSession, signIn } from "next-auth/react";
+import { Shield, Menu, X, LayoutDashboard } from "lucide-react";
 
 const navLinks = [
-  { label: 'Features', href: '/features' },
-  { label: 'Commands', href: '/commands' },
+  { label: "Features", href: "/features" },
+  { label: "Commands", href: "/commands" },
 ];
 
 export function LandingNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: session, status } = useSession();
-  const isLoggedIn = status === 'authenticated' && !!session;
+  const isLoggedIn = status === "authenticated" && !!session;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/90 backdrop-blur-lg">
@@ -23,7 +23,9 @@ export function LandingNavbar() {
           <div className="rounded-lg bg-primary/10 p-1.5 group-hover:bg-primary/15 transition-colors">
             <Shield className="h-4 w-4 text-primary" />
           </div>
-          <span className="text-base font-bold text-foreground">LumigiaBOT</span>
+          <span className="text-base font-bold text-foreground">
+            LumigiaBOT
+          </span>
         </Link>
 
         {/* Navigasi Desktop */}
@@ -49,8 +51,8 @@ export function LandingNavbar() {
             </Link>
           ) : (
             <button
-              onClick={() => signIn('discord', { callbackUrl: '/dashboard' })}
-              className="ml-3 bg-primary hover:bg-primary-hover text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors"
+              onClick={() => signIn("discord", { callbackUrl: "/dashboard" })}
+              className="ml-3 bg-primary hover:bg-primary-hover text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors cursor-pointer"
             >
               Login
             </button>
@@ -63,7 +65,11 @@ export function LandingNavbar() {
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {mobileOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </button>
       </div>
 
@@ -96,7 +102,7 @@ export function LandingNavbar() {
               <button
                 onClick={() => {
                   setMobileOpen(false);
-                  signIn('discord', { callbackUrl: '/dashboard' });
+                  signIn("discord", { callbackUrl: "/dashboard" });
                 }}
                 className="bg-primary hover:bg-primary-hover text-white rounded-lg px-4 py-2.5 text-sm font-medium text-center transition-colors w-full"
               >
