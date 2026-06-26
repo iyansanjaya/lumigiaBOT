@@ -22,7 +22,7 @@ services:
     container_name: lumigiabot-web
     restart: always
     ports:
-      - "3000:3000"
+      - "3412:3412"
     volumes:
       - ./data:/app/data:ro
     env_file: .env
