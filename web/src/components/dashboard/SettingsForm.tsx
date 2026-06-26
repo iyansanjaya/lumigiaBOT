@@ -70,7 +70,7 @@ function SettingInput({
   }, [currentValue, field, guildId, type]);
 
   if (type === 'toggle') {
-    const isEnabled = currentValue === 1 || currentValue === '1' || currentValue === true;
+    const isEnabled = currentValue === 1 || currentValue === '1';
     return (
       <div className="flex flex-col gap-1.5">
         <span className="text-foreground-muted text-sm">{label}</span>
