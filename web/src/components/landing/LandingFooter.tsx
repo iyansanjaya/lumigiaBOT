@@ -16,7 +16,7 @@ const footerSections: Record<string, FooterLink[]> = {
   Resources: [
     {
       label: "Support Server",
-      href: "https://https://discord.com/ZwrgK2r",
+      href: "https://discord.gg/ZwrgK2r",
       external: true,
     },
   ],
