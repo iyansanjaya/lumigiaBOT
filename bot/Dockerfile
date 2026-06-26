@@ -8,8 +8,8 @@ RUN npm install --omit=dev
 FROM node:22-alpine
 WORKDIR /app
 
-# Buat direktori data
-RUN mkdir -p /app/data
+# Buat direktori data dan set kepemilikan ke user node
+RUN mkdir -p /app/data && chown -R node:node /app/data
 
 # Salin dependensi dan kode sumber
 COPY --from=builder /app/node_modules ./node_modules
