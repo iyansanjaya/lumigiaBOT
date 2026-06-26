@@ -50,6 +50,9 @@ export async function execute(interaction, client) {
     // Klaim tiket
     await claimTicket(client, interaction.channel, interaction.member);
 
+    // Hapus pesan "thinking..." — embed klaim sudah dikirim oleh claimTicket
+    await interaction.deleteReply().catch(() => {});
+
     logger.info(`Ticket claimed via button by ${interaction.user.tag}`);
   } catch (error) {
     logger.error('ticket_claim button error:', error);

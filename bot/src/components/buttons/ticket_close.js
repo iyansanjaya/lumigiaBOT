@@ -29,6 +29,9 @@ export async function execute(interaction, client) {
     // Tutup tiket (membuat transkrip, menjadwalkan penghapusan channel)
     await closeTicket(client, interaction.channel, interaction.user);
 
+    // Hapus pesan "thinking..." — embed close sudah dikirim oleh closeTicket
+    await interaction.deleteReply().catch(() => {});
+
     logger.info(`Ticket closed via button by ${interaction.user.tag}`);
   } catch (error) {
     logger.error('ticket_close button error:', error);
