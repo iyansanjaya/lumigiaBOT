@@ -138,7 +138,7 @@ export default function LandingPage() {
                 background: "#3fb950",
               }}
             />
-            Online — Melayani 500+ server
+            Online — Melayani 100+ server
           </div>
 
           {/* Heading */}
