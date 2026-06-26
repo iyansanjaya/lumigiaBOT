@@ -105,7 +105,7 @@ export default async function TicketsPage({ params }: PageProps) {
                 {tickets.map((ticket) => (
                   <TableRow key={ticket.id}>
                     <TableCell className="font-mono text-xs">{ticket.id}</TableCell>
-                    <TableCell className="font-mono text-xs">{ticket.userId}</TableCell>
+                    <TableCell className="font-mono text-xs">{ticket.user_id}</TableCell>
                     <TableCell>{ticket.category ?? '—'}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusVariant(ticket.status)}>
@@ -113,15 +113,15 @@ export default async function TicketsPage({ params }: PageProps) {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-foreground-muted whitespace-nowrap">
-                      {new Date(ticket.createdAt).toLocaleDateString('en-US', {
+                      {new Date(ticket.created_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
                       })}
                     </TableCell>
                     <TableCell className="text-foreground-muted whitespace-nowrap">
-                      {ticket.closedAt
-                        ? new Date(ticket.closedAt).toLocaleDateString('en-US', {
+                      {ticket.closed_at
+                        ? new Date(ticket.closed_at).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric',

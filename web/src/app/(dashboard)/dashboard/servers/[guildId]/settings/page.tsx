@@ -90,8 +90,8 @@ export default async function SettingsPage({ params }: PageProps) {
             <h2 className="text-lg font-semibold text-foreground">Logging</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <SettingField label="Mod Log Channel" value={settings.modLogChannel} />
-            <SettingField label="AutoMod Log Channel" value={settings.autoModLogChannel} />
+            <SettingField label="Mod Log Channel" value={settings.mod_log_channel} />
+            <SettingField label="AutoMod Log Channel" value={settings.automod_log_channel} />
           </div>
         </CardContent>
       </Card>

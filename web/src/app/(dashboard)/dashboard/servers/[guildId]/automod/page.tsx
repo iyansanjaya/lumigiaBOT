@@ -57,7 +57,7 @@ export default async function AutoModPage({ params }: PageProps) {
     // Gunakan nilai cadangan
   }
 
-  const filterMap = new Map(filters.map((f) => [f.filterType, f]));
+  const filterMap = new Map(filters.map((f) => [f.filter_name, f]));
 
   return (
     <div className="space-y-8">

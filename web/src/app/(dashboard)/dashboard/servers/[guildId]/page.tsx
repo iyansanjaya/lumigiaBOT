@@ -90,7 +90,7 @@ export default async function ServerOverviewPage({ params }: PageProps) {
                     </div>
                   </div>
                   <span className="text-xs text-foreground-muted">
-                    {new Date(log.createdAt).toLocaleDateString()}
+                    {new Date(log.created_at).toLocaleDateString()}
                   </span>
                 </div>
               ))}

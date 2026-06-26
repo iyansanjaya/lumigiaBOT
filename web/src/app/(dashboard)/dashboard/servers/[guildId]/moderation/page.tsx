@@ -73,13 +73,13 @@ export default async function ModerationPage({ params }: PageProps) {
                 {warnings.map((warning) => (
                   <TableRow key={warning.id}>
                     <TableCell className="font-mono text-xs">{warning.id}</TableCell>
-                    <TableCell className="font-mono text-xs">{warning.userId}</TableCell>
-                    <TableCell className="font-mono text-xs">{warning.moderatorId}</TableCell>
+                    <TableCell className="font-mono text-xs">{warning.user_id}</TableCell>
+                    <TableCell className="font-mono text-xs">{warning.moderator_id}</TableCell>
                     <TableCell className="max-w-[300px] truncate">
                       {warning.reason ?? 'No reason provided'}
                     </TableCell>
                     <TableCell className="text-foreground-muted whitespace-nowrap">
-                      {new Date(warning.createdAt).toLocaleDateString('en-US', {
+                      {new Date(warning.created_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
