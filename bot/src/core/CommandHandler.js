@@ -41,10 +41,14 @@ export async function loadCommands(client) {
           continue;
         }
 
-        // Melampirkan metadata kategori
-        command.category = category.name;
+        // Bungkus modul dalam objek baru karena ES module bersifat frozen
+        const cmd = {
+          data: command.data,
+          execute: command.execute,
+          category: category.name,
+        };
 
-        client.commands.set(command.data.name, command);
+        client.commands.set(cmd.data.name, cmd);
         loaded++;
       } catch (error) {
         logger.error(`Failed to load command ${file.name}:`, error);

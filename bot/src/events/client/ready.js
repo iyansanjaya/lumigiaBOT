@@ -6,7 +6,7 @@
 import { ActivityType } from 'discord.js';
 import { logger } from '../../utils/Logger.js';
 
-export const name = 'ready';
+export const name = 'clientReady';
 export const once = true;
 
 export async function execute(client) {
