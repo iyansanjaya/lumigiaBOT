@@ -2,13 +2,13 @@
 
 @theme {
   /* Latar belakang */
-  --color-background: #0b0d13;
-  --color-background-secondary: #111318;
-  --color-background-tertiary: #191c24;
+  --color-background: #09090b;
+  --color-background-secondary: #0f0f14;
+  --color-background-tertiary: #18181f;
 
   /* Teks */
-  --color-foreground: #e1e4eb;
-  --color-foreground-muted: #7c8197;
+  --color-foreground: #fafafa;
+  --color-foreground-muted: #a1a1aa;
 
   /* Warna utama */
   --color-primary: #7C3AED;
@@ -20,16 +20,14 @@
 
   /* Status */
   --color-destructive: #EF4444;
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
+  --color-success: #22C55E;
+  --color-warning: #EAB308;
 
-  /* Border */
-  --color-border: #1f2231;
-  --color-border-hover: #2d3148;
-
-  /* Komponen */
-  --color-card: #13151c;
-  --color-card-hover: #191c24;
+  /* Border & Card */
+  --color-border: #27272a;
+  --color-border-hover: #3f3f46;
+  --color-card: #111114;
+  --color-card-hover: #18181f;
 }
 
 * {
@@ -39,11 +37,16 @@
 }
 
 body {
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
   background-color: var(--color-background);
   color: var(--color-foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: white;
 }
 
 /* Scrollbar */
@@ -51,9 +54,3 @@ body {
 ::-webkit-scrollbar-track { background: var(--color-background); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-border-hover); }
-
-/* Seleksi teks */
-::selection {
-  background-color: var(--color-primary);
-  color: white;
-}
