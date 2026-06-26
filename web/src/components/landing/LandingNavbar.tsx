@@ -37,7 +37,7 @@ export function LandingNavbar() {
           ))}
           <div className="ml-3 h-5 w-px bg-border" />
           <Link
-            href="/api/auth/signin/discord"
+            href="/api/auth/signin"
             className="ml-3 bg-primary hover:bg-primary-hover text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors"
           >
             Login
@@ -70,7 +70,7 @@ export function LandingNavbar() {
             ))}
             <div className="h-px bg-border my-2" />
             <Link
-              href="/api/auth/signin/discord"
+              href="/api/auth/signin"
               className="bg-primary hover:bg-primary-hover text-white rounded-lg px-4 py-2.5 text-sm font-medium text-center transition-colors"
               onClick={() => setMobileOpen(false)}
             >
