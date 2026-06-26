@@ -14,7 +14,7 @@ data/*.db-wal
 data/*.db-shm
 
 # Logs
-logs/
+/logs/
 *.log
 
 # Next.js
