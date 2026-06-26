@@ -104,11 +104,11 @@ export default async function SettingsPage({ params }: PageProps) {
             <h2 className="text-lg font-semibold text-foreground">Tickets</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <SettingField label="Category" value={settings.ticketCategory} />
-            <SettingField label="Support Role" value={settings.ticketSupportRole} />
-            <SettingField label="Log Channel" value={settings.ticketLogChannel} />
-            <SettingField label="Max Open" value={settings.ticketMaxOpen} />
-            <SettingField label="Auto Close Hours" value={settings.ticketAutoCloseHours} />
+            <SettingField label="Category" value={settings.ticket_category} />
+            <SettingField label="Support Role" value={settings.ticket_support_role} />
+            <SettingField label="Log Channel" value={settings.ticket_log_channel} />
+            <SettingField label="Max Open" value={settings.ticket_max_open} />
+            <SettingField label="Auto Close Hours" value={settings.ticket_auto_close_hours} />
           </div>
         </CardContent>
       </Card>
@@ -121,9 +121,9 @@ export default async function SettingsPage({ params }: PageProps) {
             <h2 className="text-lg font-semibold text-foreground">Anti-Raid</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <SettingField label="Enabled" value={settings.antiRaidEnabled} />
-            <SettingField label="Threshold" value={settings.antiRaidThreshold} />
-            <SettingField label="Timeframe" value={settings.antiRaidTimeframe} />
+            <SettingField label="Enabled" value={settings.anti_raid_enabled} />
+            <SettingField label="Threshold" value={settings.anti_raid_threshold} />
+            <SettingField label="Timeframe" value={settings.anti_raid_timeframe} />
           </div>
         </CardContent>
       </Card>
@@ -136,10 +136,10 @@ export default async function SettingsPage({ params }: PageProps) {
             <h2 className="text-lg font-semibold text-foreground">Welcome</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <SettingField label="Enabled" value={settings.welcomeEnabled} />
-            <SettingField label="Channel" value={settings.welcomeChannel} />
+            <SettingField label="Enabled" value={settings.welcome_enabled} />
+            <SettingField label="Channel" value={settings.welcome_channel} />
           </div>
-          <SettingField label="Message" value={settings.welcomeMessage} />
+          <SettingField label="Message" value={settings.welcome_message} />
         </CardContent>
       </Card>
     </div>

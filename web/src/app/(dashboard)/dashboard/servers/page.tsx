@@ -57,7 +57,7 @@ export default async function ServersPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {guilds.map((guild) => {
-          const iconUrl = getGuildIconUrl(guild.id, guild.icon);
+          const iconUrl = getGuildIconUrl(guild);
 
           return (
             <Card key={guild.id}>
