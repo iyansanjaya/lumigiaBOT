@@ -3,14 +3,25 @@
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, Loader2 } from 'lucide-react';
+import {
+  Check, Loader2,
+  MessageSquare, Link2, Type, ShieldAlert, SmilePlus, AtSign,
+} from 'lucide-react';
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  spam: MessageSquare,
+  link: Link2,
+  word: Type,
+  caps: ShieldAlert,
+  emoji: SmilePlus,
+  mention: AtSign,
+};
 
 interface AutoModCardProps {
   guildId: string;
   filterKey: string;
   name: string;
   description: string;
-  icon: React.ElementType;
   initialEnabled: boolean;
   initialAction: string;
 }
@@ -22,7 +33,6 @@ export function AutoModCard({
   filterKey,
   name,
   description,
-  icon: Icon,
   initialEnabled,
   initialAction,
 }: AutoModCardProps) {
@@ -30,6 +40,8 @@ export function AutoModCard({
   const [action, setAction] = useState(initialAction);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const Icon = ICON_MAP[filterKey] || ShieldAlert;
 
   async function save(newEnabled: boolean, newAction: string) {
     setSaving(true);
@@ -48,7 +60,6 @@ export function AutoModCard({
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch {
-      // Revert on error
       setEnabled(initialEnabled);
       setAction(initialAction);
     } finally {
@@ -79,7 +90,6 @@ export function AutoModCard({
             <h3 className="font-semibold text-foreground">{name}</h3>
           </div>
 
-          {/* Toggle switch */}
           <button
             onClick={handleToggle}
             disabled={saving}

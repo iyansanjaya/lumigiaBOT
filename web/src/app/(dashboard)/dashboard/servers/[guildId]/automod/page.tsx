@@ -1,4 +1,3 @@
-import { MessageSquare, Link2, Type, SmilePlus, AtSign, ShieldAlert } from 'lucide-react';
 import { getAutoModFilters } from '@/lib/database';
 import { AutoModCard } from '@/components/dashboard/AutoModCard';
 
@@ -7,42 +6,12 @@ interface PageProps {
 }
 
 const defaultFilters = [
-  {
-    key: 'spam',
-    name: 'Spam Detection',
-    description: 'Automatically detect and remove spam messages.',
-    icon: MessageSquare,
-  },
-  {
-    key: 'link',
-    name: 'Link Filter',
-    description: 'Block or restrict links from being posted.',
-    icon: Link2,
-  },
-  {
-    key: 'word',
-    name: 'Word Filter',
-    description: 'Filter messages containing banned words or phrases.',
-    icon: Type,
-  },
-  {
-    key: 'caps',
-    name: 'Caps Lock Filter',
-    description: 'Prevent excessive use of capital letters.',
-    icon: ShieldAlert,
-  },
-  {
-    key: 'emoji',
-    name: 'Emoji Spam Filter',
-    description: 'Limit excessive emoji usage in messages.',
-    icon: SmilePlus,
-  },
-  {
-    key: 'mention',
-    name: 'Mention Spam Filter',
-    description: 'Prevent mass mention abuse.',
-    icon: AtSign,
-  },
+  { key: 'spam', name: 'Spam Detection', description: 'Automatically detect and remove spam messages.' },
+  { key: 'link', name: 'Link Filter', description: 'Block or restrict links from being posted.' },
+  { key: 'word', name: 'Word Filter', description: 'Filter messages containing banned words or phrases.' },
+  { key: 'caps', name: 'Caps Lock Filter', description: 'Prevent excessive use of capital letters.' },
+  { key: 'emoji', name: 'Emoji Spam Filter', description: 'Limit excessive emoji usage in messages.' },
+  { key: 'mention', name: 'Mention Spam Filter', description: 'Prevent mass mention abuse.' },
 ];
 
 export default async function AutoModPage({ params }: PageProps) {
@@ -80,7 +49,6 @@ export default async function AutoModPage({ params }: PageProps) {
               filterKey={filter.key}
               name={filter.name}
               description={filter.description}
-              icon={filter.icon}
               initialEnabled={!!enabled}
               initialAction={action}
             />
