@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { signOut } from 'next-auth/react';
-import { LogOut } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { signOut } from "next-auth/react";
+import { LogOut } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TopbarProps {
   user: {
@@ -26,28 +26,30 @@ export function Topbar({ user }: TopbarProps) {
           {user.image ? (
             <img
               src={user.image}
-              alt={user.name ?? 'User avatar'}
+              alt={user.name ?? "User avatar"}
               className="h-8 w-8 rounded-full ring-2 ring-border"
             />
           ) : (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-primary text-sm font-bold">
-              {user.name?.charAt(0)?.toUpperCase() ?? '?'}
+              {user.name?.charAt(0)?.toUpperCase() ?? "?"}
             </div>
           )}
           <span className="hidden text-sm font-medium text-foreground sm:inline-block">
-            {user.name ?? 'User'}
+            {user.name ?? "User"}
           </span>
         </div>
 
         <button
-          onClick={() => signOut({ callbackUrl: '/' })}
+          onClick={() => signOut({ callbackUrl: "/" })}
           className={cn(
-            'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium',
-            'text-foreground-muted hover:bg-destructive/20 hover:text-destructive transition-colors'
+            "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium",
+            "text-foreground-muted hover:bg-destructive/20 hover:text-destructive transition-colors",
           )}
         >
           <LogOut className="h-4 w-4" />
-          <span className="hidden sm:inline-block">Sign Out</span>
+          <span className="hidden sm:inline-block cursor-pointer">
+            Sign Out
+          </span>
         </button>
       </div>
     </header>

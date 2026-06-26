@@ -12,6 +12,9 @@ import {
   ButtonStyle,
   AttachmentBuilder,
 } from 'discord.js';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { t } from '../../i18n/helpers.js';
 import { createEmbed } from '../../utils/EmbedBuilder.js';
 import { TicketDefaults } from '../../config/constants.js';
@@ -163,6 +166,28 @@ export async function closeTicket(client, channel, closedBy) {
     transcriptBuffer = await generateTranscript(channel);
   } catch (err) {
     logger.error('Failed to generate transcript:', err);
+  }
+
+  // --- Simpan transkrip ke disk ---
+  if (transcriptBuffer) {
+    try {
+      const dataDir = process.env.DATABASE_PATH
+        ? dirname(process.env.DATABASE_PATH)
+        : join(process.cwd(), 'data');
+      const transcriptsDir = join(dataDir, 'transcripts', channel.guild.id);
+
+      if (!existsSync(transcriptsDir)) {
+        mkdirSync(transcriptsDir, { recursive: true });
+      }
+
+      writeFileSync(
+        join(transcriptsDir, `ticket-${ticket.id}.html`),
+        transcriptBuffer,
+      );
+      logger.info(`Transcript saved to disk: ticket-${ticket.id}.html`);
+    } catch (err) {
+      logger.error('Failed to save transcript to disk:', err);
+    }
   }
 
   // --- Kirim transkrip ke channel log ---

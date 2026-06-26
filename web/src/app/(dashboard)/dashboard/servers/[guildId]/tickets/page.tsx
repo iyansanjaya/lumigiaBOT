@@ -1,4 +1,5 @@
-import { Ticket } from 'lucide-react';
+import { Ticket, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -11,6 +12,8 @@ import {
 } from '@/components/ui/table';
 import { getTicketStats, getGuildTickets } from '@/lib/database';
 import { TicketChart } from '@/components/dashboard/TicketChart';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -25,6 +28,14 @@ function getStatusVariant(status: string): 'success' | 'warning' | 'default' {
     default:
       return 'default';
   }
+}
+
+function hasTranscript(guildId: string, ticketId: number): boolean {
+  const dataDir = process.env.DATABASE_PATH
+    ? join(process.env.DATABASE_PATH, '..', 'transcripts', guildId)
+    : join(process.cwd(), '..', 'data', 'transcripts', guildId);
+
+  return existsSync(join(dataDir, `ticket-${ticketId}.html`));
 }
 
 export default async function TicketsPage({ params }: PageProps) {
@@ -99,37 +110,56 @@ export default async function TicketsPage({ params }: PageProps) {
                   <TableHead>Status</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead>Closed</TableHead>
+                  <TableHead>Transcript</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {tickets.map((ticket) => (
-                  <TableRow key={ticket.id}>
-                    <TableCell className="font-mono text-xs">{ticket.id}</TableCell>
-                    <TableCell className="font-mono text-xs">{ticket.user_id}</TableCell>
-                    <TableCell>{ticket.category ?? '—'}</TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusVariant(ticket.status)}>
-                        {ticket.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-foreground-muted whitespace-nowrap">
-                      {new Date(ticket.created_at).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </TableCell>
-                    <TableCell className="text-foreground-muted whitespace-nowrap">
-                      {ticket.closed_at
-                        ? new Date(ticket.closed_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })
-                        : '—'}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {tickets.map((ticket) => {
+                  const transcriptAvailable = ticket.status === 'closed' && hasTranscript(guildId, ticket.id);
+
+                  return (
+                    <TableRow key={ticket.id}>
+                      <TableCell className="font-mono text-xs">{ticket.id}</TableCell>
+                      <TableCell className="font-mono text-xs">{ticket.user_id}</TableCell>
+                      <TableCell>{ticket.category ?? '—'}</TableCell>
+                      <TableCell>
+                        <Badge variant={getStatusVariant(ticket.status)}>
+                          {ticket.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-foreground-muted whitespace-nowrap">
+                        {new Date(ticket.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </TableCell>
+                      <TableCell className="text-foreground-muted whitespace-nowrap">
+                        {ticket.closed_at
+                          ? new Date(ticket.closed_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })
+                          : '—'}
+                      </TableCell>
+                      <TableCell>
+                        {transcriptAvailable ? (
+                          <Link
+                            href={`/api/transcripts/${guildId}/${ticket.id}`}
+                            target="_blank"
+                            className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            View
+                          </Link>
+                        ) : (
+                          <span className="text-xs text-foreground-muted">—</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </CardContent>
