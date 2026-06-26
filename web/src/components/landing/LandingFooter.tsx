@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { Shield } from 'lucide-react';
+import Link from "next/link";
+import { Shield } from "lucide-react";
 
 interface FooterLink {
   label: string;
@@ -9,16 +9,20 @@ interface FooterLink {
 
 const footerSections: Record<string, FooterLink[]> = {
   Product: [
-    { label: 'Features', href: '/features' },
-    { label: 'Commands', href: '/commands' },
-    { label: 'Dashboard', href: '/dashboard' },
+    { label: "Features", href: "/features" },
+    { label: "Commands", href: "/commands" },
+    { label: "Dashboard", href: "/dashboard" },
   ],
   Resources: [
-    { label: 'Support Server', href: 'https://discord.gg/lumigiabot', external: true },
+    {
+      label: "Support Server",
+      href: "https://https://discord.com/ZwrgK2r",
+      external: true,
+    },
   ],
   Legal: [
-    { label: 'Privacy', href: '/privacy' },
-    { label: 'Terms', href: '/terms' },
+    { label: "Privacy", href: "/privacy" },
+    { label: "Terms", href: "/terms" },
   ],
 };
 
@@ -34,14 +38,17 @@ export function LandingFooter() {
               <span className="font-bold text-foreground">LumigiaBOT</span>
             </Link>
             <p className="text-foreground-muted text-sm leading-relaxed">
-              Bot Discord all-in-one untuk moderasi, auto-mod, tiket, dan proteksi anti-raid.
+              Bot Discord all-in-one untuk moderasi, auto-mod, tiket, dan
+              proteksi anti-raid.
             </p>
           </div>
 
           {/* Kolom Tautan */}
           {Object.entries(footerSections).map(([title, links]) => (
             <div key={title}>
-              <h4 className="text-sm font-semibold text-foreground mb-3">{title}</h4>
+              <h4 className="text-sm font-semibold text-foreground mb-3">
+                {title}
+              </h4>
               <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.label}>
