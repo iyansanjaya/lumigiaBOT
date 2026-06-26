@@ -11,117 +11,174 @@ import {
   LayoutDashboard,
   Globe,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
-/* ─────────────────────── Data Fitur ─────────────────────── */
+/* ─────────────────────── Data ─────────────────────── */
 const features = [
   {
     icon: Shield,
-    color: '#7C3AED',
+    color: '#A78BFA',
+    bg: 'rgba(124,58,237,0.12)',
     title: 'Moderasi',
-    description: 'Warn, kick, ban, mute, dan purge dengan sistem eskalasi otomatis.',
+    desc: 'Warn, kick, ban, mute, dan purge. Sistem eskalasi otomatis dan pencatatan lengkap.',
     tags: ['Warn System', 'Auto-Escalation', 'Mod Logs'],
   },
   {
     icon: Zap,
-    color: '#06B6D4',
+    color: '#22D3EE',
+    bg: 'rgba(6,182,212,0.12)',
     title: 'Auto-Mod',
-    description: 'Spam detection, link filter, word filter dengan regex support.',
-    tags: ['Spam Filter', 'Link Filter', 'Regex'],
+    desc: 'Spam detection, link filter, word filter dengan regex support.',
+    tags: ['Spam Filter', 'Link Filter', 'Regex Support'],
   },
   {
     icon: Ticket,
-    color: '#22C55E',
+    color: '#4ADE80',
+    bg: 'rgba(34,197,94,0.12)',
     title: 'Tiket Support',
-    description: 'Sistem tiket lengkap dengan kategori, klaim, dan auto-close.',
+    desc: 'Sistem tiket lengkap dengan kategori, klaim staff, dan auto-close.',
     tags: ['Categories', 'Staff Claim', 'Transcripts'],
   },
   {
     icon: ShieldAlert,
-    color: '#EAB308',
+    color: '#FACC15',
+    bg: 'rgba(234,179,8,0.12)',
     title: 'Anti-Raid',
-    description: 'Deteksi raid real-time dengan lockdown otomatis.',
+    desc: 'Deteksi raid real-time dengan lockdown server otomatis.',
     tags: ['Rate Detection', 'Auto Lock', 'Alerts'],
   },
 ];
 
-const capabilities = [
-  { icon: Terminal, title: '23+ Slash Commands', desc: 'Semua fitur mudah diakses via slash commands.' },
-  { icon: LayoutDashboard, title: 'Web Dashboard', desc: 'Kelola bot dari browser, tanpa perlu perintah.' },
-  { icon: Globe, title: 'Multi-Bahasa', desc: 'Mendukung Bahasa Indonesia dan English.' },
+const caps = [
+  { icon: Terminal, label: '23+ Commands', desc: 'Slash commands lengkap' },
+  { icon: LayoutDashboard, label: 'Web Dashboard', desc: 'Kelola dari browser' },
+  { icon: Globe, label: 'Multi-Bahasa', desc: 'Indonesia & English' },
 ];
 
 /* ═══════════════════════ HALAMAN UTAMA ═══════════════════════ */
 export default function LandingPage() {
   return (
-    <>
+    <div>
       {/* ══════ HERO ══════ */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Grid background */}
+      <section
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Grid pattern */}
         <div
-          className="absolute inset-0 pointer-events-none"
           style={{
+            position: 'absolute',
+            inset: 0,
             backgroundImage: `
-              linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px)
+              linear-gradient(rgba(48,54,61,0.4) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(48,54,61,0.4) 1px, transparent 1px)
             `,
-            backgroundSize: '60px 60px',
+            backgroundSize: '80px 80px',
+            maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 70%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 70%)',
           }}
         />
-        {/* Radial glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-primary/8 rounded-full blur-[180px] pointer-events-none" />
-        {/* Top fade */}
-        <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-background to-transparent pointer-events-none" />
+        {/* Glow */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '40%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '700px',
+            height: '500px',
+            background: 'radial-gradient(ellipse, rgba(124,58,237,0.15), transparent 70%)',
+            pointerEvents: 'none',
+          }}
+        />
 
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center py-24">
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto', padding: '120px 32px 80px', textAlign: 'center' }}>
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground-muted mb-10">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-success opacity-75 animate-ping" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
-            </span>
-            Online &mdash; Melayani 500+ server
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              border: '1px solid #30363d',
+              background: '#161b22',
+              borderRadius: '999px',
+              padding: '8px 16px',
+              fontSize: '14px',
+              color: '#8b949e',
+              marginBottom: '40px',
+            }}
+          >
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#3fb950' }} />
+            Online — Melayani 500+ server
           </div>
 
           {/* Heading */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-8">
-            <span className="text-foreground">Jaga komunitasmu</span>
+          <h1
+            style={{
+              fontSize: 'clamp(40px, 7vw, 72px)',
+              fontWeight: 800,
+              lineHeight: 1.1,
+              marginBottom: '24px',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            <span style={{ color: '#f0f6fc' }}>Jaga komunitasmu</span>
             <br />
-            <span className="bg-gradient-to-r from-primary via-primary-light to-accent bg-clip-text text-transparent">
-              tetap aman
-            </span>
+            <span style={{ color: '#A78BFA' }}>tetap aman</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg md:text-xl text-foreground-muted max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p style={{ fontSize: '18px', color: '#8b949e', maxWidth: '560px', margin: '0 auto 48px', lineHeight: 1.7 }}>
             Bot Discord all-in-one untuk moderasi, auto-mod, tiket support,
             dan proteksi anti-raid. Gratis dan open source.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          {/* CTA */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
             <Link
               href="https://discord.com/oauth2/authorize"
-              className={cn(
-                'group inline-flex items-center gap-2.5',
-                'bg-primary hover:bg-primary-hover text-white',
-                'rounded-xl px-8 py-4 text-base font-semibold',
-                'transition-all duration-300',
-                'shadow-[0_0_0_1px_rgba(124,58,237,0.3),0_4px_20px_rgba(124,58,237,0.3)]',
-                'hover:shadow-[0_0_0_1px_rgba(124,58,237,0.5),0_8px_40px_rgba(124,58,237,0.4)]',
-              )}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: '#7C3AED',
+                color: '#fff',
+                borderRadius: '12px',
+                padding: '14px 28px',
+                fontSize: '16px',
+                fontWeight: 600,
+                textDecoration: 'none',
+                transition: 'background 0.2s',
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.background = '#6D28D9')}
+              onMouseOut={(e) => (e.currentTarget.style.background = '#7C3AED')}
             >
               Undang ke Server
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight size={16} />
             </Link>
             <Link
               href="/dashboard"
-              className={cn(
-                'inline-flex items-center gap-2',
-                'bg-card border border-border hover:border-border-hover text-foreground',
-                'rounded-xl px-8 py-4 text-base font-medium',
-                'transition-all duration-200',
-              )}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: '#161b22',
+                color: '#f0f6fc',
+                border: '1px solid #30363d',
+                borderRadius: '12px',
+                padding: '14px 28px',
+                fontSize: '16px',
+                fontWeight: 500,
+                textDecoration: 'none',
+                transition: 'border-color 0.2s',
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.borderColor = '#484f58')}
+              onMouseOut={(e) => (e.currentTarget.style.borderColor = '#30363d')}
             >
               Buka Dashboard
             </Link>
@@ -130,44 +187,53 @@ export default function LandingPage() {
       </section>
 
       {/* ══════ FITUR ══════ */}
-      <section className="relative py-28 md:py-36">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-20">
-            <p className="text-primary text-sm font-semibold uppercase tracking-wider mb-3">Fitur</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+      <section style={{ borderTop: '1px solid #30363d', padding: '100px 32px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+            <p style={{ color: '#A78BFA', fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>
+              Fitur
+            </p>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700, color: '#f0f6fc' }}>
               Semua yang kamu butuhkan
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {features.map((feature) => {
-              const Icon = feature.icon;
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 460px), 1fr))', gap: '20px' }}>
+            {features.map((f) => {
+              const Icon = f.icon;
               return (
                 <div
-                  key={feature.title}
-                  className="group rounded-2xl bg-card border border-border p-7 hover:border-border-hover transition-all duration-300"
+                  key={f.title}
+                  style={{
+                    background: '#161b22',
+                    border: '1px solid #30363d',
+                    borderRadius: '16px',
+                    padding: '32px',
+                    transition: 'border-color 0.2s',
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.borderColor = '#484f58')}
+                  onMouseOut={(e) => (e.currentTarget.style.borderColor = '#30363d')}
                 >
-                  <div className="flex items-start gap-4 mb-5">
-                    <div
-                      className="shrink-0 rounded-xl p-3"
-                      style={{ backgroundColor: `${feature.color}15` }}
-                    >
-                      <Icon className="h-5 w-5" style={{ color: feature.color }} />
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '20px' }}>
+                    <div style={{ flexShrink: 0, background: f.bg, borderRadius: '12px', padding: '12px' }}>
+                      <Icon size={22} style={{ color: f.color }} />
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="text-lg font-semibold text-foreground mb-1">{feature.title}</h3>
-                      <p className="text-foreground-muted text-sm leading-relaxed">
-                        {feature.description}
-                      </p>
+                    <div>
+                      <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#f0f6fc', marginBottom: '6px' }}>{f.title}</h3>
+                      <p style={{ fontSize: '14px', color: '#8b949e', lineHeight: 1.6 }}>{f.desc}</p>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2 ml-[60px]">
-                    {feature.tags.map((tag) => (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginLeft: '58px' }}>
+                    {f.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-md bg-background-tertiary px-2.5 py-1 text-xs text-foreground-muted"
+                        style={{
+                          background: '#21262d',
+                          color: '#8b949e',
+                          borderRadius: '6px',
+                          padding: '4px 10px',
+                          fontSize: '12px',
+                        }}
                       >
                         {tag}
                       </span>
@@ -181,82 +247,90 @@ export default function LandingPage() {
       </section>
 
       {/* ══════ KEMAMPUAN ══════ */}
-      <section className="relative py-28 md:py-36 bg-card/50">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {capabilities.map((cap) => {
-              const Icon = cap.icon;
-              return (
-                <div key={cap.title} className="text-center">
-                  <div className="inline-flex items-center justify-center rounded-2xl bg-primary/10 p-4 mb-5">
-                    <Icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">{cap.title}</h3>
-                  <p className="text-foreground-muted text-sm leading-relaxed">{cap.desc}</p>
+      <section style={{ borderTop: '1px solid #30363d', background: '#161b22', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '40px' }}>
+          {caps.map((c) => {
+            const Icon = c.icon;
+            return (
+              <div key={c.label} style={{ textAlign: 'center' }}>
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(124,58,237,0.12)',
+                    borderRadius: '16px',
+                    padding: '16px',
+                    marginBottom: '16px',
+                  }}
+                >
+                  <Icon size={24} style={{ color: '#A78BFA' }} />
                 </div>
-              );
-            })}
-          </div>
+                <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#f0f6fc', marginBottom: '4px' }}>{c.label}</h3>
+                <p style={{ fontSize: '14px', color: '#8b949e' }}>{c.desc}</p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* ══════ PREVIEW COMMAND ══════ */}
-      <section className="relative py-28 md:py-36">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <p className="text-primary text-sm font-semibold uppercase tracking-wider mb-3">Preview</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+      {/* ══════ PREVIEW ══════ */}
+      <section style={{ borderTop: '1px solid #30363d', padding: '100px 32px' }}>
+        <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <p style={{ color: '#A78BFA', fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>
+              Preview
+            </p>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700, color: '#f0f6fc' }}>
               Mudah digunakan
             </h2>
           </div>
 
-          {/* Mock Terminal / Discord */}
-          <div className="rounded-2xl border border-border bg-card overflow-hidden">
-            {/* Titlebar */}
-            <div className="flex items-center gap-2 px-5 py-3.5 border-b border-border bg-background-secondary">
-              <div className="flex gap-1.5">
-                <div className="h-3 w-3 rounded-full bg-[#FF5F57]" />
-                <div className="h-3 w-3 rounded-full bg-[#FEBC2E]" />
-                <div className="h-3 w-3 rounded-full bg-[#28C840]" />
+          {/* Mock Discord */}
+          <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '16px', overflow: 'hidden' }}>
+            {/* Title bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 20px', borderBottom: '1px solid #30363d', background: '#0d1117' }}>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#f85149' }} />
+                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#d29922' }} />
+                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#3fb950' }} />
               </div>
-              <span className="text-xs text-foreground-muted ml-2 font-mono"># general</span>
+              <span style={{ fontSize: '13px', color: '#8b949e', fontFamily: 'monospace', marginLeft: '8px' }}># general</span>
             </div>
 
-            {/* Chat messages */}
-            <div className="p-6 space-y-5 font-mono text-sm">
-              {/* User message */}
-              <div className="flex items-start gap-3">
-                <div className="shrink-0 h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-xs text-primary font-bold">A</div>
+            {/* Messages */}
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {/* User */}
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(124,58,237,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A78BFA', fontWeight: 700, fontSize: '14px' }}>A</div>
                 <div>
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-primary font-semibold text-sm">Admin</span>
-                    <span className="text-foreground-muted text-xs">Hari ini pukul 14:32</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <span style={{ color: '#A78BFA', fontWeight: 600, fontSize: '14px' }}>Admin</span>
+                    <span style={{ color: '#484f58', fontSize: '12px' }}>Hari ini 14:32</span>
                   </div>
-                  <p className="text-foreground">/warn <span className="text-foreground-muted">@spammer alasan:</span><span className="text-foreground">Spam berulang kali</span></p>
+                  <p style={{ color: '#f0f6fc', fontSize: '14px', fontFamily: 'monospace' }}>
+                    /warn <span style={{ color: '#8b949e' }}>@spammer</span> <span style={{ color: '#8b949e' }}>alasan:</span>Spam berulang kali
+                  </p>
                 </div>
               </div>
 
               {/* Bot response */}
-              <div className="flex items-start gap-3">
-                <div className="shrink-0 h-8 w-8 rounded-full bg-success/20 flex items-center justify-center">
-                  <Shield className="h-4 w-4 text-success" />
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(63,185,80,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Shield size={18} style={{ color: '#3fb950' }} />
                 </div>
                 <div>
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-success font-semibold text-sm">LumigiaBOT</span>
-                    <span className="rounded bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 font-sans">BOT</span>
-                    <span className="text-foreground-muted text-xs">Hari ini pukul 14:32</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <span style={{ color: '#3fb950', fontWeight: 600, fontSize: '14px' }}>LumigiaBOT</span>
+                    <span style={{ background: 'rgba(124,58,237,0.2)', color: '#A78BFA', fontSize: '10px', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>BOT</span>
+                    <span style={{ color: '#484f58', fontSize: '12px' }}>Hari ini 14:32</span>
                   </div>
-                  <div className="rounded-lg border-l-4 border-warning bg-warning/5 p-4 max-w-md">
-                    <p className="text-warning font-semibold font-sans text-sm mb-2">⚠️ Peringatan Diberikan</p>
-                    <div className="space-y-1 text-foreground-muted text-xs font-sans">
-                      <p><span className="text-foreground-muted">User:</span> <span className="text-foreground">@spammer</span></p>
-                      <p><span className="text-foreground-muted">Alasan:</span> <span className="text-foreground">Spam berulang kali</span></p>
-                      <p><span className="text-foreground-muted">Total Warns:</span> <span className="text-warning">3/5</span></p>
+                  <div style={{ borderLeft: '4px solid #d29922', background: 'rgba(210,153,34,0.08)', borderRadius: '0 8px 8px 0', padding: '16px', maxWidth: '400px' }}>
+                    <p style={{ color: '#d29922', fontWeight: 600, fontSize: '14px', marginBottom: '12px' }}>⚠️ Peringatan Diberikan</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px' }}>
+                      <p><span style={{ color: '#8b949e' }}>User: </span><span style={{ color: '#f0f6fc' }}>@spammer</span></p>
+                      <p><span style={{ color: '#8b949e' }}>Alasan: </span><span style={{ color: '#f0f6fc' }}>Spam berulang kali</span></p>
+                      <p><span style={{ color: '#8b949e' }}>Total Warns: </span><span style={{ color: '#d29922', fontWeight: 600 }}>3/5</span></p>
                     </div>
                   </div>
                 </div>
@@ -267,41 +341,34 @@ export default function LandingPage() {
       </section>
 
       {/* ══════ CTA ══════ */}
-      <section className="relative py-28 md:py-36 overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
-
-        <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+      <section style={{ borderTop: '1px solid #30363d', padding: '100px 32px', background: 'linear-gradient(180deg, rgba(124,58,237,0.04) 0%, transparent 60%)' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700, color: '#f0f6fc', marginBottom: '16px' }}>
             Siap melindungi servermu?
           </h2>
-          <p className="text-foreground-muted text-lg mb-10">
+          <p style={{ fontSize: '16px', color: '#8b949e', marginBottom: '40px' }}>
             Tambahkan LumigiaBOT sekarang. Gratis, tanpa batasan.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="https://discord.com/oauth2/authorize"
-              className={cn(
-                'group inline-flex items-center gap-2.5',
-                'bg-primary hover:bg-primary-hover text-white',
-                'rounded-xl px-8 py-4 text-base font-semibold',
-                'transition-all duration-300',
-                'shadow-[0_0_0_1px_rgba(124,58,237,0.3),0_4px_20px_rgba(124,58,237,0.3)]',
-                'hover:shadow-[0_0_0_1px_rgba(124,58,237,0.5),0_8px_40px_rgba(124,58,237,0.4)]',
-              )}
-            >
-              Undang ke Server
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-            <Link
-              href="/commands"
-              className="text-foreground-muted hover:text-foreground text-sm font-medium transition-colors underline underline-offset-4"
-            >
-              Lihat semua perintah →
-            </Link>
-          </div>
+          <Link
+            href="https://discord.com/oauth2/authorize"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: '#7C3AED',
+              color: '#fff',
+              borderRadius: '12px',
+              padding: '14px 28px',
+              fontSize: '16px',
+              fontWeight: 600,
+              textDecoration: 'none',
+            }}
+          >
+            Undang ke Server
+            <ArrowRight size={16} />
+          </Link>
         </div>
       </section>
-    </>
+    </div>
   );
 }

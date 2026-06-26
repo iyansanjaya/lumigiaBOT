@@ -2,14 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
-/* ─────────────────────── Data Perintah ─────────────────────── */
-interface Command {
-  name: string;
-  description: string;
-  permission: string;
-}
+interface Command { name: string; description: string; permission: string; }
 
 const categories: { name: string; commands: Command[] }[] = [
   {
@@ -54,14 +48,13 @@ const categories: { name: string; commands: Command[] }[] = [
   },
 ];
 
-const permissionColors: Record<string, string> = {
-  Everyone: 'bg-success/15 text-success',
-  Staff: 'bg-accent/15 text-accent',
-  Moderator: 'bg-warning/15 text-warning',
-  Admin: 'bg-destructive/15 text-destructive',
+const permColors: Record<string, { bg: string; text: string }> = {
+  Everyone: { bg: 'rgba(63,185,80,0.15)', text: '#3fb950' },
+  Staff: { bg: 'rgba(6,182,212,0.15)', text: '#22d3ee' },
+  Moderator: { bg: 'rgba(210,153,34,0.15)', text: '#d29922' },
+  Admin: { bg: 'rgba(248,81,73,0.15)', text: '#f85149' },
 };
 
-/* ═══════════════════════ HALAMAN PERINTAH ═══════════════════════ */
 export default function CommandsPage() {
   const [query, setQuery] = useState('');
 
@@ -69,78 +62,87 @@ export default function CommandsPage() {
     if (!query.trim()) return categories;
     const q = query.toLowerCase();
     return categories
-      .map((cat) => ({
-        ...cat,
-        commands: cat.commands.filter(
-          (cmd) => cmd.name.includes(q) || cmd.description.toLowerCase().includes(q),
-        ),
-      }))
+      .map((cat) => ({ ...cat, commands: cat.commands.filter((c) => c.name.includes(q) || c.description.toLowerCase().includes(q)) }))
       .filter((cat) => cat.commands.length > 0);
   }, [query]);
 
   return (
-    <>
-      {/* Header + Pencarian */}
-      <section className="pt-32 pb-16 md:pt-40 md:pb-20">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Daftar Perintah
-          </h1>
-          <p className="text-lg text-foreground-muted mb-10">
-            Semua slash command yang tersedia di LumigiaBOT.
-          </p>
+    <div>
+      {/* Header */}
+      <section style={{ padding: '140px 32px 60px', textAlign: 'center' }}>
+        <p style={{ color: '#A78BFA', fontSize: '14px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>
+          Perintah
+        </p>
+        <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 700, color: '#f0f6fc', marginBottom: '16px' }}>
+          Daftar Perintah
+        </h1>
+        <p style={{ fontSize: '18px', color: '#8b949e', marginBottom: '40px' }}>
+          Semua slash command yang tersedia di LumigiaBOT.
+        </p>
 
-          {/* Kotak Pencarian */}
-          <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-muted" />
-            <input
-              type="text"
-              placeholder="Cari perintah..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className={cn(
-                'w-full rounded-xl bg-card border border-border pl-11 pr-4 py-3 text-sm text-foreground',
-                'placeholder:text-foreground-muted',
-                'focus:outline-none focus:border-primary/50 transition-colors',
-              )}
-            />
-          </div>
+        {/* Search */}
+        <div style={{ position: 'relative', maxWidth: '400px', margin: '0 auto' }}>
+          <Search size={16} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#8b949e' }} />
+          <input
+            type="text"
+            placeholder="Cari perintah..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            style={{
+              width: '100%',
+              background: '#161b22',
+              border: '1px solid #30363d',
+              borderRadius: '12px',
+              padding: '12px 16px 12px 44px',
+              fontSize: '14px',
+              color: '#f0f6fc',
+              outline: 'none',
+            }}
+            onFocus={(e) => (e.currentTarget.style.borderColor = '#484f58')}
+            onBlur={(e) => (e.currentTarget.style.borderColor = '#30363d')}
+          />
         </div>
       </section>
 
-      {/* Daftar Perintah */}
-      <section className="pb-24 md:pb-32">
-        <div className="max-w-4xl mx-auto px-6 space-y-10">
+      {/* Commands */}
+      <section style={{ padding: '0 32px 120px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '40px' }}>
           {filtered.length === 0 ? (
-            <p className="text-center text-foreground-muted py-16 text-lg">
-              Tidak ada perintah yang cocok dengan pencarian.
+            <p style={{ textAlign: 'center', color: '#8b949e', padding: '60px 0', fontSize: '16px' }}>
+              Tidak ada perintah yang cocok.
             </p>
           ) : (
             filtered.map((cat) => (
               <div key={cat.name}>
-                <h2 className="text-xl font-semibold text-foreground mb-4">{cat.name}</h2>
-                <div className="rounded-2xl border border-border overflow-hidden bg-card">
+                <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#f0f6fc', marginBottom: '16px' }}>{cat.name}</h2>
+                <div style={{ background: '#161b22', border: '1px solid #30363d', borderRadius: '16px', overflow: 'hidden' }}>
                   {cat.commands.map((cmd, i) => (
                     <div
                       key={cmd.name}
-                      className={cn(
-                        'flex items-center justify-between px-6 py-4',
-                        'hover:bg-background-tertiary/50 transition-colors',
-                        i !== cat.commands.length - 1 && 'border-b border-border',
-                      )}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '14px 24px',
+                        borderBottom: i < cat.commands.length - 1 ? '1px solid #21262d' : 'none',
+                      }}
                     >
-                      <div className="flex items-center gap-4 min-w-0">
-                        <code className="text-sm font-mono text-primary font-medium shrink-0">
-                          {cmd.name}
-                        </code>
-                        <span className="text-sm text-foreground-muted truncate hidden sm:inline">
-                          {cmd.description}
-                        </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 0 }}>
+                        <code style={{ fontSize: '14px', color: '#A78BFA', fontWeight: 500, flexShrink: 0 }}>{cmd.name}</code>
+                        <span style={{ fontSize: '13px', color: '#8b949e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cmd.description}</span>
                       </div>
-                      <span className={cn(
-                        'shrink-0 rounded-full px-3 py-1 text-xs font-medium ml-4',
-                        permissionColors[cmd.permission] ?? 'bg-border text-foreground-muted',
-                      )}>
+                      <span
+                        style={{
+                          flexShrink: 0,
+                          borderRadius: '999px',
+                          padding: '3px 12px',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          marginLeft: '16px',
+                          background: permColors[cmd.permission]?.bg ?? 'rgba(139,148,158,0.15)',
+                          color: permColors[cmd.permission]?.text ?? '#8b949e',
+                        }}
+                      >
                         {cmd.permission}
                       </span>
                     </div>
@@ -151,6 +153,6 @@ export default function CommandsPage() {
           )}
         </div>
       </section>
-    </>
+    </div>
   );
 }

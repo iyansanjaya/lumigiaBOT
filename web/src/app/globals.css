@@ -1,39 +1,33 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Latar belakang */
-  --color-background: #09090b;
-  --color-background-secondary: #0f0f14;
-  --color-background-tertiary: #18181f;
+  /* Latar belakang — terinspirasi GitHub Dark */
+  --color-background: #0d1117;
+  --color-background-secondary: #161b22;
+  --color-background-tertiary: #21262d;
 
   /* Teks */
-  --color-foreground: #fafafa;
-  --color-foreground-muted: #a1a1aa;
+  --color-foreground: #f0f6fc;
+  --color-foreground-muted: #8b949e;
 
   /* Warna utama */
   --color-primary: #7C3AED;
   --color-primary-hover: #6D28D9;
   --color-primary-light: #A78BFA;
 
-  /* Warna aksen */
+  /* Aksen */
   --color-accent: #06B6D4;
 
   /* Status */
-  --color-destructive: #EF4444;
-  --color-success: #22C55E;
-  --color-warning: #EAB308;
+  --color-destructive: #f85149;
+  --color-success: #3fb950;
+  --color-warning: #d29922;
 
-  /* Border & Card */
-  --color-border: #27272a;
-  --color-border-hover: #3f3f46;
-  --color-card: #111114;
-  --color-card-hover: #18181f;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  /* Border & Card — kontras JELAS */
+  --color-border: #30363d;
+  --color-border-hover: #484f58;
+  --color-card: #161b22;
+  --color-card-hover: #1c2129;
 }
 
 body {
@@ -49,8 +43,7 @@ body {
   color: white;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--color-background); }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-border-hover); }
