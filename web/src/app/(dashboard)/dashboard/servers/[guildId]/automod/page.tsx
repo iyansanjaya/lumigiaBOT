@@ -1,7 +1,6 @@
-import { Zap, MessageSquare, Link2, Type, SmilePlus, AtSign, ShieldAlert } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { MessageSquare, Link2, Type, SmilePlus, AtSign, ShieldAlert } from 'lucide-react';
 import { getAutoModFilters } from '@/lib/database';
+import { AutoModCard } from '@/components/dashboard/AutoModCard';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -64,43 +63,27 @@ export default async function AutoModPage({ params }: PageProps) {
       <div>
         <h1 className="text-3xl font-bold text-foreground">Auto-Moderation</h1>
         <p className="mt-1 text-foreground-muted">
-          Configure automated moderation filters for this server.
+          Configure automated moderation filters for this server. Changes are saved instantly.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {defaultFilters.map((filter) => {
-          const Icon = filter.icon;
           const configured = filterMap.get(filter.key);
           const enabled = configured?.enabled ?? false;
-          const action = configured?.action ?? 'none';
+          const action = configured?.action ?? 'delete';
 
           return (
-            <Card key={filter.key}>
-              <CardContent className="space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-primary/20 p-2">
-                      <Icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-foreground">{filter.name}</h3>
-                  </div>
-                </div>
-
-                <p className="text-sm text-foreground-muted">{filter.description}</p>
-
-                <div className="flex items-center gap-2">
-                  <Badge variant={enabled ? 'success' : 'default'}>
-                    {enabled ? 'Enabled' : 'Disabled'}
-                  </Badge>
-                  {enabled && (
-                    <Badge variant="default">
-                      Action: {action}
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <AutoModCard
+              key={filter.key}
+              guildId={guildId}
+              filterKey={filter.key}
+              name={filter.name}
+              description={filter.description}
+              icon={filter.icon}
+              initialEnabled={!!enabled}
+              initialAction={action}
+            />
           );
         })}
       </div>

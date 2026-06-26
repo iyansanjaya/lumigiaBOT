@@ -22,7 +22,7 @@ services:
     ports:
       - "3412:3412"
     volumes:
-      - ./data:/app/data:ro
+      - ./data:/app/data
     env_file: .env
     networks:
       - lumigiabot-network
