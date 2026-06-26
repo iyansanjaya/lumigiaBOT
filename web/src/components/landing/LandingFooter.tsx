@@ -2,7 +2,13 @@ import Link from 'next/link';
 import { Shield, Heart, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const footerLinks = {
+interface FooterLink {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
+const footerLinks: Record<string, FooterLink[]> = {
   Product: [
     { label: 'Features', href: '/features' },
     { label: 'Commands', href: '/commands' },
