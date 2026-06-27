@@ -32,7 +32,19 @@ export async function execute(interaction, client) {
 
     // --- Tombol ---
     if (interaction.isButton()) {
-      const button = client.buttons.get(interaction.customId);
+      // Coba exact match terlebih dahulu
+      let button = client.buttons.get(interaction.customId);
+
+      // Fallback: startsWith match untuk customId dinamis (contoh: rr_toggle_1_3)
+      if (!button) {
+        for (const [key, btn] of client.buttons) {
+          if (btn.startsWith && interaction.customId.startsWith(key)) {
+            button = btn;
+            break;
+          }
+        }
+      }
+
       if (button) {
         await button.execute(interaction, client);
       }

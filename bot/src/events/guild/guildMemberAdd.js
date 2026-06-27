@@ -11,4 +11,7 @@ export async function execute(member, client) {
   if (client.antiRaidEngine) {
     await client.antiRaidEngine.onMemberJoin(member);
   }
+
+  // Analytics tracking
+  try { client.db?.analytics?.trackMemberJoin(member.guild.id); } catch { /* silent */ }
 }
