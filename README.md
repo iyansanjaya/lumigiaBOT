@@ -1,11 +1,13 @@
 # 🤖 LumigiaBOT
 
-**Bot Penjaga Discord Serba Guna** — Bot Discord modern dan modular dengan Web Dashboard, dibuat untuk komunitas segala ukuran.
+**Bot Penjaga Discord Serba Guna** — Bot Discord modern dan modular dengan Web Dashboard interaktif, dibuat untuk komunitas segala ukuran.
 
 [![Discord.js](https://img.shields.io/badge/discord.js-v14-5865F2?logo=discord&logoColor=white)](https://discord.js.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
-[![Docker](https://img.shields.io/badge/Docker-Siap-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Lisensi](https://img.shields.io/badge/Lisensi-MIT-green.svg)](LICENSE)
+[![Auth.js](https://img.shields.io/badge/Auth.js-v5-7C3AED?logo=auth0&logoColor=white)](https://authjs.dev/)
+[![SQLite](https://img.shields.io/badge/SQLite-WAL-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
@@ -13,7 +15,7 @@
 
 ### 🛡️ Moderasi
 
-Perangkat moderasi lengkap dengan pemeriksaan hierarki role, notifikasi DM, dan auto-eskalasi.
+Perangkat moderasi lengkap dengan pemeriksaan hierarki role, notifikasi DM, dan auto-eskalasi warning.
 
 | Perintah      | Deskripsi                  | Izin              |
 | ------------- | -------------------------- | ----------------- |
@@ -29,44 +31,79 @@ Perangkat moderasi lengkap dengan pemeriksaan hierarki role, notifikasi DM, dan 
 
 ### 🤖 Auto Moderasi
 
-Enam filter yang bisa dikonfigurasi dengan pengaturan per-guild dan dukungan whitelist.
+Enam filter yang bisa dikonfigurasi per-server dengan dukungan whitelist (channel/role/user).
 
-- **Filter Spam** — Deteksi pesan beruntun & konten duplikat
-- **Filter Link** — Blokir undangan Discord & URL mencurigakan
-- **Filter Kata** — Daftar hitam kata kustom dengan dukungan regex
-- **Filter Huruf Kapital** — Deteksi huruf kapital berlebihan (>70%)
-- **Filter Emoji** — Deteksi spam emoji (>5 per pesan)
-- **Filter Mention** — Deteksi mention massal (>5 mention)
+| Filter          | Deskripsi                                  |
+| --------------- | ------------------------------------------ |
+| **Spam**        | Deteksi pesan beruntun & konten duplikat   |
+| **Link**        | Blokir undangan Discord & URL mencurigakan |
+| **Word**        | Daftar hitam kata kustom + dukungan regex  |
+| **Caps Lock**   | Deteksi huruf kapital berlebihan (>70%)    |
+| **Emoji**       | Deteksi spam emoji (>5 per pesan)          |
+| **Mention**     | Deteksi mention massal (>5 mention)        |
+
+Setiap filter bisa dikonfigurasi action-nya: `delete`, `warn`, `mute`, `kick`, atau `ban`.
 
 ### 🎫 Sistem Tiket
 
-Sistem tiket profesional dengan manajemen siklus hidup lengkap.
+Sistem tiket support profesional dengan manajemen siklus hidup lengkap.
 
 - 📩 Pembuatan tiket satu klik dengan pemilihan kategori
-- 📝 Form modal untuk detail tiket
-- 👋 Sistem klaim staff
-- 📄 Pembuatan transkrip HTML (tema gelap mirip Discord)
-- ⏰ Auto-tutup setelah tidak aktif (bisa dikonfigurasi)
-- 📊 Dashboard statistik tiket
+- 📝 Form modal untuk detail tiket (alasan)
+- 👋 Sistem klaim staff — tiket bisa di-claim oleh support team
+- 📄 Transkrip HTML otomatis saat tiket ditutup (tema gelap mirip Discord)
+- ⏰ Auto-close setelah tidak aktif (durasi bisa dikonfigurasi)
+- 📊 Statistik tiket di dashboard (total, open, claimed, closed)
+- 🔄 Reopen — tiket yang ditutup bisa dibuka kembali
 
 ### 🛡️ Perlindungan Anti-Raid
 
-- Pemantauan kecepatan join dengan ambang batas yang bisa dikonfigurasi
-- Verifikasi umur akun
-- Lockdown server otomatis
+- Pemantauan kecepatan join dengan threshold yang bisa dikonfigurasi
+- Lockdown server otomatis saat raid terdeteksi
 - Notifikasi peringatan untuk staff
 
 ### 🎨 Web Dashboard
 
-Dashboard modern dan cantik dibuat dengan Next.js 15 + Tailwind CSS + Coss UI.
+Dashboard modern dibuat dengan **Next.js 15 (App Router)** + **Auth.js v5** + tema gelap premium.
 
-- **Halaman Landing** — Halaman marketing memukau dengan animasi
-- **Dashboard** — Login Discord OAuth2, manajemen server
-- **Manajemen Server** — Moderasi, AutoMod, Tiket, Log, Pengaturan
+| Halaman        | Deskripsi                                                         |
+| -------------- | ----------------------------------------------------------------- |
+| **Landing**    | Halaman marketing dengan animasi, fitur, daftar command           |
+| **Login**      | Discord OAuth2 — otomatis redirect ke dashboard setelah login     |
+| **Servers**    | Daftar server yang bisa dikelola (MANAGE_GUILD permission)        |
+| **Overview**   | Statistik server — total tiket, warnings, member                  |
+| **Moderation** | Lihat riwayat warning                                             |
+| **AutoMod**    | Toggle enable/disable filter + pilih action — langsung tersimpan  |
+| **Tickets**    | Daftar tiket dengan status + link transkrip HTML untuk tiket closed |
+| **Logs**       | Audit log aktivitas moderasi bot                                  |
+| **Settings**   | Konfigurasi server interaktif (language, channels, roles, dll)    |
+| **Terms**      | Terms of Service                                                  |
+| **Privacy**    | Privacy Policy                                                    |
+
+> **Dashboard bukan read-only** — Anda bisa mengubah pengaturan server langsung dari web. Perubahan langsung tersimpan ke database dan berlaku di bot tanpa restart.
+
+### 🔧 Command Admin & Utilitas
+
+| Perintah           | Deskripsi                           | Izin              |
+| ------------------ | ----------------------------------- | ----------------- |
+| `/setup`           | Wizard konfigurasi interaktif       | `ManageGuild`     |
+| `/settings`        | Atur pengaturan per-server          | `ManageGuild`     |
+| `/audit-log`       | Lihat log audit moderasi            | `ManageGuild`     |
+| `/automod-config`  | Konfigurasi filter automod          | `ManageGuild`     |
+| `/automod-logs`    | Atur channel log automod            | `ManageGuild`     |
+| `/automod-whitelist` | Kelola whitelist automod          | `ManageGuild`     |
+| `/ticket-setup`    | Pasang panel tiket di channel       | `ManageGuild`     |
+| `/ticket-config`   | Konfigurasi sistem tiket            | `ManageGuild`     |
+| `/ticket-stats`    | Lihat statistik tiket               | `ManageGuild`     |
+| `/help`            | Daftar semua command                | —                 |
+| `/ping`            | Cek latency bot                     | —                 |
+| `/avatar`          | Lihat avatar user                   | —                 |
+| `/userinfo`        | Informasi user                      | —                 |
+| `/serverinfo`      | Informasi server                    | —                 |
 
 ### 🌐 Dukungan Dua Bahasa
 
-Dukungan penuh Bahasa Indonesia 🇮🇩 dan Bahasa Inggris 🇬🇧, bisa dikonfigurasi per server.
+Dukungan penuh **Bahasa Indonesia** 🇮🇩 dan **English** 🇬🇧, bisa dikonfigurasi per server via command `/settings language` atau dashboard.
 
 ---
 
@@ -74,9 +111,12 @@ Dukungan penuh Bahasa Indonesia 🇮🇩 dan Bahasa Inggris 🇬🇧, bisa dikon
 
 ### Prasyarat
 
-- [Node.js 22+](https://nodejs.org/)
 - [Docker](https://www.docker.com/) (direkomendasikan untuk produksi)
-- Sebuah [Aplikasi Discord](https://discord.com/developers/applications) dengan Bot Token
+- [Node.js 22+](https://nodejs.org/) (untuk pengembangan lokal)
+- Sebuah [Aplikasi Discord](https://discord.com/developers/applications) dengan:
+  - **Bot Token**
+  - **Client ID & Client Secret** (untuk OAuth2 dashboard)
+  - **Redirect URI**: `https://domain-anda.com/api/auth/callback/discord`
 
 ### 1. Clone & Konfigurasi
 
@@ -89,42 +129,43 @@ cp .env.example .env
 Edit `.env` dengan kredensial Anda:
 
 ```env
-DISCORD_TOKEN=token_bot_anda
-DISCORD_CLIENT_ID=client_id_anda
-DISCORD_CLIENT_SECRET=client_secret_anda
-AUTH_SECRET=secret_acak_anda
+# Bot Discord (Wajib)
+DISCORD_TOKEN=your_bot_token_here
+DISCORD_CLIENT_ID=your_client_id_here
+DISCORD_CLIENT_SECRET=your_client_secret_here
+
+# Dashboard (Wajib)
+AUTH_SECRET=generate_a_random_secret_here    # openssl rand -base64 32
 AUTH_TRUST_HOST=true
-AUTH_URL=https://bot.lumigia.com
+AUTH_URL=https://bot.domain-anda.com         # URL publik dashboard
+
+# Database
 DATABASE_PATH=./data/lumigiabot.db
-DEFAULT_LANGUAGE=id
-BOT_OWNER_ID=id_discord_anda
+
+# Pengaturan Bot
+DEFAULT_LANGUAGE=id                          # id atau en
+BOT_OWNER_ID=your_discord_user_id_here
 ```
 
 ### 2A. Jalankan dengan Docker (Direkomendasikan) 🐳
 
 ```bash
-docker-compose up -d
+docker compose up -d --build
 ```
 
-Selesai! Bot dan dashboard akan berjalan otomatis.
+Selesai! Bot dan dashboard berjalan otomatis.
 
 - **Bot**: Berjalan di background
-- **Dashboard**: http://localhost:3412
+- **Dashboard**: `http://localhost:3412` (atau melalui reverse proxy)
 
 ### 2B. Jalankan Lokal (Pengembangan)
 
 ```bash
-# Instal dependensi bot
-cd bot && npm install
+# Terminal 1 — Bot
+cd bot && npm install && npm run dev
 
-# Instal dependensi dashboard
-cd ../web && npm install
-
-# Jalankan bot (terminal 1)
-cd bot && npm run dev
-
-# Jalankan dashboard (terminal 2)
-cd web && npm run dev
+# Terminal 2 — Dashboard
+cd web && npm install && npm run dev
 ```
 
 ### 3. Daftarkan Slash Command
@@ -137,42 +178,55 @@ docker exec lumigiabot node deploy-commands.js
 cd bot && npm run deploy
 ```
 
+### 4. Rebuild Setelah Update
+
+```bash
+git pull
+docker compose build --no-cache
+docker compose down && docker compose up -d
+```
+
 ---
 
 ## 📁 Struktur Proyek
 
 ```
 lumigiabot/
-├── bot/                    # 🤖 Bot Discord (Node.js, discord.js v14)
+├── bot/                          # 🤖 Bot Discord (Node.js + discord.js v14)
 │   ├── src/
-│   │   ├── commands/       # Slash command (moderasi, automod, tiket, admin, utilitas)
-│   │   ├── components/     # Handler tombol, modal, select menu
-│   │   ├── config/         # Konstanta, level permission
-│   │   ├── core/           # BotClient, handler, manajer cooldown
-│   │   ├── database/       # SQLite, migrasi, repository (DAO)
-│   │   ├── events/         # Event gateway Discord
-│   │   ├── i18n/           # Terjemahan (en-US, id)
-│   │   ├── modules/        # Logika bisnis (moderasi, automod, tiket, antiraid)
-│   │   └── utils/          # Logger, validator, formatter
+│   │   ├── commands/             # Slash commands
+│   │   │   ├── admin/            #   setup, settings, audit-log
+│   │   │   ├── automod/          #   automod-config, automod-logs, automod-whitelist
+│   │   │   ├── moderation/       #   ban, kick, mute, warn, purge, slowmode, lockdown
+│   │   │   ├── tickets/          #   ticket-setup, ticket-config, ticket-stats
+│   │   │   └── utility/          #   help, ping, avatar, userinfo, serverinfo
+│   │   ├── components/           # Handler tombol, modal, select menu
+│   │   ├── config/               # Konstanta, level permission
+│   │   ├── core/                 # BotClient, handler, manajer cooldown
+│   │   ├── database/             # SQLite + migrasi + repository (DAO pattern)
+│   │   ├── events/               # Event gateway Discord
+│   │   ├── i18n/                 # Terjemahan (en-US, id)
+│   │   ├── modules/              # Logika bisnis (moderasi, automod, tiket, antiraid)
+│   │   └── utils/                # Logger, validator, formatter, embed builder
 │   ├── deploy-commands.js
 │   ├── Dockerfile
 │   └── package.json
 │
-├── web/                    # 🎨 Dashboard (Next.js 15, Tailwind CSS)
+├── web/                          # 🎨 Dashboard (Next.js 15 App Router)
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── (landing)/  # Halaman marketing
-│   │   │   ├── (dashboard)/ # Dashboard admin
-│   │   │   └── api/        # Rute API NextAuth
-│   │   ├── components/     # Komponen UI, landing, dashboard
-│   │   ├── lib/            # Auth, database, utilitas
-│   │   └── types/          # Interface TypeScript
+│   │   │   ├── (landing)/        # Landing page, features, commands, terms, privacy
+│   │   │   ├── (dashboard)/      # Dashboard admin (overview, servers, settings, dll)
+│   │   │   └── api/              # API routes (auth, guilds settings/automod, transcripts)
+│   │   ├── components/           # UI components (landing, dashboard, shared)
+│   │   ├── lib/                  # Auth (Auth.js v5), database, discord-api
+│   │   └── types/                # TypeScript interfaces
 │   ├── Dockerfile
 │   └── package.json
 │
-├── data/                   # 📁 Database SQLite (volume Docker)
-├── docker-compose.yml      # 🐳 Orkestrasi
-├── .env.example            # 📋 Template environment
+├── data/                         # 📁 Database SQLite (shared volume antara bot & web)
+├── compose.yml                   # 🐳 Docker Compose orchestration
+├── .env.example                  # 📋 Template environment variables
 └── README.md
 ```
 
@@ -180,68 +234,88 @@ lumigiabot/
 
 ## 🔒 Keamanan
 
-- **Validasi Permission** pada setiap command
-- **Pemeriksaan Hierarki Role** untuk mencegah eskalasi privilege
-- **Sanitasi Input** (pemblokiran @everyone/@here)
-- **Rate Limiting** cooldown per-command
-- **Pencegahan SQL Injection** via query terparameterisasi
-- **Autentikasi OAuth2** untuk akses dashboard
-- **Kontainer Docker Non-root** (`USER node`)
-- **Volume DB Baca-saja** untuk kontainer dashboard
-- **Variabel Environment** untuk semua rahasia (tidak pernah di-hardcode)
-- **Mode WAL** SQLite untuk akses konkuren yang aman
-- **Error Handler Global** mencegah crash loop
+### Bot & Discord
+- **Validasi Permission** — setiap command dicek izinnya sebelum eksekusi
+- **Pemeriksaan Hierarki Role** — mencegah moderator menghukum user dengan role lebih tinggi
+- **Sanitasi Input** — pemblokiran @everyone/@here dalam input user
+- **Rate Limiting** — cooldown per-command untuk mencegah spam
+- **Error Handler Global** — mencegah crash loop pada error tak terduga
+
+### Database
+- **Parameterized Queries** — semua query menggunakan placeholder `?`, mencegah SQL injection
+- **Field Whitelist** — hanya field yang terdaftar yang bisa diubah via dashboard API
+- **WAL Mode** — memungkinkan bot dan web mengakses database bersamaan tanpa lock
+- **Busy Timeout** — 5 detik timeout untuk menghindari deadlock
+
+### Web Dashboard
+- **Discord OAuth2** — login hanya melalui akun Discord yang valid
+- **Permission Check** — setiap API request dicek ulang: user harus punya `MANAGE_GUILD` di server target
+- **3-Layer Security** pada API write:
+  1. **Authentication** — session JWT harus valid
+  2. **Authorization** — verifikasi permission via Discord API
+  3. **Validation** — whitelist ketat pada field names, filter names, dan actions
+- **Guild ID Validation** — format ID Discord (17-20 digit) divalidasi sebelum query
+- **Input Sanitization** — whitespace di-trim, string kosong dikonversi ke `null`
+- **Non-root Container** — container berjalan sebagai user `node` (UID 1000)
+- **Environment Variables** — semua secrets disimpan di `.env`, tidak pernah di-hardcode
 
 ---
 
 ## ⚙️ Konfigurasi
 
-### Pengaturan Per-Server
-
-Gunakan `/setup` di Discord untuk menjalankan wizard konfigurasi interaktif, atau gunakan command individual:
+### Via Discord (Slash Commands)
 
 ```
-/settings language id          # Atur ke Bahasa Indonesia
-/settings mod-log #mod-log     # Atur channel log moderasi
-/automod-config spam true warn # Aktifkan filter spam
-/automod-logs #automod-log     # Atur channel log automod
-/ticket-setup #support         # Pasang panel tiket
-/ticket-config support-role @Support
+/setup                             # Wizard konfigurasi interaktif
+/settings language id              # Atur bahasa ke Bahasa Indonesia
+/settings mod-log #mod-log         # Atur channel log moderasi
+/automod-config spam true warn     # Aktifkan filter spam dengan action warn
+/automod-logs #automod-log         # Atur channel log automod
+/automod-whitelist add channel #general  # Whitelist channel dari automod
+/ticket-setup #support             # Pasang panel tiket di channel
+/ticket-config support-role @Support     # Atur role support untuk tiket
 ```
 
-### Dashboard
+### Via Web Dashboard
 
-Akses web dashboard untuk mengatur pengaturan secara visual:
+1. Kunjungi URL dashboard Anda (contoh: `https://bot.lumigia.com`)
+2. Login dengan akun Discord
+3. Pilih server yang ingin dikonfigurasi
+4. Gunakan halaman **Settings** untuk mengatur:
+   - 🌐 Bahasa bot
+   - 📢 Channel sambutan + pesan custom
+   - 📋 Channel log moderasi & automod
+   - 🎫 Kategori tiket, role support, auto-close timeout
+   - 🛡️ Anti-raid (threshold, timeframe)
+   - ⚠️ Warning escalation (mute/kick/ban otomatis)
+5. Gunakan halaman **AutoMod** untuk toggle filter & pilih action
 
-1. Kunjungi URL dashboard Anda
-2. Login dengan Discord
-3. Pilih server yang Anda kelola
-4. Konfigurasikan modul melalui UI
+> Semua perubahan dari dashboard langsung tersimpan dan berlaku tanpa restart bot.
 
 ---
 
 ## 🤝 Kontribusi
 
 1. Fork repository ini
-2. Buat branch fitur: `git checkout -b fitur/fitur-saya`
-3. Commit perubahan: `git commit -m 'Tambah fitur saya'`
-4. Push ke branch: `git push origin fitur/fitur-saya`
+2. Buat branch fitur: `git checkout -b fitur/fitur-baru`
+3. Commit perubahan: `git commit -m 'Tambah fitur baru'`
+4. Push ke branch: `git push origin fitur/fitur-baru`
 5. Buka Pull Request
 
 ### Panduan Pengembangan
 
-- Gunakan ES Modules (`import/export`)
-- Ikuti struktur kode yang sudah ada
-- Tambahkan terjemahan i18n untuk kedua bahasa `en-US` dan `id`
-- Gunakan pola repository untuk akses database
-- Tambahkan komentar JSDoc pada semua fungsi
-- Uji pemeriksaan permission dan penanganan error
+- Gunakan **ES Modules** (`import`/`export`)
+- Ikuti struktur kode dan folder yang sudah ada
+- Tambahkan terjemahan i18n untuk kedua bahasa (`en-US` dan `id`)
+- Gunakan **repository pattern** untuk akses database
+- Tambahkan **JSDoc** pada semua fungsi publik
+- Uji validasi permission dan error handling
 
 ---
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah Lisensi MIT.
+Proyek ini dilisensikan di bawah [Lisensi MIT](LICENSE).
 
 ---
 
