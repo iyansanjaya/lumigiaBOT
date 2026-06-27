@@ -1,8 +1,17 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Globe, ScrollText, Ticket, ShieldAlert, Megaphone, Save, Check, Loader2 } from 'lucide-react';
+import { useState, useCallback } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Globe,
+  ScrollText,
+  Ticket,
+  ShieldAlert,
+  Megaphone,
+  Save,
+  Check,
+  Loader2,
+} from "lucide-react";
 
 interface GuildSettings {
   guild_id: string;
@@ -28,14 +37,18 @@ interface Props {
   initialSettings: GuildSettings | null;
 }
 
-type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+type SaveState = "idle" | "saving" | "saved" | "error";
 
 // ─── Save helper ───
-async function saveSetting(guildId: string, field: string, value: string | number | null): Promise<boolean> {
+async function saveSetting(
+  guildId: string,
+  field: string,
+  value: string | number | null,
+): Promise<boolean> {
   try {
     const res = await fetch(`/api/guilds/${guildId}/settings`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ field, value }),
     });
     return res.ok;
@@ -46,21 +59,27 @@ async function saveSetting(guildId: string, field: string, value: string | numbe
 
 // ─── Toggle Input ───
 function ToggleInput({
-  label, field, value, guildId,
+  label,
+  field,
+  value,
+  guildId,
 }: {
-  label: string; field: string; value: number | null | undefined; guildId: string;
+  label: string;
+  field: string;
+  value: number | null | undefined;
+  guildId: string;
 }) {
   const [enabled, setEnabled] = useState(value === 1);
-  const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [saveState, setSaveState] = useState<SaveState>("idle");
 
   async function toggle() {
     const newVal = enabled ? 0 : 1;
     setEnabled(!enabled);
-    setSaveState('saving');
+    setSaveState("saving");
     const ok = await saveSetting(guildId, field, newVal);
-    setSaveState(ok ? 'saved' : 'error');
+    setSaveState(ok ? "saved" : "error");
     if (!ok) setEnabled(enabled);
-    setTimeout(() => setSaveState('idle'), 2000);
+    setTimeout(() => setSaveState("idle"), 2000);
   }
 
   return (
@@ -70,17 +89,25 @@ function ToggleInput({
         <button
           onClick={toggle}
           className={`relative w-11 h-6 rounded-full transition-colors ${
-            enabled ? 'bg-primary' : 'bg-background-tertiary'
+            enabled ? "bg-primary" : "bg-background-tertiary"
           }`}
         >
-          <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
-            enabled ? 'translate-x-5' : 'translate-x-0'
-          }`} />
+          <span
+            className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
+              enabled ? "translate-x-5" : "translate-x-0"
+            }`}
+          />
         </button>
-        <span className="text-sm text-foreground">{enabled ? 'Enabled' : 'Disabled'}</span>
-        {saveState === 'saving' && <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />}
-        {saveState === 'saved' && <Check className="h-4 w-4 text-green-500" />}
-        {saveState === 'error' && <span className="text-xs text-red-400">Gagal</span>}
+        <span className="text-sm text-foreground">
+          {enabled ? "Enabled" : "Disabled"}
+        </span>
+        {saveState === "saving" && (
+          <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />
+        )}
+        {saveState === "saved" && <Check className="h-4 w-4 text-green-500" />}
+        {saveState === "error" && (
+          <span className="text-xs text-red-400">Gagal</span>
+        )}
       </div>
     </div>
   );
@@ -88,22 +115,31 @@ function ToggleInput({
 
 // ─── Select Input (Dropdown) ───
 function SelectInput({
-  label, field, value, guildId, options, placeholder,
+  label,
+  field,
+  value,
+  guildId,
+  options,
+  placeholder,
 }: {
-  label: string; field: string; value: string | number | null | undefined; guildId: string;
-  options: { value: string; label: string }[]; placeholder?: string;
+  label: string;
+  field: string;
+  value: string | number | null | undefined;
+  guildId: string;
+  options: { value: string; label: string }[];
+  placeholder?: string;
 }) {
-  const [currentValue, setCurrentValue] = useState(String(value ?? ''));
-  const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [currentValue, setCurrentValue] = useState(String(value ?? ""));
+  const [saveState, setSaveState] = useState<SaveState>("idle");
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const newVal = e.target.value;
     setCurrentValue(newVal);
-    setSaveState('saving');
-    const sendVal = newVal === '' ? null : newVal;
+    setSaveState("saving");
+    const sendVal = newVal === "" ? null : newVal;
     const ok = await saveSetting(guildId, field, sendVal);
-    setSaveState(ok ? 'saved' : 'error');
-    setTimeout(() => setSaveState('idle'), 2000);
+    setSaveState(ok ? "saved" : "error");
+    setTimeout(() => setSaveState("idle"), 2000);
   }
 
   return (
@@ -115,14 +151,20 @@ function SelectInput({
           onChange={handleChange}
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
         >
-          <option value="">{placeholder || '— Not configured —'}</option>
+          <option value="">{placeholder || "— Not configured —"}</option>
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
           ))}
         </select>
-        {saveState === 'saving' && <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />}
-        {saveState === 'saved' && <Check className="h-4 w-4 text-green-500" />}
-        {saveState === 'error' && <span className="text-xs text-red-400">Gagal</span>}
+        {saveState === "saving" && (
+          <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />
+        )}
+        {saveState === "saved" && <Check className="h-4 w-4 text-green-500" />}
+        {saveState === "error" && (
+          <span className="text-xs text-red-400">Gagal</span>
+        )}
       </div>
     </div>
   );
@@ -130,22 +172,38 @@ function SelectInput({
 
 // ─── Text/Number Input with Save Button ───
 function TextInput({
-  label, field, value, guildId, type = 'text', placeholder, hint,
+  label,
+  field,
+  value,
+  guildId,
+  type = "text",
+  placeholder,
+  hint,
 }: {
-  label: string; field: string; value: string | number | null | undefined; guildId: string;
-  type?: 'text' | 'number'; placeholder?: string; hint?: string;
+  label: string;
+  field: string;
+  value: string | number | null | undefined;
+  guildId: string;
+  type?: "text" | "number";
+  placeholder?: string;
+  hint?: string;
 }) {
-  const [currentValue, setCurrentValue] = useState(String(value ?? ''));
-  const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [currentValue, setCurrentValue] = useState(String(value ?? ""));
+  const [saveState, setSaveState] = useState<SaveState>("idle");
 
   const save = useCallback(async () => {
-    setSaveState('saving');
-    const sendValue = type === 'number'
-      ? (currentValue === '' ? null : Number(currentValue))
-      : (currentValue === '' ? null : currentValue);
+    setSaveState("saving");
+    const sendValue =
+      type === "number"
+        ? currentValue === ""
+          ? null
+          : Number(currentValue)
+        : currentValue === ""
+          ? null
+          : currentValue;
     const ok = await saveSetting(guildId, field, sendValue);
-    setSaveState(ok ? 'saved' : 'error');
-    setTimeout(() => setSaveState('idle'), ok ? 2000 : 3000);
+    setSaveState(ok ? "saved" : "error");
+    setTimeout(() => setSaveState("idle"), ok ? 2000 : 3000);
   }, [currentValue, field, guildId, type]);
 
   return (
@@ -158,26 +216,30 @@ function TextInput({
           value={currentValue}
           onChange={(e) => {
             setCurrentValue(e.target.value);
-            if (saveState !== 'idle') setSaveState('idle');
+            if (saveState !== "idle") setSaveState("idle");
           }}
-          placeholder={placeholder || 'Not configured'}
+          placeholder={placeholder || "Not configured"}
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
         />
         <button
           onClick={save}
-          disabled={saveState === 'saving'}
+          disabled={saveState === "saving"}
           className="flex items-center gap-1.5 rounded-lg bg-primary hover:bg-primary-hover disabled:opacity-50 px-3 py-2 text-sm font-medium text-white transition-colors"
         >
-          {saveState === 'saving' ? (
+          {saveState === "saving" ? (
             <Loader2 className="h-4 w-4 animate-spin" />
-          ) : saveState === 'saved' ? (
+          ) : saveState === "saved" ? (
             <Check className="h-4 w-4" />
           ) : (
             <Save className="h-4 w-4" />
           )}
         </button>
       </div>
-      {saveState === 'error' && <span className="text-xs text-red-400">Gagal menyimpan. Coba lagi.</span>}
+      {saveState === "error" && (
+        <span className="text-xs text-red-400">
+          Gagal menyimpan. Coba lagi.
+        </span>
+      )}
     </div>
   );
 }
@@ -187,47 +249,47 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
   const s = initialSettings;
 
   const languageOptions = [
-    { value: 'en', label: '🇬🇧 English' },
-    { value: 'id', label: '🇮🇩 Bahasa Indonesia' },
+    { value: "en", label: "🇬🇧 English" },
+    { value: "id", label: "🇮🇩 Bahasa Indonesia" },
   ];
 
   const maxOpenOptions = [
-    { value: '1', label: '1 tiket' },
-    { value: '2', label: '2 tiket' },
-    { value: '3', label: '3 tiket' },
-    { value: '4', label: '4 tiket' },
-    { value: '5', label: '5 tiket' },
+    { value: "1", label: "1 tiket per user" },
+    { value: "2", label: "2 tiket per user" },
+    { value: "3", label: "3 tiket per user" },
+    { value: "4", label: "4 tiket per user" },
+    { value: "5", label: "5 tiket per user" },
   ];
 
   const autoCloseOptions = [
-    { value: '12', label: '12 jam' },
-    { value: '24', label: '24 jam (1 hari)' },
-    { value: '48', label: '48 jam (2 hari)' },
-    { value: '72', label: '72 jam (3 hari)' },
-    { value: '168', label: '168 jam (7 hari)' },
+    { value: "12", label: "12 jam" },
+    { value: "24", label: "24 jam (1 hari)" },
+    { value: "48", label: "48 jam (2 hari)" },
+    { value: "72", label: "72 jam (3 hari)" },
+    { value: "168", label: "168 jam (7 hari)" },
   ];
 
   const raidThresholdOptions = [
-    { value: '5', label: '5 joins' },
-    { value: '10', label: '10 joins' },
-    { value: '15', label: '15 joins' },
-    { value: '20', label: '20 joins' },
-    { value: '30', label: '30 joins' },
+    { value: "5", label: "5 member baru" },
+    { value: "10", label: "10 member baru" },
+    { value: "15", label: "15 member baru" },
+    { value: "20", label: "20 member baru" },
+    { value: "30", label: "30 member baru" },
   ];
 
   const raidTimeframeOptions = [
-    { value: '5', label: '5 detik' },
-    { value: '10', label: '10 detik' },
-    { value: '15', label: '15 detik' },
-    { value: '30', label: '30 detik' },
-    { value: '60', label: '60 detik' },
+    { value: "5", label: "5 detik" },
+    { value: "10", label: "10 detik" },
+    { value: "15", label: "15 detik" },
+    { value: "30", label: "30 detik" },
+    { value: "60", label: "60 detik (1 menit)" },
   ];
 
   const escalationOptions = [
-    { value: 'none', label: 'None — hanya warning' },
-    { value: 'mute', label: 'Mute setelah batas' },
-    { value: 'kick', label: 'Kick setelah batas' },
-    { value: 'ban', label: 'Ban setelah batas' },
+    { value: "none", label: "Tidak ada — hanya beri warning" },
+    { value: "mute", label: "Mute — bisukan user setelah batas warning" },
+    { value: "kick", label: "Kick — keluarkan user setelah batas warning" },
+    { value: "ban", label: "Ban — blokir user setelah batas warning" },
   ];
 
   return (
@@ -239,67 +301,16 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
             <Globe className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-foreground">General</h2>
           </div>
+          <p className="text-sm text-foreground-muted">Pengaturan umum bot untuk server ini.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <SelectInput label="Language" field="language" value={s?.language} guildId={guildId} options={languageOptions} placeholder="— Select language —" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Logging */}
-      <Card>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <ScrollText className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Logging</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <TextInput label="Mod Log Channel" field="mod_log_channel" value={s?.mod_log_channel} guildId={guildId} placeholder="Channel ID" hint="Klik kanan channel → Copy Channel ID" />
-            <TextInput label="AutoMod Log Channel" field="automod_log_channel" value={s?.automod_log_channel} guildId={guildId} placeholder="Channel ID" hint="Klik kanan channel → Copy Channel ID" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Tickets */}
-      <Card>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Ticket className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Tickets</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <TextInput label="Category ID" field="ticket_category" value={s?.ticket_category} guildId={guildId} placeholder="Category ID" hint="Klik kanan kategori → Copy ID" />
-            <TextInput label="Support Role ID" field="ticket_support_role" value={s?.ticket_support_role} guildId={guildId} placeholder="Role ID" hint="Klik kanan role → Copy Role ID" />
-            <TextInput label="Log Channel ID" field="ticket_log_channel" value={s?.ticket_log_channel} guildId={guildId} placeholder="Channel ID" hint="Klik kanan channel → Copy Channel ID" />
-            <SelectInput label="Max Open Tickets" field="ticket_max_open" value={s?.ticket_max_open} guildId={guildId} options={maxOpenOptions} placeholder="— Default (1) —" />
-            <SelectInput label="Auto Close Timeout" field="ticket_auto_close_hours" value={s?.ticket_auto_close_hours} guildId={guildId} options={autoCloseOptions} placeholder="— Default (48 jam) —" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Moderation */}
-      <Card>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <ShieldAlert className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Anti-Raid</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <ToggleInput label="Anti-Raid" field="anti_raid_enabled" value={s?.anti_raid_enabled} guildId={guildId} />
-            <SelectInput label="Threshold" field="anti_raid_threshold" value={s?.anti_raid_threshold} guildId={guildId} options={raidThresholdOptions} placeholder="— Default (10) —" />
-            <SelectInput label="Timeframe" field="anti_raid_timeframe" value={s?.anti_raid_timeframe} guildId={guildId} options={raidTimeframeOptions} placeholder="— Default (10s) —" />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Warning Escalation */}
-      <Card>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <ShieldAlert className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Warning Escalation</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <SelectInput label="Escalation Action" field="warn_escalation" value={s?.warn_escalation} guildId={guildId} options={escalationOptions} placeholder="— None —" />
+            <SelectInput
+              label="Bahasa Bot"
+              field="language"
+              value={s?.language}
+              guildId={guildId}
+              options={languageOptions}
+              placeholder="— Pilih bahasa —"
+            />
           </div>
         </CardContent>
       </Card>
@@ -311,13 +322,184 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
             <Megaphone className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-foreground">Welcome</h2>
           </div>
+          <p className="text-sm text-foreground-muted">
+            Kirim pesan sambutan otomatis ketika member baru bergabung ke server.
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <ToggleInput label="Welcome" field="welcome_enabled" value={s?.welcome_enabled} guildId={guildId} />
-            <TextInput label="Welcome Channel ID" field="welcome_channel" value={s?.welcome_channel} guildId={guildId} placeholder="Channel ID" hint="Klik kanan channel → Copy Channel ID" />
+            <ToggleInput
+              label="Aktifkan Pesan Sambutan"
+              field="welcome_enabled"
+              value={s?.welcome_enabled}
+              guildId={guildId}
+            />
+            <TextInput
+              label="Channel Sambutan"
+              field="welcome_channel"
+              value={s?.welcome_channel}
+              guildId={guildId}
+              placeholder="Contoh: 123456789012345678"
+              hint="Channel tempat pesan sambutan dikirim. Klik kanan channel di Discord → Copy Channel ID."
+            />
           </div>
-          <TextInput label="Welcome Message" field="welcome_message" value={s?.welcome_message} guildId={guildId} placeholder="Welcome {user} to {server}!" hint="Gunakan {user} untuk mention user, {server} untuk nama server" />
+          <TextInput
+            label="Pesan Sambutan"
+            field="welcome_message"
+            value={s?.welcome_message}
+            guildId={guildId}
+            placeholder="Selamat datang {user} di {server}!"
+            hint="Tulis pesan sambutan. Gunakan {user} untuk mention member baru, dan {server} untuk nama server."
+          />
+        </CardContent>
+      </Card>
+
+      {/* Logging */}
+      <Card>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <ScrollText className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">Logging</h2>
+          </div>
+          <p className="text-sm text-foreground-muted">
+            Channel untuk mencatat aktivitas moderasi dan automod. Bot akan mengirim log ke channel yang dipilih.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <TextInput
+              label="Channel Log Moderasi"
+              field="mod_log_channel"
+              value={s?.mod_log_channel}
+              guildId={guildId}
+              placeholder="Contoh: 123456789012345678"
+              hint="Channel tempat log ban, kick, mute, dan warning dikirim. Klik kanan channel → Copy Channel ID."
+            />
+            <TextInput
+              label="Channel Log AutoMod"
+              field="automod_log_channel"
+              value={s?.automod_log_channel}
+              guildId={guildId}
+              placeholder="Contoh: 123456789012345678"
+              hint="Channel tempat log filter automod (spam, link, kata terlarang, dll) dikirim. Klik kanan channel → Copy Channel ID."
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tickets */}
+      <Card>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Ticket className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">Tickets</h2>
+          </div>
+          <p className="text-sm text-foreground-muted">
+            Pengaturan sistem tiket support. User bisa membuat tiket untuk menghubungi staff server.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <TextInput
+              label="Kategori Tiket"
+              field="ticket_category"
+              value={s?.ticket_category}
+              guildId={guildId}
+              placeholder="Contoh: 123456789012345678"
+              hint="Folder (kategori) di Discord tempat channel tiket baru dibuat. Buat kategori seperti '📩 Tickets', lalu klik kanan → Copy Channel ID. Jika kosong, tiket dibuat tanpa kategori."
+            />
+            <TextInput
+              label="Role Support"
+              field="ticket_support_role"
+              value={s?.ticket_support_role}
+              guildId={guildId}
+              placeholder="Contoh: 123456789012345678"
+              hint="Role yang bisa melihat dan menangani tiket. Klik kanan role di Discord → Copy Role ID."
+            />
+            <TextInput
+              label="Channel Log Tiket"
+              field="ticket_log_channel"
+              value={s?.ticket_log_channel}
+              guildId={guildId}
+              placeholder="Contoh: 123456789012345678"
+              hint="Channel tempat bot mengirim notifikasi saat tiket dibuka/ditutup. Klik kanan channel → Copy Channel ID."
+            />
+            <SelectInput
+              label="Maks Tiket Terbuka"
+              field="ticket_max_open"
+              value={s?.ticket_max_open}
+              guildId={guildId}
+              options={maxOpenOptions}
+              placeholder="— Default (1 tiket) —"
+            />
+            <SelectInput
+              label="Tutup Otomatis Setelah"
+              field="ticket_auto_close_hours"
+              value={s?.ticket_auto_close_hours}
+              guildId={guildId}
+              options={autoCloseOptions}
+              placeholder="— Default (48 jam) —"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Anti-Raid */}
+      <Card>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <ShieldAlert className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">Anti-Raid</h2>
+          </div>
+          <p className="text-sm text-foreground-muted">
+            Proteksi otomatis dari serangan raid (banyak akun bergabung secara bersamaan).
+            Jika jumlah member baru melebihi batas dalam waktu tertentu, bot akan mengaktifkan lockdown.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <ToggleInput
+              label="Aktifkan Anti-Raid"
+              field="anti_raid_enabled"
+              value={s?.anti_raid_enabled}
+              guildId={guildId}
+            />
+            <SelectInput
+              label="Batas Member Baru"
+              field="anti_raid_threshold"
+              value={s?.anti_raid_threshold}
+              guildId={guildId}
+              options={raidThresholdOptions}
+              placeholder="— Default (10 member) —"
+            />
+            <SelectInput
+              label="Dalam Waktu"
+              field="anti_raid_timeframe"
+              value={s?.anti_raid_timeframe}
+              guildId={guildId}
+              options={raidTimeframeOptions}
+              placeholder="— Default (10 detik) —"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Warning Escalation */}
+      <Card>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <ShieldAlert className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">Warning Escalation</h2>
+          </div>
+          <p className="text-sm text-foreground-muted">
+            Tindakan otomatis yang diambil ketika user mendapat terlalu banyak warning.
+            Contoh: setelah 3 warning, user otomatis di-mute.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <SelectInput
+              label="Tindakan Eskalasi"
+              field="warn_escalation"
+              value={s?.warn_escalation}
+              guildId={guildId}
+              options={escalationOptions}
+              placeholder="— Tidak ada —"
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 }
+
