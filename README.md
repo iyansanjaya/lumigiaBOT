@@ -62,6 +62,20 @@ Sistem tiket support profesional dengan manajemen siklus hidup lengkap.
 - Lockdown server otomatis saat raid terdeteksi
 - Notifikasi peringatan untuk staff
 
+### 🎥 Streamer & Komunitas
+
+Paket fitur lengkap yang dirancang khusus untuk Streamer (Twitch/YouTube), Content Creator, dan komunitas yang aktif.
+
+- **🎙️ Temp Voice Channels** — Buat channel suara sementara otomatis saat user bergabung ke channel hub (Join-to-Create).
+- **🎭 Reaction Roles** — Berikan role otomatis ke anggota berdasarkan reaksi emoji pada pesan (mode Toggle, Single, atau Verify).
+- **⭐ Sistem Leveling & XP** — Gamifikasi server dengan ranking, XP per pesan, multiplier, dan auto-role reward saat naik level. Termasuk perintah `/rank` dan `/leaderboard`.
+- **🎁 Giveaway** — Buat, kelola, dan acak ulang pemenang giveaway otomatis. Mendukung prasyarat role.
+- **📅 Stream Schedule** — Tampilkan jadwal streaming mingguan dengan zona waktu dan fitur auto-posting.
+- **🔴 Live Notifications** — Notifikasi otomatis saat Anda live di Twitch atau YouTube, lengkap dengan embed dan preview.
+- **🎨 Custom Embeds & Socials** — Buat embed cantik langsung dari Discord dan kelola link sosial media streamer secara terpusat.
+- **🖼️ Fan Art Gallery** — Sistem pengumpulan dan voting karya seni dari penggemar, dilengkapi dengan sistem approval moderator.
+- **📊 Server Analytics** — Lacak pertumbuhan server, aktivitas member (join/leave), jumlah pesan harian, dan top channel paling aktif.
+
 ### 🎨 Web Dashboard
 
 Dashboard modern dibuat dengan **Next.js 15 (App Router)** + **Auth.js v5** + tema gelap premium.
@@ -75,12 +89,29 @@ Dashboard modern dibuat dengan **Next.js 15 (App Router)** + **Auth.js v5** + te
 | **Moderation** | Lihat riwayat warning                                             |
 | **AutoMod**    | Toggle enable/disable filter + pilih action — langsung tersimpan  |
 | **Tickets**    | Daftar tiket dengan status + link transkrip HTML untuk tiket closed |
+| **Streamer**   | 8 Halaman baru: Voice, Reaction Roles, Giveaways, Schedule, Leveling, Streams, Fan Art, Analytics |
 | **Logs**       | Audit log aktivitas moderasi bot                                  |
 | **Settings**   | Konfigurasi server interaktif (language, channels, roles, dll)    |
 | **Terms**      | Terms of Service                                                  |
 | **Privacy**    | Privacy Policy                                                    |
 
 > **Dashboard bukan read-only** — Anda bisa mengubah pengaturan server langsung dari web. Perubahan langsung tersimpan ke database dan berlaku di bot tanpa restart.
+
+### 🎥 Command Streamer & Komunitas
+
+| Perintah           | Deskripsi                               | Izin              |
+| ------------------ | --------------------------------------- | ----------------- |
+| `/voice`           | Kelola temp voice channel (Join2Create) | `ManageGuild`*    |
+| `/reaction-role`   | Buat dan atur panel reaction role       | `ManageRoles`     |
+| `/xp`, `/rank`     | Sistem ranking, XP, dan role reward     | `ManageGuild`*    |
+| `/giveaway`        | Mulai, end, dan reroll giveaway         | `ManageGuild`     |
+| `/schedule`        | Kelola jadwal streaming mingguan        | `ManageGuild`     |
+| `/stream`          | Setup notifikasi live (Twitch/YouTube)  | `ManageGuild`     |
+| `/fanart`          | Submit dan moderasi galeri fan art      | `ManageGuild`*    |
+| `/embed`, `/socials`| Buat embed kustom & link sosmed        | `ManageGuild`     |
+| `/analytics`       | Statistik aktivitas dan pesan server    | `ManageGuild`     |
+
+*(Tanda `*` menandakan beberapa sub-command bisa dipakai user biasa, misalnya `/rank` atau `/fanart submit`)*
 
 ### 🔧 Command Admin & Utilitas
 
@@ -145,6 +176,10 @@ DATABASE_PATH=./data/lumigiabot.db
 # Pengaturan Bot
 DEFAULT_LANGUAGE=id                          # id atau en
 BOT_OWNER_ID=your_discord_user_id_here
+
+# Opsional: Twitch API (Untuk Notifikasi Live)
+TWITCH_CLIENT_ID=your_twitch_client_id
+TWITCH_CLIENT_SECRET=your_twitch_client_secret
 ```
 
 ### 2A. Jalankan dengan Docker (Direkomendasikan) 🐳
@@ -310,6 +345,20 @@ lumigiabot/
 - Gunakan **repository pattern** untuk akses database
 - Tambahkan **JSDoc** pada semua fungsi publik
 - Uji validasi permission dan error handling
+
+---
+
+## 🛠️ Troubleshooting (Masalah Umum)
+
+### ❌ Error 500 di Dashboard (SQLITE_READONLY)
+Jika Anda menggunakan Docker (terutama di Linux/VPS) dan tidak bisa mengubah pengaturan di Dashboard (Error 500) atau melihat error `attempt to write a readonly database` di log `lumigiabot-web`, ini karena masalah izin folder (permissions).
+
+**Solusi:**
+Ubah kepemilikan folder `data` agar bisa ditulis oleh user di dalam container Docker (UID 1000). Jalankan perintah berikut di folder proyek Anda:
+```bash
+sudo chown -R 1000:1000 data/
+```
+Setelah itu, coba simpan pengaturan kembali dari Dashboard.
 
 ---
 
