@@ -9,11 +9,23 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { logger } from '../utils/Logger.js';
 
+// ── Core Repositories ──
 import GuildSettingsRepo from './repositories/GuildSettingsRepo.js';
 import TicketRepo from './repositories/TicketRepo.js';
 import WarnRepo from './repositories/WarnRepo.js';
 import AutoModRepo from './repositories/AutoModRepo.js';
 import AuditLogRepo from './repositories/AuditLogRepo.js';
+
+// ── Streamer Feature Repositories ──
+import VoiceRepo from './repositories/VoiceRepo.js';
+import ReactionRoleRepo from './repositories/ReactionRoleRepo.js';
+import GiveawayRepo from './repositories/GiveawayRepo.js';
+import ScheduleRepo from './repositories/ScheduleRepo.js';
+import CustomEmbedRepo from './repositories/CustomEmbedRepo.js';
+import LevelingRepo from './repositories/LevelingRepo.js';
+import StreamNotifRepo from './repositories/StreamNotifRepo.js';
+import FanArtRepo from './repositories/FanArtRepo.js';
+import AnalyticsRepo from './repositories/AnalyticsRepo.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -32,12 +44,23 @@ export default class Database {
     // Jalankan migrasi
     this._runMigrations();
 
-    // Inisialisasi repository (Lapisan Akses Data)
+    // ── Core Repositories (Lapisan Akses Data) ──
     this.guildSettings = new GuildSettingsRepo(this.db);
     this.tickets = new TicketRepo(this.db);
     this.warnings = new WarnRepo(this.db);
     this.automod = new AutoModRepo(this.db);
     this.auditLogs = new AuditLogRepo(this.db);
+
+    // ── Streamer Feature Repositories ──
+    this.voice = new VoiceRepo(this.db);
+    this.reactionRoles = new ReactionRoleRepo(this.db);
+    this.giveaways = new GiveawayRepo(this.db);
+    this.schedule = new ScheduleRepo(this.db);
+    this.customEmbeds = new CustomEmbedRepo(this.db);
+    this.leveling = new LevelingRepo(this.db);
+    this.streamNotif = new StreamNotifRepo(this.db);
+    this.fanArt = new FanArtRepo(this.db);
+    this.analytics = new AnalyticsRepo(this.db);
 
     logger.info('Database terhubung dan migrasi diterapkan.');
   }

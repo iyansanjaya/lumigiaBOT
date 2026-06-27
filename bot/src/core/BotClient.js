@@ -13,6 +13,7 @@ export default class BotClient extends Client {
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildModeration,
+        GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.MessageContent,
       ],
       partials: [
