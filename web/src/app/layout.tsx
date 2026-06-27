@@ -1,11 +1,18 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Bricolage_Grotesque, Archivo } from 'next/font/google';
 import { Providers } from '@/components/providers';
 import './globals.css';
 
-const inter = Inter({
+const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-bricolage',
+  weight: ['700'],
+});
+
+const archivo = Archivo({
+  subsets: ['latin'],
+  variable: '--font-archivo',
+  weight: ['400'],
 });
 
 export const metadata: Metadata = {
@@ -19,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen bg-background text-foreground antialiased">
+    <html lang="en" className={`${bricolage.variable} ${archivo.variable}`}>
+      <body className="min-h-screen bg-background text-foreground antialiased font-sans">
         <Providers>{children}</Providers>
       </body>
     </html>
