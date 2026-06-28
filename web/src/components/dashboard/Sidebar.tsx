@@ -162,10 +162,13 @@ export function Sidebar() {
             items: navItems.filter((i) => !i.section || i.section === "Core"),
           },
           {
+            name: "Config",
+            items: navItems.filter((i) => i.section === "Config"),
+          },
+          {
             name: "Streamer",
             items: navItems.filter((i) => i.section === "Streamer"),
           },
-          { name: null, items: navItems.filter((i) => i.section === "Config") },
         ]
       : [{ name: null, items: navItems }];
 
