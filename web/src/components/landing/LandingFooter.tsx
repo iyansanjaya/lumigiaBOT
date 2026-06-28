@@ -15,6 +15,11 @@ const footerSections: Record<string, FooterLink[]> = {
   ],
   Resources: [
     {
+      label: "Documentation",
+      href: "https://dashboard.lumigia.com",
+      external: true,
+    },
+    {
       label: "Support Server",
       href: "https://discord.gg/ZwrgK2r",
       external: true,

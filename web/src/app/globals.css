@@ -45,6 +45,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
+select {
+  padding-right: 2.5rem !important;
+}
+
 ::selection {
   background-color: var(--color-primary);
   color: white;

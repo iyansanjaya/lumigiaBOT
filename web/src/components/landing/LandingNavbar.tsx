@@ -8,6 +8,7 @@ import { Shield, Menu, X, LayoutDashboard } from "lucide-react";
 const navLinks = [
   { label: "Features", href: "/features" },
   { label: "Commands", href: "/commands" },
+  { label: "Docs", href: "https://dashboard.lumigia.com", external: true },
 ];
 
 export function LandingNavbar() {
@@ -30,15 +31,27 @@ export function LandingNavbar() {
 
         {/* Navigasi Desktop */}
         <div className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-lg px-4 py-2 text-sm text-foreground-muted hover:text-foreground hover:bg-card transition-all"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            link.external ? (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg px-4 py-2 text-sm text-foreground-muted hover:text-foreground hover:bg-card transition-all"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-lg px-4 py-2 text-sm text-foreground-muted hover:text-foreground hover:bg-card transition-all"
+              >
+                {link.label}
+              </Link>
+            )
+          )}
           <div className="ml-3 h-5 w-px bg-border" />
 
           {isLoggedIn ? (
@@ -77,16 +90,29 @@ export function LandingNavbar() {
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-card">
           <div className="px-6 py-4 flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="rounded-lg px-3 py-2.5 text-sm text-foreground-muted hover:text-foreground hover:bg-background-tertiary transition-all"
-                onClick={() => setMobileOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) =>
+              link.external ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg px-3 py-2.5 text-sm text-foreground-muted hover:text-foreground hover:bg-background-tertiary transition-all"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-lg px-3 py-2.5 text-sm text-foreground-muted hover:text-foreground hover:bg-background-tertiary transition-all"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
             <div className="h-px bg-border my-2" />
 
             {isLoggedIn ? (
