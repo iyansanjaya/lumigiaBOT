@@ -1,0 +1,125 @@
+---
+title: AutoMod
+description: Filter otomatis untuk menjaga server dari spam dan konten berbahaya
+---
+
+AutoMod adalah sistem filter otomatis yang bekerja 24/7 untuk menjaga server kamu dari spam, konten berbahaya, dan pelanggaran aturan. Semua aksi dijalankan secara instan tanpa perlu campur tangan staff.
+
+## 6 Filter yang Tersedia
+
+LumigiaBOT menyediakan **6 jenis filter** yang bisa diaktifkan sesuai kebutuhan server:
+
+| Filter | Deskripsi |
+| --- | --- |
+| **Spam** | Deteksi pesan berulang atau pengiriman pesan terlalu cepat |
+| **Link** | Blokir link/URL yang tidak diizinkan |
+| **Kata Terlarang** | Filter kata-kata yang tidak pantas atau melanggar aturan |
+| **Caps Lock** | Deteksi pesan dengan huruf kapital berlebihan |
+| **Emoji Berlebih** | Batasi penggunaan emoji yang terlalu banyak dalam satu pesan |
+| **Mention Massal** | Cegah spam mention ke banyak user sekaligus |
+
+## Cara Mengaktifkan
+
+Gunakan command `/automod-config` untuk mengaktifkan atau menonaktifkan filter:
+
+```
+/automod-config filter:spam aktif:true aksi:mute
+/automod-config filter:link aktif:true aksi:delete
+/automod-config filter:kata_terlarang aktif:true aksi:warn
+```
+
+<Steps>
+<Step>
+### Pilih Filter
+Tentukan filter mana yang ingin diaktifkan (spam, link, kata_terlarang, caps, emoji, mention).
+</Step>
+
+<Step>
+### Aktifkan atau Nonaktifkan
+Set parameter `aktif` ke `true` untuk mengaktifkan atau `false` untuk menonaktifkan.
+</Step>
+
+<Step>
+### Pilih Aksi
+Tentukan aksi yang diambil saat filter mendeteksi pelanggaran.
+</Step>
+</Steps>
+
+## Aksi yang Tersedia
+
+Setiap filter bisa dikonfigurasi dengan salah satu aksi berikut:
+
+| Aksi | Deskripsi |
+| --- | --- |
+| `delete` | Hapus pesan yang melanggar |
+| `warn` | Hapus pesan + beri warning ke member (masuk ke warning system) |
+| `mute` | Hapus pesan + timeout member |
+| `kick` | Hapus pesan + kick member dari server |
+| `ban` | Hapus pesan + ban member secara permanen |
+
+<Callout type="warn">
+Aksi `kick` dan `ban` sebaiknya hanya digunakan untuk pelanggaran serius. Untuk filter seperti spam atau caps lock, gunakan `delete` atau `mute` agar tidak terlalu keras.
+</Callout>
+
+## Whitelist
+
+Kamu bisa mengecualikan channel atau role tertentu dari semua filter AutoMod menggunakan whitelist:
+
+```
+/automod-whitelist add channel:#bot-commands
+/automod-whitelist add role:@Staff
+/automod-whitelist remove channel:#bot-commands
+```
+
+Channel atau role yang masuk whitelist **tidak akan** dikenakan filter AutoMod apapun. Cocok untuk:
+- Channel bot commands yang sering mengandung link
+- Role staff atau moderator yang perlu kebebasan mengirim pesan
+- Channel pengumuman yang perlu format khusus
+
+## Log AutoMod
+
+Semua aksi yang dijalankan oleh AutoMod dicatat secara otomatis ke channel log. Log mencakup:
+- Jenis filter yang terpicu
+- Member yang melanggar
+- Isi pesan yang dihapus
+- Aksi yang diambil
+- Waktu kejadian
+
+<Callout type="info">
+Atur channel log AutoMod melalui **Dashboard > Settings > Channel Log AutoMod**, atau gunakan command `/settings` di Discord.
+</Callout>
+
+## Contoh Setup
+
+Berikut contoh konfigurasi AutoMod yang direkomendasikan untuk server umum:
+
+<Steps>
+<Step>
+### Aktifkan Anti-Spam
+```
+/automod-config filter:spam aktif:true aksi:mute
+```
+Pesan spam otomatis dihapus dan pengirimnya di-mute.
+</Step>
+
+<Step>
+### Aktifkan Filter Link
+```
+/automod-config filter:link aktif:true aksi:delete
+```
+Link yang tidak diizinkan otomatis dihapus.
+</Step>
+
+<Step>
+### Whitelist Channel Bot
+```
+/automod-whitelist add channel:#bot-commands
+```
+Channel `#bot-commands` dikecualikan dari semua filter.
+</Step>
+
+<Step>
+### Atur Channel Log
+Buka **Dashboard > Settings** dan pilih channel untuk menerima log AutoMod.
+</Step>
+</Steps>

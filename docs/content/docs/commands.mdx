@@ -1,0 +1,135 @@
+---
+title: Daftar Perintah
+description: Semua slash commands yang tersedia di LumigiaBOT
+---
+
+# Daftar Perintah
+
+Berikut adalah semua slash commands yang tersedia di LumigiaBOT, dikelompokkan berdasarkan kategori.
+
+<Callout type="info">
+  Semua perintah menggunakan Slash Commands (`/`). Ketik `/` di chat Discord untuk melihat daftar perintah beserta opsinya.
+</Callout>
+
+## Admin
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/setup` | Konfigurasi awal bot di server | Manage Server |
+| `/settings` | Mengubah pengaturan server (bahasa, log channel, dll.) | Manage Server |
+| `/audit-log` | Melihat riwayat log audit server | Manage Server |
+
+## Moderasi
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/ban` | Banned member dari server | Ban Members |
+| `/kick` | Kick member dari server | Kick Members |
+| `/mute` | Timeout/mute member | Moderate Members |
+| `/warn` | Memberikan peringatan ke member | Moderate Members |
+| `/purge` | Menghapus pesan secara massal | Manage Messages |
+| `/slowmode` | Mengatur slowmode di channel | Manage Channels |
+| `/lockdown` | Mengunci channel dari aktivitas member | Manage Channels |
+
+## AutoMod
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/automod-config` | Mengatur konfigurasi filter AutoMod | Manage Server |
+| `/automod-logs` | Melihat log aktivitas AutoMod | Manage Server |
+| `/automod-whitelist` | Mengatur whitelist channel/role dari AutoMod | Manage Server |
+
+## Tickets
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/ticket-setup` | Membuat panel tiket support | Manage Channels |
+| `/ticket-config` | Mengatur konfigurasi sistem tiket | Manage Channels |
+| `/ticket-stats` | Melihat statistik tiket server | Manage Channels |
+
+## Utility
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/help` | Menampilkan daftar perintah dan bantuan | — |
+| `/ping` | Mengecek latensi bot | — |
+| `/avatar` | Melihat avatar user | — |
+| `/userinfo` | Melihat informasi detail user | — |
+| `/serverinfo` | Melihat informasi detail server | — |
+
+## Voice
+
+Semua subcommands menggunakan prefix `/voice`.
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/voice setup` | Mengatur channel Join-to-Create | Manage Channels |
+| `/voice settings` | Mengubah pengaturan voice default | Manage Channels |
+| `/voice name` | Mengubah nama channel voice sementara | Pemilik Channel |
+| `/voice limit` | Mengatur batas user di channel voice | Pemilik Channel |
+| `/voice lock` | Mengunci channel voice | Pemilik Channel |
+| `/voice unlock` | Membuka kunci channel voice | Pemilik Channel |
+| `/voice permit` | Mengizinkan user masuk channel terkunci | Pemilik Channel |
+| `/voice reject` | Menolak/mengeluarkan user dari channel | Pemilik Channel |
+
+## Reaction Roles
+
+Semua subcommands menggunakan prefix `/reaction-role`.
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/reaction-role create` | Membuat panel reaction role baru | Manage Roles |
+| `/reaction-role add-role` | Menambahkan role ke panel | Manage Roles |
+| `/reaction-role remove-role` | Menghapus role dari panel | Manage Roles |
+| `/reaction-role edit` | Mengedit pengaturan panel | Manage Roles |
+| `/reaction-role delete` | Menghapus panel reaction role | Manage Roles |
+| `/reaction-role list` | Melihat daftar panel yang aktif | Manage Roles |
+
+## Giveaway
+
+Semua subcommands menggunakan prefix `/giveaway`.
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/giveaway start` | Memulai giveaway baru | Manage Server |
+| `/giveaway end` | Mengakhiri giveaway lebih awal | Manage Server |
+| `/giveaway reroll` | Mengundi ulang pemenang giveaway | Manage Server |
+| `/giveaway list` | Melihat daftar giveaway aktif | Manage Server |
+
+## Community
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/schedule` | Mengatur jadwal mingguan (streaming, event, dll.) | Manage Server |
+| `/embed` | Membuat dan mengirim custom embed | Manage Messages |
+| `/socials` | Mengatur link media sosial server | Manage Server |
+
+## Leveling
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/rank` | Melihat level dan XP kamu | — |
+| `/leaderboard` | Melihat leaderboard XP server | — |
+| `/xp set` | Mengatur XP member secara manual | Manage Server |
+| `/xp add` | Menambahkan XP ke member | Manage Server |
+| `/xp remove` | Mengurangi XP dari member | Manage Server |
+| `/xp reset` | Mereset XP member | Manage Server |
+| `/xp settings` | Mengatur konfigurasi leveling | Manage Server |
+| `/xp rewards` | Mengatur role rewards per level | Manage Server |
+| `/xp channel` | Mengatur channel khusus level-up | Manage Server |
+| `/xp ignore` | Mengatur channel/role yang diabaikan dari XP | Manage Server |
+
+## Streaming
+
+| Perintah | Deskripsi | Permission |
+|---|---|---|
+| `/stream setup` | Mengatur notifikasi stream Twitch/YouTube | Manage Server |
+| `/stream add` | Menambahkan streamer untuk dimonitor | Manage Server |
+| `/stream remove` | Menghapus streamer dari daftar monitor | Manage Server |
+| `/stream list` | Melihat daftar streamer yang dimonitor | Manage Server |
+| `/fanart setup` | Mengatur channel galeri fan art | Manage Server |
+| `/fanart submit` | Mengirim fan art untuk disetujui | — |
+| `/fanart approve` | Menyetujui fan art yang dikirim | Manage Messages |
+| `/fanart gallery` | Melihat galeri fan art server | — |
+| `/analytics view` | Melihat statistik server | Manage Server |
+| `/analytics export` | Mengekspor data statistik | Manage Server |

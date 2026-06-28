@@ -1,0 +1,120 @@
+---
+title: Voice Channels
+description: Sistem voice channel sementara (join-to-create)
+---
+
+Fitur Voice Channels memungkinkan server kamu memiliki sistem **join-to-create** — user cukup join ke satu Hub Channel, dan bot otomatis membuatkan voice channel pribadi untuk mereka. Channel dihapus otomatis saat kosong.
+
+## Cara Kerja
+
+<Steps>
+<Step>
+### User Join ke Hub Channel
+User masuk ke voice channel yang sudah ditetapkan sebagai **Hub Channel**.
+</Step>
+
+<Step>
+### Bot Buat Channel Baru
+Bot otomatis membuat voice channel baru di kategori yang ditentukan. User dipindahkan ke channel tersebut secara otomatis.
+</Step>
+
+<Step>
+### Pemilik Atur Channel
+User yang pertama join (pemilik) bisa mengatur nama, limit user, dan permission channel.
+</Step>
+
+<Step>
+### Channel Dihapus Otomatis
+Saat semua user keluar dari channel, bot otomatis menghapus channel tersebut. Tidak ada channel kosong yang menumpuk.
+</Step>
+</Steps>
+
+## Setup
+
+Ada dua cara untuk mengatur fitur voice channel:
+
+### Via Command
+
+```
+/voice setup hub_channel:#Join untuk Buat Channel category:Voice Channels
+```
+
+### Via Dashboard
+
+Buka **Dashboard > Voice** dan atur:
+- **Hub Channel** — Channel yang harus di-join user untuk membuat channel baru
+- **Kategori** — Folder tempat channel baru akan dibuat
+
+## Subcommands untuk Pemilik Channel
+
+<Callout type="info">
+Hanya **pemilik channel** (user yang pertama kali join ke Hub Channel dan memicu pembuatan channel) yang bisa menggunakan command pengaturan berikut.
+</Callout>
+
+Pemilik channel memiliki kontrol penuh atas channel yang mereka buat:
+
+### `/voice name [nama]`
+
+Ganti nama voice channel sesuai keinginan.
+
+```
+/voice name nama:Ngobrol Santai
+/voice name nama:Mabar Valorant
+```
+
+### `/voice limit [angka]`
+
+Batasi jumlah user yang bisa join ke channel. Set `0` untuk menghapus batasan.
+
+```
+/voice limit angka:5
+/voice limit angka:0
+```
+
+### `/voice lock`
+
+Kunci channel sehingga tidak ada user lain yang bisa join.
+
+```
+/voice lock
+```
+
+### `/voice unlock`
+
+Buka kunci channel sehingga semua user bisa join kembali.
+
+```
+/voice unlock
+```
+
+### `/voice permit @user`
+
+Izinkan user tertentu untuk masuk ke channel, bahkan jika channel sedang dikunci.
+
+```
+/voice permit @Teman
+```
+
+### `/voice reject @user`
+
+Tolak user tertentu dari channel. User yang ditolak akan di-disconnect dan tidak bisa join kembali.
+
+```
+/voice reject @UserGanggu
+```
+
+## Ringkasan Command
+
+| Command | Fungsi | Akses |
+| --- | --- | --- |
+| `/voice setup` | Setup Hub Channel dan kategori | Admin |
+| `/voice name` | Ganti nama channel | Pemilik |
+| `/voice limit` | Batasi jumlah user | Pemilik |
+| `/voice lock` | Kunci channel | Pemilik |
+| `/voice unlock` | Buka kunci channel | Pemilik |
+| `/voice permit` | Izinkan user tertentu | Pemilik |
+| `/voice reject` | Tolak user tertentu | Pemilik |
+
+<Callout type="warn">
+Pastikan bot memiliki permission **Manage Channels** dan **Move Members** di kategori yang digunakan agar fitur ini berjalan dengan baik.
+</Callout>

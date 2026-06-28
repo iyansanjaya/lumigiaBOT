@@ -175,6 +175,15 @@ app/
 - `lib/discord-api.ts` — `getUserGuilds(accessToken)`, `canManageGuild(accessToken, guildId)` via user OAuth2 token
 - `api/discord-data/route.ts` — Fetch channels + roles via `DISCORD_TOKEN` (Bot Token) untuk dropdown picker
 
+## Arsitektur Dokumentasi (`docs/`)
+
+Dokumentasi resmi untuk pemilik server menggunakan Fumadocs.
+
+- **Stack**: Next.js 15 (App Router) + Fumadocs MDX + Tailwind CSS v4.
+- **Konfigurasi URL**: Diatur terpusat pada `docs/src/lib/shared.ts` (invite link, dashboard URL, support server).
+- **Format Konten**: File `.mdx` di `docs/content/docs/`. Menggunakan komponen dari `fumadocs-ui` (seperti `<Callout>`, `<Steps>`).
+- **Deploy**: Di-deploy terpisah ke Vercel dengan **Root Directory** diset ke `docs`.
+
 ## Konvensi & Aturan
 
 1. **Bahasa**: Semua UI label, hint, dan error message dalam Bahasa Indonesia

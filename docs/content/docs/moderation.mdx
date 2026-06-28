@@ -1,0 +1,134 @@
+---
+title: Moderasi
+description: Sistem moderasi lengkap untuk menjaga keamanan server
+---
+
+Sistem moderasi LumigiaBOT menyediakan seperangkat alat lengkap untuk menjaga keamanan dan ketertiban server Discord kamu. Semua aksi moderasi dicatat secara otomatis di audit log.
+
+## Fitur Utama
+
+LumigiaBOT menyediakan **7 command moderasi** yang bisa digunakan oleh staff server:
+
+| Command | Fungsi |
+| --- | --- |
+| `/ban` | Banned member secara permanen dari server |
+| `/kick` | Keluarkan member dari server |
+| `/mute` | Timeout member untuk durasi tertentu |
+| `/warn` | Beri peringatan yang tersimpan di database |
+| `/purge` | Hapus pesan massal di channel |
+| `/slowmode` | Atur slowmode pada channel |
+| `/lockdown` | Kunci channel dari pesan member biasa |
+
+## Hierarchy Check
+
+<Callout type="warn">
+Pastikan role bot **lebih tinggi** dari role member yang ingin dimoderasi. Bot tidak bisa menghukum member dengan role yang sama atau lebih tinggi dari role bot di pengaturan server.
+</Callout>
+
+Sebelum menjalankan aksi moderasi, bot akan memeriksa hierarki role secara otomatis:
+
+- Bot **tidak bisa** menghukum pemilik server (owner)
+- Bot **tidak bisa** menghukum member dengan role yang sama atau lebih tinggi
+- Staff **tidak bisa** menghukum member dengan role yang sama atau lebih tinggi dari dirinya sendiri
+
+Jika hierarchy check gagal, bot akan menampilkan pesan error dan aksi tidak akan dijalankan.
+
+## Warning System
+
+Sistem warning LumigiaBOT bersifat **bertingkat** — semakin banyak warning yang diterima, semakin berat hukumannya secara otomatis:
+
+<Steps>
+<Step>
+### Warning ke-1 & ke-2
+Member menerima peringatan tertulis. Warning tersimpan di database dan bisa dilihat oleh staff.
+</Step>
+
+<Step>
+### Warning ke-3
+Member otomatis di-**mute** (timeout) selama durasi yang ditentukan di pengaturan server.
+</Step>
+
+<Step>
+### Warning ke-4
+Member otomatis di-**kick** dari server. Member masih bisa join kembali.
+</Step>
+
+<Step>
+### Warning ke-5
+Member otomatis di-**ban** secara permanen dari server.
+</Step>
+</Steps>
+
+<Callout type="info">
+Threshold warning bisa dikonfigurasi melalui **Dashboard > Settings**. Angka di atas adalah pengaturan default.
+</Callout>
+
+## Panduan Penggunaan
+
+### `/ban @user [alasan]`
+
+Banned member secara permanen dari server. Member yang di-ban tidak bisa join kembali kecuali di-unban.
+
+```
+/ban @UserNakal alasan:Melanggar aturan server berkali-kali
+```
+
+### `/kick @user [alasan]`
+
+Keluarkan member dari server. Member yang di-kick masih bisa join kembali menggunakan invite link.
+
+```
+/kick @UserNakal alasan:Tidak mematuhi peringatan staff
+```
+
+### `/mute @user [durasi] [alasan]`
+
+Timeout member untuk durasi tertentu. Selama di-mute, member tidak bisa mengirim pesan atau join voice channel.
+
+```
+/mute @UserNakal durasi:1h alasan:Spam di channel umum
+/mute @UserNakal durasi:30m alasan:Berulang kali melanggar aturan
+/mute @UserNakal durasi:1d alasan:Konten tidak pantas
+```
+
+Format durasi yang didukung:
+- `m` — menit (contoh: `30m`)
+- `h` — jam (contoh: `1h`, `12h`)
+- `d` — hari (contoh: `1d`, `7d`)
+
+### `/warn @user [alasan]`
+
+Beri peringatan kepada member. Warning tersimpan secara permanen di database dan berkontribusi terhadap eskalasi hukuman otomatis.
+
+```
+/warn @UserNakal alasan:Bahasa tidak sopan di channel umum
+```
+
+### `/purge [jumlah]`
+
+Hapus pesan massal di channel saat ini. Jumlah pesan yang bisa dihapus antara **1 sampai 100** pesan.
+
+```
+/purge jumlah:50
+```
+
+<Callout type="info">
+Discord hanya mengizinkan penghapusan massal untuk pesan yang berumur kurang dari 14 hari.
+</Callout>
+
+### `/slowmode [detik]`
+
+Atur slowmode pada channel. Member hanya bisa mengirim pesan setiap X detik. Gunakan `0` untuk menonaktifkan slowmode.
+
+```
+/slowmode detik:10
+/slowmode detik:0
+```
+
+### `/lockdown`
+
+Kunci channel dari pesan member biasa. Hanya staff dengan permission yang bisa mengirim pesan selama lockdown aktif. Jalankan command yang sama untuk membuka kunci.
+
+```
+/lockdown
+```

@@ -1,0 +1,62 @@
+---
+title: Giveaway
+description: Buat giveaway dengan mudah untuk komunitas Anda
+---
+
+## Commands
+
+| Command | Penjelasan |
+|---|---|
+| `/giveaway start [channel] [hadiah] [durasi] [pemenang]` | Mulai giveaway baru |
+| `/giveaway end [giveaway_id]` | Akhiri giveaway lebih awal |
+| `/giveaway reroll [giveaway_id]` | Pilih ulang pemenang secara acak |
+| `/giveaway list` | Lihat semua giveaway yang sedang aktif |
+
+## Format Durasi
+
+Kamu bisa menggunakan format singkat untuk menentukan durasi giveaway:
+
+| Format | Arti |
+|---|---|
+| `1h` | 1 jam |
+| `1d` | 1 hari |
+| `1w` | 1 minggu |
+
+Format bisa dikombinasikan, contoh: `1d12h` untuk 1 hari 12 jam.
+
+## Fitur
+
+- **Embed otomatis** — Bot mengirim embed cantik dengan informasi hadiah dan countdown timer
+- **Tombol partisipasi** — Member cukup klik tombol untuk ikut giveaway, tanpa perlu reaksi manual
+- **Pengumuman pemenang otomatis** — Saat waktu habis, bot langsung mengumumkan pemenang yang dipilih secara acak
+- **Reroll** — Jika pemenang tidak merespons atau tidak valid, kamu bisa pilih ulang pemenang kapan saja
+
+## Contoh Penggunaan
+
+<Steps>
+<Step>
+### Mulai Giveaway
+
+```
+/giveaway start #giveaway "Nitro 1 Bulan" 1d 1
+```
+
+Ini akan membuat giveaway untuk **Nitro 1 Bulan** di channel `#giveaway` selama **1 hari** dengan **1 pemenang**.
+</Step>
+
+<Step>
+### Member Berpartisipasi
+
+Member cukup klik tombol **🎉 Ikut Giveaway** di embed untuk berpartisipasi.
+</Step>
+
+<Step>
+### Pemenang Diumumkan
+
+Setelah durasi habis, bot akan otomatis memilih pemenang secara acak dan mengumumkannya di channel yang sama.
+</Step>
+</Steps>
+
+<Callout type="tip">
+Giveaway yang sedang berjalan akan **tetap aktif** meskipun bot restart. Data giveaway disimpan di database, jadi kamu tidak perlu khawatir kehilangan giveaway yang sedang berlangsung.
+</Callout>

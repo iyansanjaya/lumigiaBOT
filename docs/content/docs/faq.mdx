@@ -1,0 +1,80 @@
+---
+title: FAQ
+description: Pertanyaan yang sering ditanyakan
+---
+
+import { dashboardUrl } from '@/lib/shared';
+
+# Pertanyaan yang Sering Ditanyakan (FAQ)
+
+Berikut adalah jawaban untuk pertanyaan yang paling sering ditanyakan tentang LumigiaBOT.
+
+---
+
+### Bot tidak merespon perintah saya?
+
+Ada beberapa hal yang bisa kamu periksa:
+
+1. **Pastikan bot punya permission yang diperlukan** — Cek apakah bot memiliki akses di channel tersebut (View Channel, Send Messages).
+2. **Gunakan Slash Commands** — LumigiaBOT hanya merespon slash commands (`/`). Ketik `/` di chat untuk melihat daftar perintah.
+3. **Cek status bot** — Pastikan bot online (ditandai dengan titik hijau di daftar member).
+4. **Jalankan `/help`** — Untuk melihat daftar perintah yang tersedia dan memastikan bot berfungsi normal.
+
+<Callout type="info">
+  Jika slash commands tidak muncul sama sekali, coba kick dan invite ulang bot ke server. Discord terkadang memerlukan waktu untuk menyinkronkan perintah.
+</Callout>
+
+---
+
+### Bagaimana cara mengatur bahasa bot?
+
+LumigiaBOT mendukung **Bahasa Indonesia** dan **English**. Kamu bisa mengubah bahasa dengan dua cara:
+
+- **Via Command** — Gunakan `/settings language` lalu pilih bahasa yang diinginkan.
+- **Via Dashboard** — Buka <a href={dashboardUrl} target="_blank" rel="noopener noreferrer" className="font-medium underline">Dashboard</a> → pilih server → **Settings** → ubah opsi bahasa.
+
+---
+
+### Bot bisa dipakai di berapa server?
+
+**Tidak terbatas!** LumigiaBOT bisa digunakan di banyak server sekaligus. Setiap server memiliki konfigurasi yang sepenuhnya independen — pengaturan di satu server tidak akan memengaruhi server lain.
+
+---
+
+### Apakah data server saya aman?
+
+**Ya, data kamu aman.** Berikut langkah keamanan yang kami terapkan:
+
+- Setiap server terisolasi sepenuhnya — data satu server tidak bisa diakses oleh server lain.
+- Data disimpan di database terenkripsi.
+- Bot hanya menyimpan data yang diperlukan untuk fitur-fitur yang aktif.
+- Tidak ada data yang dibagikan ke pihak ketiga.
+
+---
+
+### Bagaimana cara melapor bug?
+
+Jika kamu menemukan bug atau masalah, kamu bisa melaporkannya melalui:
+
+1. **Server Support Discord** — Bergabung ke server support kami dan buat laporan di channel yang disediakan.
+2. **GitHub Issues** — Buat issue baru di repository GitHub LumigiaBOT dengan detail langkah untuk mereproduksi bug.
+
+<Callout type="warn">
+  Sertakan informasi berikut saat melapor bug: nama server, channel tempat masalah terjadi, perintah yang digunakan, dan screenshot jika memungkinkan.
+</Callout>
+
+---
+
+### Bot tiba-tiba offline?
+
+Jika bot tiba-tiba tidak merespon atau tampak offline, kemungkinan penyebabnya:
+
+- **Maintenance terjadwal** — Bot mungkin sedang diperbarui atau menjalani maintenance.
+- **Restart otomatis** — Bot akan kembali online dalam beberapa menit setelah restart.
+- **Gangguan Discord** — Terkadang Discord mengalami gangguan yang memengaruhi koneksi bot.
+
+Cek status terbaru bot di server support Discord kami.
+
+<Callout type="info">
+  Biasanya bot akan kembali online dalam 1–5 menit setelah restart. Jika lebih dari itu, hubungi developer melalui server support.
+</Callout>

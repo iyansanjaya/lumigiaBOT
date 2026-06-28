@@ -1,0 +1,118 @@
+---
+title: Fitur Streamer
+description: Fitur khusus untuk streamer Twitch dan YouTuber
+---
+
+LumigiaBOT memiliki fitur lengkap yang dirancang khusus untuk para streamer dan content creator. Dari notifikasi live stream hingga galeri fan art, semua tersedia untuk membangun komunitas yang lebih interaktif.
+
+## Notifikasi Live Stream
+
+Dapatkan notifikasi otomatis di server Discord kamu setiap kali kamu atau streamer favorit sedang live.
+
+### Setup
+
+Gunakan command atau Dashboard untuk menambahkan notifikasi:
+
+```
+/stream add [platform] [username] [channel]
+```
+
+Atau lewat **Dashboard > Streams** untuk pengaturan yang lebih mudah.
+
+### Platform yang Didukung
+
+| Platform | Penjelasan |
+|---|---|
+| **Twitch** | Notifikasi saat streamer live di Twitch |
+| **YouTube** | Notifikasi saat ada live stream di YouTube |
+
+### Fitur
+
+- **Notifikasi otomatis** saat streamer mulai live
+- **Custom message** — Sesuaikan pesan notifikasi sesuai keinginan
+- **Ping role** — Mention role tertentu agar member tahu kamu sedang live
+
+## Jadwal Streaming
+
+Buat jadwal streaming mingguan yang otomatis dikirim ke channel server kamu.
+
+### Setup
+
+```
+/schedule add [hari] [waktu] [judul]
+```
+
+Atau lewat **Dashboard > Schedule** untuk mengelola jadwal dengan mudah.
+
+### Fitur
+
+- **Jadwal mingguan otomatis** — Bot mengirim embed jadwal di awal minggu
+- **Embed informatif** — Tampilkan hari, jam, dan judul stream dalam format yang rapi
+- **Support timezone Indonesia**:
+
+| Zona Waktu | Keterangan |
+|---|---|
+| WIB | Waktu Indonesia Barat (UTC+7) |
+| WITA | Waktu Indonesia Tengah (UTC+8) |
+| WIT | Waktu Indonesia Timur (UTC+9) |
+| UTC | Coordinated Universal Time |
+
+## Fan Art Gallery
+
+Sistem galeri fan art dengan approval, memungkinkan fans mengirim karya seni mereka untuk ditampilkan di server.
+
+### Setup
+
+```
+/fanart setup [submit_channel] [gallery_channel]
+```
+
+Atau lewat **Dashboard > Fan Art** untuk konfigurasi lengkap.
+
+### Alur Fan Art
+
+<Steps>
+<Step>
+### Fan Submit Karya
+
+Fan mengirim karya seni mereka ke channel submit yang sudah ditentukan.
+</Step>
+
+<Step>
+### Staff Approve
+
+Staff atau moderator mereview dan approve karya yang masuk.
+</Step>
+
+<Step>
+### Ditampilkan di Gallery
+
+Karya yang di-approve otomatis ditampilkan di channel gallery dengan format yang rapi.
+</Step>
+</Steps>
+
+### Fitur
+
+- **Approval system** — Staff bisa approve atau reject submission sebelum ditampilkan
+- **Vote emoji** — Member bisa memberikan vote pada karya yang ditampilkan
+- **Galeri otomatis** — Karya yang di-approve langsung dikirim ke channel gallery
+
+## Analytics Server
+
+Pantau statistik server kamu untuk memahami aktivitas komunitas.
+
+### Command
+
+```
+/analytics view
+```
+
+### Fitur Tracking
+
+- **Pesan harian** — Jumlah pesan yang dikirim per hari
+- **Member join/leave** — Tracking member yang bergabung dan keluar
+- **Channel activity** — Statistik aktivitas per channel
+
+<Callout type="tip">
+Semua fitur streamer di atas bisa dikonfigurasi lewat **Dashboard** untuk kemudahan. Tidak perlu menghafal command — cukup buka Dashboard dan atur semuanya dari sana.
+</Callout>

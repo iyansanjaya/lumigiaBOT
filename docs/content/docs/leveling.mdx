@@ -1,0 +1,146 @@
+---
+title: Leveling & XP
+description: Sistem XP dan level untuk meningkatkan engagement member
+---
+
+Sistem Leveling & XP membuat server kamu lebih hidup dengan memberikan **pengalaman (XP)** kepada member setiap kali mereka mengirim pesan. Semakin aktif member, semakin tinggi levelnya — dan mereka bisa mendapatkan **role reward** secara otomatis saat mencapai level tertentu.
+
+## Cara Kerja
+
+<Steps>
+<Step>
+### Member Kirim Pesan
+Setiap pesan yang dikirim member akan memberikan sejumlah XP (sesuai konfigurasi).
+</Step>
+
+<Step>
+### XP Terkumpul
+XP terakumulasi hingga mencapai batas level berikutnya. Semakin tinggi level, semakin banyak XP yang dibutuhkan.
+</Step>
+
+<Step>
+### Level Up
+Saat XP cukup, member otomatis naik level. Notifikasi dikirim ke channel pengumuman (jika diatur).
+</Step>
+
+<Step>
+### Role Reward
+Jika ada role reward yang diatur untuk level tersebut, member otomatis mendapatkan role baru.
+</Step>
+</Steps>
+
+## Konfigurasi
+
+Semua pengaturan leveling bisa diatur melalui **Dashboard > Leveling**:
+
+| Pengaturan | Deskripsi | Range | Default |
+| --- | --- | --- | --- |
+| **XP Per Pesan** | Jumlah XP yang didapat per pesan | 5–50 XP | 15 XP |
+| **Cooldown** | Jeda antar pemberian XP (mencegah spam) | 30–120 detik | 60 detik |
+| **Multiplier** | Pengali XP (untuk event boost) | 1.0x–5.0x | 1.0x |
+| **Channel Pengumuman** | Channel untuk notifikasi level-up | — | Nonaktif |
+
+### XP Per Pesan
+
+Tentukan berapa XP yang didapat member setiap kali mengirim pesan. Semakin tinggi nilainya, semakin cepat member naik level.
+
+### Cooldown
+
+Jeda waktu antar pemberian XP. Jika member mengirim pesan dalam waktu kurang dari cooldown, pesan tersebut tidak memberikan XP. Ini mencegah member spam pesan untuk mendapat XP.
+
+### Multiplier
+
+<Callout type="info">
+Gunakan **multiplier** saat mengadakan event khusus untuk meningkatkan engagement member. Misalnya, set ke `2.0x` saat event ulang tahun server agar member lebih aktif berpartisipasi.
+</Callout>
+
+Pengali XP yang berlaku untuk seluruh server. Dengan multiplier `2.0x`, member mendapat XP dua kali lipat dari biasanya.
+
+### Channel Pengumuman
+
+Pilih channel tempat notifikasi level-up dikirim. Jika tidak diatur, notifikasi tidak akan dikirim.
+
+## Commands
+
+### `/rank [@user]`
+
+Lihat level, XP, dan progress bar visual dari member. Jika tidak menyebutkan user, menampilkan data diri sendiri.
+
+```
+/rank
+/rank user:@Teman
+```
+
+Menampilkan:
+- Level saat ini
+- XP saat ini / XP yang dibutuhkan
+- Progress bar visual menuju level berikutnya
+- Peringkat di server
+
+### `/leaderboard`
+
+Tampilkan daftar member dengan XP tertinggi di server.
+
+```
+/leaderboard
+```
+
+### `/xp add @user [jumlah]`
+
+Tambahkan XP secara manual ke member tertentu. Hanya bisa digunakan oleh **Admin**.
+
+```
+/xp add user:@Member jumlah:500
+```
+
+### `/xp remove @user [jumlah]`
+
+Kurangi XP dari member tertentu. Hanya bisa digunakan oleh **Admin**.
+
+```
+/xp remove user:@Member jumlah:200
+```
+
+### `/xp reset @user`
+
+Reset seluruh XP dan level member ke 0. Hanya bisa digunakan oleh **Admin**.
+
+```
+/xp reset user:@Member
+```
+
+<Callout type="warn">
+Reset XP bersifat permanen dan tidak bisa dibatalkan. Gunakan dengan hati-hati.
+</Callout>
+
+### `/xp set-reward [level] [role]`
+
+Atur role reward yang otomatis diberikan saat member mencapai level tertentu.
+
+```
+/xp set-reward level:5 role:@Aktif
+/xp set-reward level:10 role:@Veteran
+/xp set-reward level:25 role:@Legend
+```
+
+## Contoh Setup Role Reward
+
+Berikut contoh konfigurasi role reward yang direkomendasikan:
+
+| Level | Role | Deskripsi |
+| --- | --- | --- |
+| 5 | @Aktif | Member yang mulai aktif |
+| 10 | @Reguler | Member yang konsisten aktif |
+| 25 | @Veteran | Member yang sudah lama berkontribusi |
+| 50 | @Legend | Member paling aktif dan loyal |
+
+## Ringkasan Command
+
+| Command | Fungsi | Akses |
+| --- | --- | --- |
+| `/rank` | Lihat level dan XP | Semua |
+| `/leaderboard` | Daftar top member | Semua |
+| `/xp add` | Tambah XP manual | Admin |
+| `/xp remove` | Kurangi XP | Admin |
+| `/xp reset` | Reset XP ke 0 | Admin |
+| `/xp set-reward` | Atur role reward | Admin |

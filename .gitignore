@@ -20,6 +20,8 @@ data/*.db-shm
 # Next.js
 web/.next/
 web/out/
+docs/.next/
+docs/.source/
 
 # Build
 dist/

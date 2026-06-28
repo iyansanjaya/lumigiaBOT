@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "index",
+    "getting-started",
+    "commands",
+    "moderation",
+    "automod",
+    "tickets",
+    "voice",
+    "leveling",
+    "roles",
+    "giveaway",
+    "streamer",
+    "dashboard",
+    "faq"
+  ]
+}

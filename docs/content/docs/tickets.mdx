@@ -1,0 +1,96 @@
+---
+title: Tickets
+description: Sistem tiket support untuk komunikasi privat antara member dan staff
+---
+
+Sistem tiket memungkinkan member server untuk menghubungi staff secara privat melalui channel khusus. Setiap tiket dibuat sebagai channel tersendiri yang hanya bisa diakses oleh member yang membuat tiket dan staff yang ditunjuk.
+
+## Cara Kerja
+
+<Steps>
+<Step>
+### Member Klik Tombol
+Member menekan tombol **Buat Tiket** pada panel tiket yang dipasang di channel tertentu.
+</Step>
+
+<Step>
+### Channel Tiket Dibuat
+Bot otomatis membuat channel privat baru di kategori yang sudah ditentukan. Hanya member yang membuat tiket dan role support yang bisa mengakses channel ini.
+</Step>
+
+<Step>
+### Komunikasi dengan Staff
+Member dan staff bisa berkomunikasi secara privat di channel tiket tersebut.
+</Step>
+
+<Step>
+### Tiket Ditutup
+Saat masalah selesai, staff atau member bisa menutup tiket. Bot otomatis membuat **transcript** berisi seluruh percakapan.
+</Step>
+</Steps>
+
+## Setup Panel Tiket
+
+Gunakan command `/ticket-setup` untuk memasang panel tiket di channel yang diinginkan:
+
+```
+/ticket-setup channel:#buat-tiket
+```
+
+Bot akan mengirim embed dengan tombol **Buat Tiket** ke channel yang ditentukan. Member cukup klik tombol tersebut untuk membuka tiket baru.
+
+## Konfigurasi via Dashboard
+
+<Callout type="info">
+Atur semua konfigurasi tiket dari **Dashboard > Tickets** agar lebih mudah dan lengkap. Tidak perlu menghafal command satu per satu.
+</Callout>
+
+Buka **Dashboard > Tickets** untuk mengatur konfigurasi berikut:
+
+| Pengaturan | Deskripsi | Default |
+| --- | --- | --- |
+| **Kategori Tiket** | Folder (category) tempat channel tiket dibuat | — |
+| **Role Support** | Role yang bisa mengakses dan merespons semua tiket | — |
+| **Channel Log** | Channel untuk notifikasi setiap tiket dibuka atau ditutup | — |
+| **Maks Tiket Terbuka** | Batas jumlah tiket yang bisa dibuka per member secara bersamaan | 1 |
+| **Tutup Otomatis** | Tiket ditutup otomatis setelah X jam tidak ada aktivitas | Nonaktif |
+
+### Kategori Tiket
+
+Tentukan kategori (folder) di Discord tempat channel tiket akan dibuat. Pastikan bot memiliki permission untuk membuat channel di kategori tersebut.
+
+### Role Support
+
+Pilih role yang akan menjadi tim support. Semua member dengan role ini bisa melihat dan merespons tiket yang dibuat oleh member manapun.
+
+### Channel Log
+
+Setiap kali tiket dibuka atau ditutup, notifikasi akan dikirim ke channel log. Berguna untuk memantau aktivitas tiket tanpa harus membuka satu per satu.
+
+### Maks Tiket Terbuka
+
+Batasi jumlah tiket yang bisa dibuka oleh satu member secara bersamaan. Ini mencegah penyalahgunaan sistem tiket.
+
+### Tutup Otomatis
+
+Jika diaktifkan, tiket yang tidak ada aktivitas selama X jam akan ditutup secara otomatis oleh bot. Transcript tetap dibuat saat auto-close.
+
+## Fitur Tambahan
+
+### Transcript Otomatis
+
+Saat tiket ditutup, bot otomatis membuat transcript yang berisi seluruh percakapan di dalam tiket. Transcript dikirim ke channel log dan bisa diakses kapan saja oleh staff.
+
+### Statistik Tiket
+
+Gunakan command `/ticket-stats` untuk melihat statistik tiket server:
+
+```
+/ticket-stats
+```
+
+Statistik mencakup:
+- Total tiket yang pernah dibuat
+- Tiket yang sedang terbuka
+- Rata-rata waktu respons staff
+- Tiket per hari/minggu

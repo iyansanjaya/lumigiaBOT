@@ -1,0 +1,67 @@
+---
+title: Reaction Roles
+description: Biarkan member memilih role mereka sendiri dengan tombol
+---
+
+## Apa itu Reaction Roles?
+
+Reaction Roles memungkinkan kamu membuat **panel interaktif** dengan tombol-tombol role. Member cukup klik tombol untuk toggle (ambil/lepas) role mereka sendiri — tanpa perlu menghubungi admin.
+
+Panel akan dikirim sebagai embed di channel yang kamu pilih, lengkap dengan tombol untuk setiap role yang tersedia.
+
+## Commands
+
+| Command | Penjelasan |
+|---|---|
+| `/reaction-role create [channel] [judul] [deskripsi]` | Buat panel baru di channel tertentu |
+| `/reaction-role add-role [panel_id] [role] [emoji] [label]` | Tambah role ke panel yang sudah ada |
+| `/reaction-role remove-role [panel_id] [role]` | Hapus role dari panel |
+| `/reaction-role edit [panel_id] [judul] [deskripsi]` | Edit judul atau deskripsi panel |
+| `/reaction-role delete [panel_id]` | Hapus panel sepenuhnya |
+| `/reaction-role list` | Lihat daftar semua panel di server |
+
+## Contoh Penggunaan
+
+<Steps>
+<Step>
+### Buat Panel
+
+Buat panel baru di channel yang diinginkan:
+
+```
+/reaction-role create #self-roles "Pilih Role" "Klik tombol untuk memilih role"
+```
+
+Bot akan mengirim embed panel ke channel `#self-roles`. Catat **panel_id** yang diberikan.
+</Step>
+
+<Step>
+### Tambah Role Pertama
+
+Tambahkan role ke panel menggunakan panel_id:
+
+```
+/reaction-role add-role 1 @Gamer 🎮 "Gamer"
+```
+
+Tombol baru akan muncul di panel dengan emoji 🎮 dan label "Gamer".
+</Step>
+
+<Step>
+### Tambah Role Lainnya
+
+Tambahkan role sebanyak yang kamu butuhkan:
+
+```
+/reaction-role add-role 1 @Artist 🎨 "Artist"
+```
+
+Panel akan otomatis diperbarui dengan tombol tambahan.
+</Step>
+</Steps>
+
+Sekarang member bisa klik tombol di panel untuk mengambil atau melepas role yang mereka inginkan.
+
+<Callout type="info">
+Pastikan role bot (LumigiaBOT) berada **lebih tinggi** di daftar role server dibanding role yang ingin diberikan. Jika tidak, bot tidak akan bisa memberikan role tersebut kepada member.
+</Callout>

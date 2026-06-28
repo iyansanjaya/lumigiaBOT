@@ -1,0 +1,64 @@
+---
+title: Memulai
+description: Cara menambahkan dan mengatur LumigiaBOT di server Discord Anda
+---
+
+import { botInviteUrl, dashboardUrl } from '@/lib/shared';
+
+# Memulai
+
+Ikuti langkah-langkah berikut untuk menambahkan LumigiaBOT ke server Discord kamu dan melakukan konfigurasi awal.
+
+<Steps>
+  <Step>
+    ### Invite Bot ke Server
+
+    Klik link berikut untuk mengundang LumigiaBOT ke server Discord kamu:
+
+    👉 <a href={botInviteUrl} target="_blank" rel="noopener noreferrer" className="font-medium underline">Invite LumigiaBOT</a>
+
+    Pilih server tujuan, lalu klik **Authorize**. Pastikan kamu memiliki permission **Manage Server** di server tersebut.
+  </Step>
+
+  <Step>
+    ### Pastikan Permission Bot
+
+    Setelah bot bergabung, pastikan bot memiliki permission berikut agar semua fitur berjalan dengan baik:
+
+    | Permission | Fungsi |
+    |---|---|
+    | Manage Channels | Membuat/menghapus channel (tickets, voice) |
+    | Manage Roles | Memberikan/mencabut role (leveling, reaction roles) |
+    | Manage Messages | Menghapus pesan (purge, automod) |
+    | Send Messages | Mengirim pesan dan respons |
+    | Embed Links | Mengirim pesan embed |
+    | Read Message History | Membaca riwayat pesan |
+    | View Channels | Melihat channel di server |
+    | Moderate Members | Timeout/mute member |
+  </Step>
+
+  <Step>
+    ### Jalankan `/setup`
+
+    Ketik `/setup` di salah satu channel untuk melakukan konfigurasi awal. Bot akan memandu kamu mengatur:
+
+    - Channel log moderasi
+    - Channel welcome
+    - Bahasa bot (Indonesia / English)
+    - Fitur-fitur dasar lainnya
+  </Step>
+
+  <Step>
+    ### Buka Dashboard
+
+    Untuk konfigurasi lebih lanjut, buka Web Dashboard di:
+
+    👉 <a href={dashboardUrl} target="_blank" rel="noopener noreferrer" className="font-medium underline">Dashboard LumigiaBOT</a>
+
+    Login menggunakan akun Discord kamu, pilih server, lalu atur semua fitur dari antarmuka yang mudah digunakan.
+  </Step>
+</Steps>
+
+<Callout type="info">
+  LumigiaBOT menggunakan **Slash Commands** (`/`). Ketik `/` di chat untuk melihat semua perintah yang tersedia. Jika perintah tidak muncul, coba kick dan invite ulang bot, atau tunggu beberapa menit agar Discord menyinkronkan perintah.
+</Callout>
