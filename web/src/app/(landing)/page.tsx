@@ -15,7 +15,7 @@ import {
   Users,
   Gift,
   Palette,
-  Video
+  Video,
 } from "lucide-react";
 
 /* ─────────────────────── Data ─────────────────────── */

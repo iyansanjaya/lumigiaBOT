@@ -7,21 +7,29 @@ interface Command { name: string; description: string; permission: string; }
 
 const categories: { name: string; commands: Command[] }[] = [
   {
-    name: 'Moderasi',
+    name: 'Admin & Setup',
     commands: [
-      { name: '/warn', description: 'Beri peringatan ke anggota', permission: 'Moderator' },
-      { name: '/kick', description: 'Keluarkan anggota dari server', permission: 'Moderator' },
-      { name: '/ban', description: 'Ban anggota dari server', permission: 'Admin' },
-      { name: '/unban', description: 'Hapus ban anggota', permission: 'Admin' },
-      { name: '/mute', description: 'Bisukan anggota sementara', permission: 'Moderator' },
-      { name: '/unmute', description: 'Batalkan bisu anggota', permission: 'Moderator' },
-      { name: '/warnings', description: 'Lihat daftar peringatan anggota', permission: 'Moderator' },
-      { name: '/clearwarns', description: 'Hapus semua peringatan anggota', permission: 'Admin' },
-      { name: '/purge', description: 'Hapus banyak pesan sekaligus', permission: 'Moderator' },
+      { name: '/setup', description: 'Wizard konfigurasi interaktif bot', permission: 'Admin' },
+      { name: '/settings', description: 'Atur pengaturan per-server', permission: 'Admin' },
+      { name: '/audit-log', description: 'Lihat log audit moderasi', permission: 'Admin' },
     ],
   },
   {
-    name: 'Auto-Mod',
+    name: 'Moderasi',
+    commands: [
+      { name: '/ban', description: 'Banned anggota dari server', permission: 'Admin' },
+      { name: '/kick', description: 'Kick anggota dari server', permission: 'Moderator' },
+      { name: '/mute', description: 'Timeout anggota (1m–28h)', permission: 'Moderator' },
+      { name: '/warn', description: 'Beri peringatan ke anggota', permission: 'Moderator' },
+      { name: '/warnings', description: 'Lihat riwayat peringatan anggota', permission: 'Moderator' },
+      { name: '/clearwarns', description: 'Hapus peringatan anggota', permission: 'Moderator' },
+      { name: '/purge', description: 'Hapus pesan massal (1–100)', permission: 'Moderator' },
+      { name: '/slowmode', description: 'Atur slowmode channel', permission: 'Moderator' },
+      { name: '/lockdown', description: 'Kunci/buka kunci channel', permission: 'Moderator' },
+    ],
+  },
+  {
+    name: 'Auto-Mod & Anti-Raid',
     commands: [
       { name: '/automod-config', description: 'Konfigurasi filter auto-moderasi', permission: 'Admin' },
       { name: '/automod-whitelist', description: 'Kelola whitelist auto-mod', permission: 'Admin' },
@@ -29,11 +37,28 @@ const categories: { name: string; commands: Command[] }[] = [
     ],
   },
   {
-    name: 'Tiket',
+    name: 'Sistem Tiket',
     commands: [
       { name: '/ticket-setup', description: 'Setup sistem tiket di server', permission: 'Admin' },
       { name: '/ticket-config', description: 'Konfigurasi pengaturan tiket', permission: 'Admin' },
       { name: '/ticket-stats', description: 'Lihat statistik tiket server', permission: 'Staff' },
+    ],
+  },
+  {
+    name: 'Streamer & Komunitas',
+    commands: [
+      { name: '/voice', description: 'Kelola temp voice channel (Join2Create)', permission: 'Everyone' },
+      { name: '/reaction-role', description: 'Buat dan atur panel reaction role', permission: 'Admin' },
+      { name: '/xp', description: 'Atur sistem XP dan leveling', permission: 'Admin' },
+      { name: '/rank', description: 'Lihat rank dan progress XP', permission: 'Everyone' },
+      { name: '/leaderboard', description: 'Lihat leaderboard XP server', permission: 'Everyone' },
+      { name: '/giveaway', description: 'Mulai, end, dan reroll giveaway', permission: 'Admin' },
+      { name: '/schedule', description: 'Kelola jadwal streaming mingguan', permission: 'Admin' },
+      { name: '/stream', description: 'Setup notifikasi live (Twitch/YouTube)', permission: 'Admin' },
+      { name: '/fanart', description: 'Submit dan moderasi galeri fan art', permission: 'Everyone' },
+      { name: '/embed', description: 'Buat embed kustom interaktif', permission: 'Admin' },
+      { name: '/socials', description: 'Atur link social media streamer', permission: 'Admin' },
+      { name: '/analytics', description: 'Statistik aktivitas dan pesan server', permission: 'Admin' },
     ],
   },
   {
