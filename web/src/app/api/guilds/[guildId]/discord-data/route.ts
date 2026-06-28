@@ -104,7 +104,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     const rawRoles: DiscordRole[] = await rolesRes.json();
 
     // 5. Filter & format channels
-    const allowedTypes = new Set([
+    const allowedTypes: Set<number> = new Set([
       CHANNEL_TYPE.GUILD_TEXT,
       CHANNEL_TYPE.GUILD_VOICE,
       CHANNEL_TYPE.GUILD_CATEGORY,
