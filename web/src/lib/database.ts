@@ -307,3 +307,67 @@ export function updateLevelingSetting(guildId: string, field: string, value: str
   } catch (err) { console.error('[DB] updateLevelingSetting failed:', err); return false; }
 }
 
+// ── Fan Art Settings Write ──
+const ALLOWED_FANART_FIELDS = new Set(['enabled', 'submit_channel', 'gallery_channel', 'approval_required', 'vote_emoji']);
+
+/** Update fan art settings */
+export function updateFanArtSetting(guildId: string, field: string, value: string | number | null): boolean {
+  if (!ALLOWED_FANART_FIELDS.has(field)) throw new Error(`Field tidak diizinkan: ${field}`);
+  try {
+    const db = getDb();
+    db.prepare('INSERT INTO fanart_settings (guild_id) VALUES (?) ON CONFLICT(guild_id) DO NOTHING').run(guildId);
+    db.prepare(`UPDATE fanart_settings SET ${field} = ? WHERE guild_id = ?`).run(value, guildId);
+    return true;
+  } catch (err) { console.error('[DB] updateFanArtSetting failed:', err); return false; }
+}
+
+// ── Stream Notifications CRUD ──
+
+/** Tambah stream notification config */
+export function addStreamNotification(
+  guildId: string, platform: string, platformUser: string,
+  notifyChannel: string, pingRole: string | null, customMessage: string | null,
+): boolean {
+  if (!['twitch', 'youtube'].includes(platform)) throw new Error(`Platform tidak valid: ${platform}`);
+  try {
+    getDb().prepare(`
+      INSERT INTO stream_notifications (guild_id, platform, platform_user, notify_channel, ping_role, custom_message)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(guildId, platform, platformUser, notifyChannel, pingRole, customMessage);
+    return true;
+  } catch (err) { console.error('[DB] addStreamNotification failed:', err); return false; }
+}
+
+/** Hapus stream notification config — pastikan milik guild yang sama */
+export function deleteStreamNotification(id: number, guildId: string): boolean {
+  try {
+    const result = getDb().prepare('DELETE FROM stream_notifications WHERE id = ? AND guild_id = ?').run(id, guildId);
+    return result.changes > 0;
+  } catch (err) { console.error('[DB] deleteStreamNotification failed:', err); return false; }
+}
+
+// ── Schedule CRUD ──
+
+/** Tambah jadwal streaming */
+export function addScheduleEntry(
+  guildId: string, dayOfWeek: number, time: string,
+  timezone: string, title: string, description: string | null,
+): boolean {
+  if (dayOfWeek < 0 || dayOfWeek > 6) throw new Error('Day of week harus 0-6');
+  try {
+    getDb().prepare(`
+      INSERT INTO stream_schedule (guild_id, day_of_week, time, timezone, title, description)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(guildId, dayOfWeek, time, timezone, title, description);
+    return true;
+  } catch (err) { console.error('[DB] addScheduleEntry failed:', err); return false; }
+}
+
+/** Hapus jadwal streaming — pastikan milik guild yang sama */
+export function deleteScheduleEntry(id: number, guildId: string): boolean {
+  try {
+    const result = getDb().prepare('DELETE FROM stream_schedule WHERE id = ? AND guild_id = ?').run(id, guildId);
+    return result.changes > 0;
+  } catch (err) { console.error('[DB] deleteScheduleEntry failed:', err); return false; }
+}
+

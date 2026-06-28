@@ -9,6 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getFanArtSettings, getFanArtGallery, getFanArtPending } from '@/lib/database';
+import { FanArtSettingsForm } from '@/components/dashboard/FanArtSettingsForm';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -28,37 +29,6 @@ export default async function FanArtPage({ params }: PageProps) {
   } catch {
     // Gunakan nilai cadangan
   }
-
-  if (!settings) {
-    return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Fan Art</h1>
-          <p className="mt-1 text-foreground-muted">
-            Fan art submissions and gallery for this server.
-          </p>
-        </div>
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <Palette className="h-12 w-12 text-foreground-muted mb-4" />
-          <h2 className="text-xl font-semibold text-foreground">Not Configured</h2>
-          <p className="mt-2 text-foreground-muted">
-            Fan art settings have not been configured for this server.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  const isEnabled = settings.enabled === 1;
-  const approvalRequired = settings.approval_required === 1;
-
-  const settingItems = [
-    { label: 'Status', value: isEnabled ? 'Enabled' : 'Disabled' },
-    { label: 'Submit Channel', value: settings.submit_channel ?? 'Not set' },
-    { label: 'Gallery Channel', value: settings.gallery_channel ?? 'Not set' },
-    { label: 'Approval Required', value: approvalRequired ? 'Yes' : 'No' },
-    { label: 'Vote Emoji', value: settings.vote_emoji },
-  ];
 
   return (
     <div className="space-y-8">
@@ -100,7 +70,7 @@ export default async function FanArtPage({ params }: PageProps) {
             </div>
             <div className="flex items-center gap-3">
               <p className="text-lg font-semibold text-foreground">System</p>
-              {isEnabled ? (
+              {settings?.enabled === 1 ? (
                 <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
                   Active
                 </span>
@@ -114,27 +84,8 @@ export default async function FanArtPage({ params }: PageProps) {
         </Card>
       </div>
 
-      {/* Settings */}
-      <Card>
-        <CardContent className="space-y-4">
-          <h2 className="text-xl font-semibold text-foreground">Configuration</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {settingItems.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-lg bg-background-tertiary/50 px-4 py-3"
-              >
-                <p className="text-xs text-foreground-muted uppercase tracking-wider">
-                  {item.label}
-                </p>
-                <p className="mt-1 text-sm font-medium text-foreground font-mono">
-                  {item.value}
-                </p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Settings Form */}
+      <FanArtSettingsForm guildId={guildId} initialSettings={settings ?? null} />
 
       {/* Approved Gallery */}
       <Card>
@@ -162,7 +113,7 @@ export default async function FanArtPage({ params }: PageProps) {
                       <TableCell className="font-mono text-xs">{submission.user_id}</TableCell>
                       <TableCell>
                         <span className="inline-flex items-center gap-1 text-sm">
-                          {settings.vote_emoji} {submission.votes}
+                          {settings?.vote_emoji ?? '⭐'} {submission.votes}
                         </span>
                       </TableCell>
                       <TableCell className="text-foreground-muted whitespace-nowrap">
