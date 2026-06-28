@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -31,6 +31,22 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
   const [notifyChannel, setNotifyChannel] = useState("");
   const [pingRole, setPingRole] = useState("");
   const [customMessage, setCustomMessage] = useState("");
+
+  // ─── Discord data for selects ───
+  const [discordChannels, setDiscordChannels] = useState<{id: string; name: string; type: number}[]>([]);
+  const [discordRoles, setDiscordRoles] = useState<{id: string; name: string; color: number}[]>([]);
+  const [loadingDiscord, setLoadingDiscord] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/guilds/${guildId}/discord-data`)
+      .then(r => r.json())
+      .then(data => {
+        setDiscordChannels(data.channels?.filter((c: any) => c.type === 0 || c.type === 5) ?? []);
+        setDiscordRoles(data.roles ?? []);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingDiscord(false));
+  }, [guildId]);
 
   // ─── Delete handler ───
   async function handleDelete(id: number) {
@@ -229,39 +245,34 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
 
               {/* Notify Channel */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-foreground-muted text-sm">
-                  Channel Notifikasi
-                </label>
-                <p className="text-xs text-foreground-muted/70">
-                  ID channel Discord tempat notifikasi dikirim. Klik kanan
-                  channel → Copy Channel ID.
-                </p>
-                <input
-                  type="text"
+                <label className="text-foreground-muted text-sm">Channel Notifikasi *</label>
+                <select
                   value={notifyChannel}
                   onChange={(e) => setNotifyChannel(e.target.value)}
-                  placeholder="Contoh: 123456789012345678"
-                  required
-                  className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
+                  disabled={loadingDiscord}
+                  className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
+                >
+                  <option value="">{loadingDiscord ? 'Memuat channel...' : '— Pilih channel —'}</option>
+                  {discordChannels.map(ch => (
+                    <option key={ch.id} value={ch.id}># {ch.name}</option>
+                  ))}
+                </select>
               </div>
 
               {/* Ping Role */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-foreground-muted text-sm">
-                  Role Ping
-                </label>
-                <p className="text-xs text-foreground-muted/70">
-                  ID role yang akan di-ping saat live. Opsional. Klik kanan role
-                  → Copy Role ID.
-                </p>
-                <input
-                  type="text"
+                <label className="text-foreground-muted text-sm">Role Ping (opsional)</label>
+                <select
                   value={pingRole}
                   onChange={(e) => setPingRole(e.target.value)}
-                  placeholder="Opsional"
-                  className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
+                  disabled={loadingDiscord}
+                  className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
+                >
+                  <option value="">{loadingDiscord ? 'Memuat roles...' : '— Tidak ada —'}</option>
+                  {discordRoles.map(r => (
+                    <option key={r.id} value={r.id}>@ {r.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
 

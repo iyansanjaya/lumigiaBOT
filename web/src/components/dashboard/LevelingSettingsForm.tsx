@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, Save, Check, Loader2 } from "lucide-react";
+import { TrendingUp, Check, Loader2 } from "lucide-react";
 import type { LevelingSettings } from "@/types/streamer";
+import { ChannelSelect } from "@/components/dashboard/ChannelSelect";
 
 interface Props {
   guildId: string;
@@ -143,79 +144,6 @@ function SelectInput({
   );
 }
 
-// ─── Text/Number Input with Save Button ───
-function TextInput({
-  label,
-  field,
-  value,
-  guildId,
-  type = "text",
-  placeholder,
-  hint,
-}: {
-  label: string;
-  field: string;
-  value: string | number | null | undefined;
-  guildId: string;
-  type?: "text" | "number";
-  placeholder?: string;
-  hint?: string;
-}) {
-  const [currentValue, setCurrentValue] = useState(String(value ?? ""));
-  const [saveState, setSaveState] = useState<SaveState>("idle");
-
-  const save = useCallback(async () => {
-    setSaveState("saving");
-    const sendValue =
-      type === "number"
-        ? currentValue === ""
-          ? null
-          : Number(currentValue)
-        : currentValue === ""
-          ? null
-          : currentValue;
-    const ok = await saveSetting(guildId, field, sendValue);
-    setSaveState(ok ? "saved" : "error");
-    setTimeout(() => setSaveState("idle"), ok ? 2000 : 3000);
-  }, [currentValue, field, guildId, type]);
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-foreground-muted text-sm">{label}</label>
-      {hint && <p className="text-xs text-foreground-muted/70">{hint}</p>}
-      <div className="flex gap-2">
-        <input
-          type={type}
-          value={currentValue}
-          onChange={(e) => {
-            setCurrentValue(e.target.value);
-            if (saveState !== "idle") setSaveState("idle");
-          }}
-          placeholder={placeholder || "Not configured"}
-          className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
-        />
-        <button
-          onClick={save}
-          disabled={saveState === "saving"}
-          className="flex items-center gap-1.5 rounded-lg bg-primary hover:bg-primary-hover disabled:opacity-50 px-3 py-2 text-sm font-medium text-white transition-colors"
-        >
-          {saveState === "saving" ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : saveState === "saved" ? (
-            <Check className="h-4 w-4" />
-          ) : (
-            <Save className="h-4 w-4" />
-          )}
-        </button>
-      </div>
-      {saveState === "error" && (
-        <span className="text-xs text-red-400">
-          Gagal menyimpan. Coba lagi.
-        </span>
-      )}
-    </div>
-  );
-}
 
 // ─── Main Form ───
 export function LevelingSettingsForm({ guildId, initialSettings }: Props) {
@@ -292,13 +220,14 @@ export function LevelingSettingsForm({ guildId, initialSettings }: Props) {
               options={multiplierOptions}
               placeholder="— Pilih multiplier —"
             />
-            <TextInput
+            <ChannelSelect
+              guildId={guildId}
               label="Channel Pengumuman Level Up"
               field="announce_channel"
               value={s?.announce_channel}
-              guildId={guildId}
-              placeholder="Contoh: 123456789012345678"
               hint="Channel tempat pesan level-up dikirim. Kosongkan untuk kirim di channel pesan."
+              channelType="text"
+              apiEndpoint={`/api/guilds/${guildId}/leveling`}
             />
           </div>
         </CardContent>

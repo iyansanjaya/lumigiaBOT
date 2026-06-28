@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mic, Save, Check, Loader2 } from "lucide-react";
 import type { VoiceSettings } from "@/types/streamer";
+import { ChannelSelect } from "@/components/dashboard/ChannelSelect";
 
 interface Props {
   guildId: string;
@@ -258,21 +259,23 @@ export function VoiceSettingsForm({ guildId, initialSettings }: Props) {
               value={s?.enabled}
               guildId={guildId}
             />
-            <TextInput
-              label="Hub Channel ID"
+            <ChannelSelect
+              guildId={guildId}
+              label="Hub Channel"
               field="hub_channel_id"
               value={s?.hub_channel_id}
-              guildId={guildId}
-              placeholder="Contoh: 123456789012345678"
-              hint="Channel yang user harus join untuk membuat voice channel sementara. Klik kanan channel → Copy Channel ID."
+              hint="Channel yang user harus join untuk membuat voice channel sementara."
+              channelType="voice"
+              apiEndpoint={`/api/guilds/${guildId}/voice`}
             />
-            <TextInput
-              label="Category ID"
+            <ChannelSelect
+              guildId={guildId}
+              label="Kategori Channel"
               field="category_id"
               value={s?.category_id}
-              guildId={guildId}
-              placeholder="Contoh: 123456789012345678"
-              hint="Kategori tempat channel sementara dibuat. Klik kanan kategori → Copy Channel ID."
+              hint="Kategori tempat channel sementara dibuat."
+              channelType="category"
+              apiEndpoint={`/api/guilds/${guildId}/voice`}
             />
             <TextInput
               label="Nama Default"

@@ -12,6 +12,8 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
+import { ChannelSelect } from "@/components/dashboard/ChannelSelect";
+import { RoleSelect } from "@/components/dashboard/RoleSelect";
 
 interface GuildSettings {
   guild_id: string;
@@ -332,13 +334,13 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
               value={s?.welcome_enabled}
               guildId={guildId}
             />
-            <TextInput
+            <ChannelSelect
+              guildId={guildId}
               label="Channel Sambutan"
               field="welcome_channel"
               value={s?.welcome_channel}
-              guildId={guildId}
-              placeholder="Contoh: 123456789012345678"
-              hint="Channel tempat pesan sambutan dikirim. Klik kanan channel di Discord → Copy Channel ID."
+              hint="Channel tempat pesan sambutan dikirim."
+              channelType="text"
             />
           </div>
           <TextInput
@@ -363,21 +365,21 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
             Channel untuk mencatat aktivitas moderasi dan automod. Bot akan mengirim log ke channel yang dipilih.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <TextInput
+            <ChannelSelect
+              guildId={guildId}
               label="Channel Log Moderasi"
               field="mod_log_channel"
               value={s?.mod_log_channel}
-              guildId={guildId}
-              placeholder="Contoh: 123456789012345678"
-              hint="Channel tempat log ban, kick, mute, dan warning dikirim. Klik kanan channel → Copy Channel ID."
+              hint="Channel tempat log ban, kick, mute, dan warning dikirim."
+              channelType="text"
             />
-            <TextInput
+            <ChannelSelect
+              guildId={guildId}
               label="Channel Log AutoMod"
               field="automod_log_channel"
               value={s?.automod_log_channel}
-              guildId={guildId}
-              placeholder="Contoh: 123456789012345678"
-              hint="Channel tempat log filter automod (spam, link, kata terlarang, dll) dikirim. Klik kanan channel → Copy Channel ID."
+              hint="Channel tempat log filter automod (spam, link, kata terlarang, dll) dikirim."
+              channelType="text"
             />
           </div>
         </CardContent>
@@ -394,29 +396,28 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
             Pengaturan sistem tiket support. User bisa membuat tiket untuk menghubungi staff server.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <TextInput
+            <ChannelSelect
+              guildId={guildId}
               label="Kategori Tiket"
               field="ticket_category"
               value={s?.ticket_category}
-              guildId={guildId}
-              placeholder="Contoh: 123456789012345678"
-              hint="Folder (kategori) di Discord tempat channel tiket baru dibuat. Buat kategori seperti '📩 Tickets', lalu klik kanan → Copy Channel ID. Jika kosong, tiket dibuat tanpa kategori."
+              hint="Folder (kategori) tempat channel tiket baru dibuat. Jika kosong, tiket dibuat tanpa kategori."
+              channelType="category"
             />
-            <TextInput
+            <RoleSelect
+              guildId={guildId}
               label="Role Support"
               field="ticket_support_role"
               value={s?.ticket_support_role}
-              guildId={guildId}
-              placeholder="Contoh: 123456789012345678"
-              hint="Role yang bisa melihat dan menangani tiket. Klik kanan role di Discord → Copy Role ID."
+              hint="Role yang bisa melihat dan menangani tiket."
             />
-            <TextInput
+            <ChannelSelect
+              guildId={guildId}
               label="Channel Log Tiket"
               field="ticket_log_channel"
               value={s?.ticket_log_channel}
-              guildId={guildId}
-              placeholder="Contoh: 123456789012345678"
-              hint="Channel tempat bot mengirim notifikasi saat tiket dibuka/ditutup. Klik kanan channel → Copy Channel ID."
+              hint="Channel tempat bot mengirim notifikasi saat tiket dibuka/ditutup."
+              channelType="text"
             />
             <SelectInput
               label="Maks Tiket Terbuka"

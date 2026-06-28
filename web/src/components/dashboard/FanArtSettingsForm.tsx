@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Palette, Save, Check, Loader2 } from "lucide-react";
+import { ChannelSelect } from "@/components/dashboard/ChannelSelect";
 import type { FanArtSettings } from "@/types/streamer";
 
 interface Props {
@@ -180,21 +181,23 @@ export function FanArtSettingsForm({ guildId, initialSettings }: Props) {
             value={s?.approval_required}
             guildId={guildId}
           />
-          <TextInput
+          <ChannelSelect
+            guildId={guildId}
             label="Channel Submit"
             field="submit_channel"
             value={s?.submit_channel}
-            guildId={guildId}
-            placeholder="Contoh: 123456789012345678"
-            hint="Channel tempat penggemar mengirim fan art untuk review. Klik kanan channel → Copy Channel ID."
+            hint="Channel tempat penggemar mengirim fan art untuk review."
+            channelType="text"
+            apiEndpoint={`/api/guilds/${guildId}/fanart`}
           />
-          <TextInput
+          <ChannelSelect
+            guildId={guildId}
             label="Channel Gallery"
             field="gallery_channel"
             value={s?.gallery_channel}
-            guildId={guildId}
-            placeholder="Contoh: 123456789012345678"
             hint="Channel tempat fan art yang disetujui ditampilkan."
+            channelType="text"
+            apiEndpoint={`/api/guilds/${guildId}/fanart`}
           />
           <TextInput
             label="Emoji Vote"
