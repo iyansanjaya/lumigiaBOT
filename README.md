@@ -76,9 +76,10 @@ Paket fitur lengkap yang dirancang khusus untuk Streamer (Twitch/YouTube), Conte
 - **🖼️ Fan Art Gallery** — Sistem pengumpulan dan voting karya seni dari penggemar, dilengkapi dengan sistem approval moderator.
 - **📊 Server Analytics** — Lacak pertumbuhan server, aktivitas member (join/leave), jumlah pesan harian, dan top channel paling aktif.
 
-### 🎨 Web Dashboard
+### 🎨 Web Dashboard & Dokumentasi
 
 Dashboard modern dibuat dengan **Next.js 15 (App Router)** + **Auth.js v5** + tema gelap premium.
+Dokumentasi terintegrasi menggunakan **Fumadocs** dan dapat di-deploy secara mandiri ke Vercel.
 
 | Halaman        | Deskripsi                                                         |
 | -------------- | ----------------------------------------------------------------- |
@@ -257,6 +258,11 @@ lumigiabot/
 │   │   ├── lib/                  # Auth (Auth.js v5), database, discord-api
 │   │   └── types/                # TypeScript interfaces
 │   ├── Dockerfile
+│   └── package.json
+│
+├── docs/                         # 📚 Dokumentasi Resmi (Next.js 15 + Fumadocs)
+│   ├── content/docs/             # File Markdown (MDX) konten dokumentasi
+│   ├── src/                      # Komponen dan konfigurasi (Fumadocs)
 │   └── package.json
 │
 ├── data/                         # 📁 Database SQLite (shared volume antara bot & web)
