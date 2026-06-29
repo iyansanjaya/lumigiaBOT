@@ -65,7 +65,7 @@ export default class FanArtService {
    * Menampilkan gambar, credit ke artist, dan jumlah vote.
    * @param {object} submission - Objek submission dari database
    * @param {import('discord.js').User} user - User artist
-   * @returns {EmbedBuilder}
+   * @returns {{ embed: EmbedBuilder, row: ActionRowBuilder }}
    */
   static buildGalleryEmbed(submission, user) {
     const embed = new EmbedBuilder()
@@ -86,7 +86,15 @@ export default class FanArtService {
     embed.setDescription(lines.join('\n'));
     embed.setThumbnail(user.displayAvatarURL({ size: 64 }));
 
-    return embed;
+    // Tombol Vote
+    const voteBtn = new ButtonBuilder()
+      .setCustomId(`fanart_vote_${submission.id}`)
+      .setLabel(`⭐ Vote (${submission.votes})`)
+      .setStyle(ButtonStyle.Secondary);
+
+    const row = new ActionRowBuilder().addComponents(voteBtn);
+
+    return { embed, row };
   }
 
   /**
@@ -129,8 +137,8 @@ export default class FanArtService {
       try {
         const galleryChannel = await client.channels.fetch(settings.gallery_channel);
         if (galleryChannel) {
-          const galleryEmbed = FanArtService.buildGalleryEmbed(approvedSubmission, user);
-          const message = await galleryChannel.send({ embeds: [galleryEmbed] });
+          const { embed: galleryEmbed, row: voteRow } = FanArtService.buildGalleryEmbed(approvedSubmission, user);
+          const message = await galleryChannel.send({ embeds: [galleryEmbed], components: [voteRow] });
           client.db.fanArt.setGalleryMessage(submissionId, message.id);
         }
       } catch (error) {
@@ -161,8 +169,8 @@ export default class FanArtService {
       const galleryChannel = await client.channels.fetch(settings.gallery_channel);
       if (galleryChannel) {
         const artist = await client.users.fetch(submission.user_id);
-        const galleryEmbed = FanArtService.buildGalleryEmbed(approvedSubmission, artist);
-        const message = await galleryChannel.send({ embeds: [galleryEmbed] });
+        const { embed: galleryEmbed, row: voteRow } = FanArtService.buildGalleryEmbed(approvedSubmission, artist);
+        const message = await galleryChannel.send({ embeds: [galleryEmbed], components: [voteRow] });
         client.db.fanArt.setGalleryMessage(submission.id, message.id);
       }
     } catch (error) {

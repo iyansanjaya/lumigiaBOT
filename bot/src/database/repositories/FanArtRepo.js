@@ -62,6 +62,20 @@ export default class FanArtRepo {
     this.stmtCountByUser = db.prepare(
       "SELECT COUNT(*) as count FROM fanart_submissions WHERE guild_id = ? AND user_id = ? AND status != 'rejected'"
     );
+
+    // ── Per-user Vote Tracking ──
+    this.stmtAddVote = db.prepare(
+      'INSERT OR IGNORE INTO fanart_votes (submission_id, user_id) VALUES (?, ?)'
+    );
+    this.stmtRemoveVote = db.prepare(
+      'DELETE FROM fanart_votes WHERE submission_id = ? AND user_id = ?'
+    );
+    this.stmtHasVoted = db.prepare(
+      'SELECT 1 FROM fanart_votes WHERE submission_id = ? AND user_id = ?'
+    );
+    this.stmtGetVoteCount = db.prepare(
+      'SELECT COUNT(*) as count FROM fanart_votes WHERE submission_id = ?'
+    );
   }
 
   // ── Settings ──
@@ -116,9 +130,38 @@ export default class FanArtRepo {
   setGalleryMessage(id, messageId) { this.stmtSetGalleryMessage.run(messageId, id); }
   setSubmitMessage(id, messageId) { this.stmtSetSubmitMessage.run(messageId, id); }
 
-  /** Vote tracking */
+  /** Vote counter (denormalized cache on fanart_submissions) */
   incrementVotes(id) { this.stmtIncrementVotes.run(id); }
   decrementVotes(id) { this.stmtDecrementVotes.run(id); }
+
+  // ── Per-user Vote Tracking ──
+
+  /**
+   * Toggle vote untuk submission. Return true jika vote ditambahkan, false jika dicabut.
+   * @param {number} submissionId
+   * @param {string} userId
+   * @returns {boolean} true = voted, false = unvoted
+   */
+  toggleVote(submissionId, userId) {
+    if (this.hasVoted(submissionId, userId)) {
+      this.stmtRemoveVote.run(submissionId, userId);
+      this.stmtDecrementVotes.run(submissionId);
+      return false;
+    }
+    this.stmtAddVote.run(submissionId, userId);
+    this.stmtIncrementVotes.run(submissionId);
+    return true;
+  }
+
+  /** @returns {boolean} Apakah user sudah vote */
+  hasVoted(submissionId, userId) {
+    return !!this.stmtHasVoted.get(submissionId, userId);
+  }
+
+  /** @returns {number} Total vote untuk submission */
+  getVoteCount(submissionId) {
+    return this.stmtGetVoteCount.get(submissionId).count;
+  }
 
   /** Hapus submission */
   delete(id) { return this.stmtDelete.run(id).changes > 0; }

@@ -8,7 +8,7 @@ import { Shield, Menu, X, LayoutDashboard } from "lucide-react";
 const navLinks = [
   { label: "Features", href: "/features" },
   { label: "Commands", href: "/commands" },
-  { label: "Docs", href: "https://dashboard.lumigia.com", external: true },
+  { label: "Docs", href: "https://docs.lumigia.com", external: true },
 ];
 
 export function LandingNavbar() {
@@ -50,7 +50,7 @@ export function LandingNavbar() {
               >
                 {link.label}
               </Link>
-            )
+            ),
           )}
           <div className="ml-3 h-5 w-px bg-border" />
 
@@ -111,7 +111,7 @@ export function LandingNavbar() {
                 >
                   {link.label}
                 </Link>
-              )
+              ),
             )}
             <div className="h-px bg-border my-2" />
 

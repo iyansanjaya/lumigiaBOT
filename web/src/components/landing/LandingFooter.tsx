@@ -16,7 +16,7 @@ const footerSections: Record<string, FooterLink[]> = {
   Resources: [
     {
       label: "Documentation",
-      href: "https://dashboard.lumigia.com",
+      href: "https://docs.lumigia.com",
       external: true,
     },
     {
