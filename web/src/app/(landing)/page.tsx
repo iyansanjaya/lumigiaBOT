@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSession, signIn } from "next-auth/react";
 import {
   Shield,
   Zap,
@@ -97,6 +98,69 @@ const caps = [
 ];
 
 /* ═══════════════════════ HALAMAN UTAMA ═══════════════════════ */
+const DashboardButton = () => {
+  const { data: session } = useSession();
+  
+  if (session) {
+    return (
+      <Link
+        href="/dashboard"
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+          background: "#161b22",
+          color: "#f0f6fc",
+          border: "1px solid #30363d",
+          borderRadius: "12px",
+          padding: "14px 28px",
+          fontSize: "16px",
+          fontWeight: 500,
+          textDecoration: "none",
+          transition: "border-color 0.2s",
+        }}
+        onMouseOver={(e) =>
+          (e.currentTarget.style.borderColor = "#484f58")
+        }
+        onMouseOut={(e) =>
+          (e.currentTarget.style.borderColor = "#30363d")
+        }
+      >
+        Buka Dashboard
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => signIn("discord", { callbackUrl: "/dashboard" })}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "8px",
+        background: "#161b22",
+        color: "#f0f6fc",
+        border: "1px solid #30363d",
+        borderRadius: "12px",
+        padding: "14px 28px",
+        fontSize: "16px",
+        fontWeight: 500,
+        textDecoration: "none",
+        transition: "border-color 0.2s",
+        cursor: "pointer",
+      }}
+      onMouseOver={(e) =>
+        (e.currentTarget.style.borderColor = "#484f58")
+      }
+      onMouseOut={(e) =>
+        (e.currentTarget.style.borderColor = "#30363d")
+      }
+    >
+      Buka Dashboard
+    </button>
+  );
+};
+
 export default function LandingPage() {
   return (
     <div>
@@ -241,31 +305,7 @@ export default function LandingPage() {
               Undang ke Server
               <ArrowRight size={16} />
             </Link>
-            <Link
-              href="/api/auth/signin/discord?callbackUrl=%2Fdashboard"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                background: "#161b22",
-                color: "#f0f6fc",
-                border: "1px solid #30363d",
-                borderRadius: "12px",
-                padding: "14px 28px",
-                fontSize: "16px",
-                fontWeight: 500,
-                textDecoration: "none",
-                transition: "border-color 0.2s",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.borderColor = "#484f58")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.borderColor = "#30363d")
-              }
-            >
-              Buka Dashboard
-            </Link>
+            <DashboardButton />
           </div>
         </div>
       </section>
