@@ -168,6 +168,10 @@ export async function execute(interaction, client) {
             privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
             entityType: GuildScheduledEventEntityType.External,
             entityMetadata: { location: 'Stream' },
+            recurrenceRule: {
+              frequency: GuildScheduledEventRecurrenceRuleFrequency.Weekly,
+              byWeekday: [dayOfWeek === 0 ? 6 : dayOfWeek - 1]
+            }
           });
           eventId = createdEvent.id;
         } catch (err) {

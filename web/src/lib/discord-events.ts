@@ -67,7 +67,8 @@ export async function createDiscordScheduledEvent(
         },
         recurrence_rule: {
           frequency: 2, // WEEKLY
-          interval: 1
+          interval: 1,
+          by_weekday: [dayOfWeek === 0 ? 6 : dayOfWeek - 1]
         }
       })
     });
