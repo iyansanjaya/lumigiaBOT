@@ -70,7 +70,7 @@ commands/
 ├── voice/        — voice (8 subcommands)
 ├── roles/        — reaction-role (6 subcommands)
 ├── giveaway/     — giveaway (4 subcommands)
-├── community/    — schedule (3 subcommands), embed, socials
+├── community/    — schedule (4 subcommands: set/show/remove/clear), embed, socials
 ├── leveling/     — rank, leaderboard, xp (8 subcommands)
 ├── streaming/    — stream (4 subcommands), fanart (5 subcommands), analytics (2 subcommands)
 ```
@@ -146,7 +146,7 @@ app/
     ├── leveling/route.ts        — PATCH: update leveling settings
     ├── fanart/route.ts          — PATCH: update fan art settings
     ├── streams/route.ts         — POST + DELETE: stream notification CRUD
-    ├── schedule/route.ts        — POST + DELETE: schedule CRUD
+    ├── schedule/route.ts        — POST + DELETE: schedule CRUD + Discord Scheduled Events sync
     └── discord-data/route.ts    — GET: fetch channels + roles via Bot Token
 ```
 
@@ -173,6 +173,7 @@ app/
 ### Discord API Access (Web)
 
 - `lib/discord-api.ts` — `getUserGuilds(accessToken)`, `canManageGuild(accessToken, guildId)` via user OAuth2 token
+- `lib/discord-events.ts` — `createDiscordScheduledEvent()`, `deleteDiscordScheduledEvent()` via Bot Token (REST API langsung ke Discord)
 - `api/discord-data/route.ts` — Fetch channels + roles via `DISCORD_TOKEN` (Bot Token) untuk dropdown picker
 
 ## Arsitektur Dokumentasi (`docs/`)
