@@ -41,6 +41,14 @@ export default async function AutoModPage({ params }: PageProps) {
           const configured = filterMap.get(filter.key);
           const enabled = configured?.enabled ?? false;
           const action = configured?.action ?? 'delete';
+          const configString = configured?.config ?? '{}';
+
+          let parsedConfig = {};
+          try {
+            parsedConfig = JSON.parse(configString);
+          } catch {
+            // ignore
+          }
 
           return (
             <AutoModCard
@@ -51,6 +59,7 @@ export default async function AutoModPage({ params }: PageProps) {
               description={filter.description}
               initialEnabled={!!enabled}
               initialAction={action}
+              initialConfig={parsedConfig}
             />
           );
         })}

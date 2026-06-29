@@ -253,6 +253,7 @@ export function updateAutoModFilter(
   filterName: string,
   enabled: boolean,
   action: string,
+  config: string = '{}',
 ): boolean {
   if (!ALLOWED_FILTER_NAMES.has(filterName)) {
     throw new Error(`Filter tidak diizinkan: ${filterName}`);
@@ -265,11 +266,12 @@ export function updateAutoModFilter(
     const db = getDb();
     db.prepare(`
       INSERT INTO automod_filters (guild_id, filter_name, enabled, action, config)
-      VALUES (?, ?, ?, ?, '{}')
+      VALUES (?, ?, ?, ?, ?)
       ON CONFLICT(guild_id, filter_name) DO UPDATE SET
         enabled = excluded.enabled,
-        action = excluded.action
-    `).run(guildId, filterName, enabled ? 1 : 0, action);
+        action = excluded.action,
+        config = excluded.config
+    `).run(guildId, filterName, enabled ? 1 : 0, action, config);
     return true;
   } catch (err) {
     console.error('[DB] updateAutoModFilter failed:', err);

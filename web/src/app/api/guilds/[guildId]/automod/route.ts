@@ -32,7 +32,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     }
 
     // ── 4. Parse & validate body ──
-    let body: { filter_name: string; enabled: boolean; action: string };
+    let body: { filter_name: string; enabled: boolean; action: string; config?: Record<string, any> };
     try {
       body = await req.json();
     } catch {
@@ -49,8 +49,11 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Missing or invalid action' }, { status: 400 });
     }
 
+    // Convert config to JSON string if present
+    const configString = body.config ? JSON.stringify(body.config) : '{}';
+
     // ── 5. Update database (whitelist validation inside) ──
-    const success = updateAutoModFilter(guildId, body.filter_name, body.enabled, body.action);
+    const success = updateAutoModFilter(guildId, body.filter_name, body.enabled, body.action, configString);
     if (!success) {
       return NextResponse.json({ error: 'Failed to update filter' }, { status: 500 });
     }

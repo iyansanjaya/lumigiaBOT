@@ -57,7 +57,10 @@ export async function execute(client) {
       await import("../../modules/automod/AutoModEngine.js");
     client.autoModEngine = new AutoModEngine(client);
     logger.info("AutoMod engine dimulai.");
+
+    const { default: PhishingService } = await import("../../modules/automod/PhishingService.js");
+    await PhishingService.start();
   } catch (err) {
-    logger.error("Gagal memulai automod engine:", err);
+    logger.error("Gagal memulai automod engine / phishing service:", err);
   }
 }

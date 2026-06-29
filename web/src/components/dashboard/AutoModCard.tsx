@@ -24,6 +24,7 @@ interface AutoModCardProps {
   description: string;
   initialEnabled: boolean;
   initialAction: string;
+  initialConfig?: Record<string, any>;
 }
 
 const ACTIONS = ['delete', 'warn', 'mute', 'kick', 'ban'];
@@ -35,15 +36,17 @@ export function AutoModCard({
   description,
   initialEnabled,
   initialAction,
+  initialConfig = {},
 }: AutoModCardProps) {
   const [enabled, setEnabled] = useState(initialEnabled);
   const [action, setAction] = useState(initialAction);
+  const [config, setConfig] = useState<Record<string, any>>(initialConfig);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const Icon = ICON_MAP[filterKey] || ShieldAlert;
 
-  async function save(newEnabled: boolean, newAction: string) {
+  async function save(newEnabled: boolean, newAction: string, newConfig: Record<string, any> = config) {
     setSaving(true);
     setSaved(false);
     try {
@@ -54,6 +57,7 @@ export function AutoModCard({
           filter_name: filterKey,
           enabled: newEnabled,
           action: newAction,
+          config: newConfig,
         }),
       });
       if (!res.ok) throw new Error();
@@ -77,6 +81,13 @@ export function AutoModCard({
     const newAction = e.target.value;
     setAction(newAction);
     save(enabled, newAction);
+  }
+
+  function handleConfigToggle(key: string) {
+    const currentValue = config[key] ?? (key === 'blockInvites' || key === 'blockPhishing' ? true : false);
+    const newConfig = { ...config, [key]: !currentValue };
+    setConfig(newConfig);
+    save(enabled, action, newConfig);
   }
 
   return (
@@ -130,6 +141,57 @@ export function AutoModCard({
           {saving && <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />}
           {saved && <Check className="h-4 w-4 text-green-500" />}
         </div>
+
+        {/* ── Advanced Settings (Link Filter Only) ── */}
+        {enabled && filterKey === 'link' && (
+          <div className="mt-4 pt-4 border-t border-border space-y-3">
+            <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">Advanced Settings</h4>
+            
+            <label className="flex items-center justify-between text-sm cursor-pointer">
+              <span className="text-foreground-muted">Block Discord Invites</span>
+              <input 
+                type="checkbox" 
+                checked={config.blockInvites ?? true}
+                onChange={() => handleConfigToggle('blockInvites')}
+                disabled={saving}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary/50"
+              />
+            </label>
+
+            <label className="flex items-center justify-between text-sm cursor-pointer">
+              <span className="text-foreground-muted">Block Phishing Links (Beta)</span>
+              <input 
+                type="checkbox" 
+                checked={config.blockPhishing ?? true}
+                onChange={() => handleConfigToggle('blockPhishing')}
+                disabled={saving}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary/50"
+              />
+            </label>
+
+            <label className="flex items-center justify-between text-sm cursor-pointer">
+              <span className="text-foreground-muted">Block HTTP Links (Insecure)</span>
+              <input 
+                type="checkbox" 
+                checked={config.blockHttp ?? false}
+                onChange={() => handleConfigToggle('blockHttp')}
+                disabled={saving}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary/50"
+              />
+            </label>
+
+            <label className="flex items-center justify-between text-sm cursor-pointer">
+              <span className="text-foreground-muted">Block All URLs</span>
+              <input 
+                type="checkbox" 
+                checked={config.blockAllUrls ?? false}
+                onChange={() => handleConfigToggle('blockAllUrls')}
+                disabled={saving}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary/50"
+              />
+            </label>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
