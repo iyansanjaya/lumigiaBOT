@@ -242,7 +242,7 @@ export default function LandingPage() {
               <ArrowRight size={16} />
             </Link>
             <Link
-              href="/dashboard"
+              href="/api/auth/signin/discord?callbackUrl=%2Fdashboard"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
