@@ -77,8 +77,16 @@ export default class Database {
 
     for (const file of files) {
       const sql = readFileSync(join(migrationsDir, file), 'utf-8');
-      this.db.exec(sql);
-      logger.debug(`Migrasi diterapkan: ${file}`);
+      try {
+        this.db.exec(sql);
+        logger.debug(`Migrasi diterapkan: ${file}`);
+      } catch (err) {
+        if (err.message.includes('duplicate column name')) {
+          logger.debug(`Migrasi (duplicate column diabaikan): ${file}`);
+        } else {
+          throw err;
+        }
+      }
     }
   }
 
