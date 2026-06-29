@@ -352,22 +352,36 @@ export function deleteStreamNotification(id: number, guildId: string): boolean {
 export function addScheduleEntry(
   guildId: string, dayOfWeek: number, time: string,
   timezone: string, title: string, description: string | null,
+  eventId: string | null = null,
 ): boolean {
   if (dayOfWeek < 0 || dayOfWeek > 6) throw new Error('Day of week harus 0-6');
   try {
     getDb().prepare(`
-      INSERT INTO stream_schedule (guild_id, day_of_week, time, timezone, title, description)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(guildId, dayOfWeek, time, timezone, title, description);
+      INSERT INTO stream_schedule (guild_id, day_of_week, time, timezone, title, description, event_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(guildId, dayOfWeek, time, timezone, title, description, eventId);
     return true;
   } catch (err) { console.error('[DB] addScheduleEntry failed:', err); return false; }
 }
 
-/** Hapus jadwal streaming — pastikan milik guild yang sama */
-export function deleteScheduleEntry(id: number, guildId: string): boolean {
+/** Hapus jadwal streaming — pastikan milik guild yang sama, dan kembalikan data entry-nya agar event_id bisa didapat */
+export function deleteScheduleEntry(id: number, guildId: string): any {
   try {
+    const entry = getDb().prepare('SELECT * FROM stream_schedule WHERE id = ? AND guild_id = ?').get(id, guildId);
+    if (!entry) return null;
+    
     const result = getDb().prepare('DELETE FROM stream_schedule WHERE id = ? AND guild_id = ?').run(id, guildId);
+    return result.changes > 0 ? entry : null;
+  } catch (err) { console.error('[DB] deleteScheduleEntry failed:', err); return null; }
+}
+
+// ── Fan Art CRUD ──
+
+/** Hapus fan art submission — pastikan milik guild yang sama */
+export function deleteFanArt(id: number, guildId: string): boolean {
+  try {
+    const result = getDb().prepare('DELETE FROM fanart_submissions WHERE id = ? AND guild_id = ?').run(id, guildId);
     return result.changes > 0;
-  } catch (err) { console.error('[DB] deleteScheduleEntry failed:', err); return false; }
+  } catch (err) { console.error('[DB] deleteFanArt failed:', err); return false; }
 }
 

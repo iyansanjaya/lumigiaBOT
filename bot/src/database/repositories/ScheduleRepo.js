@@ -12,8 +12,8 @@ export default class ScheduleRepo {
 
     // ── Schedule Entries ──
     this.stmtAdd = db.prepare(`
-      INSERT OR REPLACE INTO stream_schedule (guild_id, day_of_week, time, timezone, title, description)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT OR REPLACE INTO stream_schedule (guild_id, day_of_week, time, timezone, title, description, event_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
     this.stmtRemove = db.prepare('DELETE FROM stream_schedule WHERE guild_id = ? AND day_of_week = ? AND time = ?');
     this.stmtGetByGuild = db.prepare('SELECT * FROM stream_schedule WHERE guild_id = ? ORDER BY day_of_week, time');
@@ -41,16 +41,23 @@ export default class ScheduleRepo {
    * @param {string} timezone
    * @param {string} title
    * @param {string|null} description
+   * @param {string|null} eventId
+   * @returns {number|bigint} inserted ID
    */
-  addSchedule(guildId, dayOfWeek, time, timezone, title, description = null) {
-    this.stmtAdd.run(guildId, dayOfWeek, time, timezone, title, description);
+  addSchedule(guildId, dayOfWeek, time, timezone, title, description = null, eventId = null) {
+    const info = this.stmtAdd.run(guildId, dayOfWeek, time, timezone, title, description, eventId);
+    return info.lastInsertRowid;
   }
 
   /**
-   * Hapus jadwal tertentu.
+   * Hapus jadwal tertentu dan kembalikan datanya (agar tahu event_id).
    */
   removeSchedule(guildId, dayOfWeek, time) {
-    return this.stmtRemove.run(guildId, dayOfWeek, time).changes > 0;
+    const entry = this.db.prepare('SELECT * FROM stream_schedule WHERE guild_id = ? AND day_of_week = ? AND time = ?').get(guildId, dayOfWeek, time);
+    if (!entry) return null;
+    
+    this.stmtRemove.run(guildId, dayOfWeek, time);
+    return entry;
   }
 
   /** @returns {object[]} Semua jadwal untuk guild, urut hari lalu waktu */

@@ -103,6 +103,20 @@ export const data = new SlashCommandBuilder()
   // --- pending ---
   .addSubcommand((sub) =>
     sub.setName('pending').setDescription('View pending fan art submissions'),
+  )
+
+  // --- delete ---
+  .addSubcommand((sub) =>
+    sub
+      .setName('delete')
+      .setDescription('Delete a fan art submission')
+      .addIntegerOption((opt) =>
+        opt
+          .setName('id')
+          .setDescription('Submission ID to delete')
+          .setRequired(true)
+          .setMinValue(1),
+      ),
   );
 
 /**
@@ -125,6 +139,9 @@ export async function execute(interaction, client) {
         break;
       case 'pending':
         await handlePending(interaction, client);
+        break;
+      case 'delete':
+        await handleDelete(interaction, client);
         break;
     }
 
@@ -339,4 +356,50 @@ async function handlePending(interaction, client) {
   embed.setDescription(lines.join('\n\n'));
 
   await interaction.reply({ embeds: [embed], ephemeral: true });
+}
+
+/**
+ * Hapus fan art.
+ * @param {import('discord.js').ChatInputCommandInteraction} interaction
+ * @param {import('../../core/BotClient.js').default} client
+ */
+async function handleDelete(interaction, client) {
+  // Cek izin ManageGuild
+  if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageGuild)) {
+    return interaction.reply({
+      embeds: [errorEmbed('❌ You need **Manage Server** permission to use this command.')],
+      ephemeral: true,
+    });
+  }
+
+  const id = interaction.options.getInteger('id');
+  const submission = client.db.fanArt.get(id);
+
+  if (!submission) {
+    return interaction.reply({
+      embeds: [errorEmbed(`❌ Fan art with ID **#${id}** not found.`)],
+      ephemeral: true,
+    });
+  }
+
+  if (submission.guild_id !== interaction.guildId) {
+    return interaction.reply({
+      embeds: [errorEmbed('❌ This submission does not belong to this server.')],
+      ephemeral: true,
+    });
+  }
+
+  const success = client.db.fanArt.delete(id);
+
+  if (success) {
+    await interaction.reply({
+      embeds: [successEmbed(`🗑️ Fan art **#${id}** has been successfully deleted.`)],
+      ephemeral: true,
+    });
+  } else {
+    await interaction.reply({
+      embeds: [errorEmbed(`❌ Failed to delete fan art **#${id}**.`)],
+      ephemeral: true,
+    });
+  }
 }

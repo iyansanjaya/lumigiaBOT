@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { addScheduleEntry, deleteScheduleEntry } from '@/lib/database';
 import { canManageGuild } from '@/lib/discord-api';
+import { createDiscordScheduledEvent, deleteDiscordScheduledEvent } from '@/lib/discord-events';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -50,10 +51,18 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Judul wajib diisi' }, { status: 400 });
     }
 
+    // 1. Buat event di Discord terlebih dahulu
+    const eventId = await createDiscordScheduledEvent(guildId, body.title, body.description || null, body.day_of_week, body.time);
+
+    // 2. Simpan ke database beserta event_id
     const success = addScheduleEntry(
-      guildId, body.day_of_week, body.time.trim(),
-      body.timezone.trim(), body.title.trim(),
+      guildId,
+      body.day_of_week,
+      body.time.trim(),
+      body.timezone.trim(),
+      body.title.trim(),
       body.description?.trim() || null,
+      eventId
     );
     if (!success) {
       return NextResponse.json({ error: 'Gagal menambah jadwal' }, { status: 500 });
@@ -94,9 +103,15 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'ID wajib diisi' }, { status: 400 });
     }
 
-    const success = deleteScheduleEntry(body.id, guildId);
-    if (!success) {
-      return NextResponse.json({ error: 'Jadwal tidak ditemukan' }, { status: 404 });
+    const entry = deleteScheduleEntry(body.id, guildId);
+
+    if (!entry) {
+      return NextResponse.json({ error: 'Failed to delete schedule entry or not found' }, { status: 500 });
+    }
+
+    // Jika punya event_id, hapus dari Discord
+    if (entry.event_id) {
+      await deleteDiscordScheduledEvent(guildId, entry.event_id);
     }
 
     return NextResponse.json({ ok: true });

@@ -8,15 +8,39 @@
 import {
   SlashCommandBuilder,
   PermissionFlagsBits,
-  ChannelType,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
+  GuildScheduledEventPrivacyLevel,
+  GuildScheduledEventEntityType,
+  GuildScheduledEventRecurrenceRuleFrequency,
 } from 'discord.js';
 import { successEmbed, errorEmbed } from '../../utils/EmbedBuilder.js';
 import { logger } from '../../utils/Logger.js';
 import ScheduleService from '../../modules/schedule/ScheduleService.js';
+
+/**
+ * Helper mendapatkan Date berikutnya untuk hari & jam tertentu.
+ * @param {number} dayOfWeek (0=Minggu, 1=Senin, ..., 6=Sabtu)
+ * @param {string} timeStr (HH:MM)
+ * @returns {Date}
+ */
+function getNextDateForDay(dayOfWeek, timeStr) {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const now = new Date();
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+
+  const currentDay = date.getDay();
+  let daysToAdd = dayOfWeek - currentDay;
+  if (daysToAdd < 0 || (daysToAdd === 0 && date < now)) {
+    daysToAdd += 7;
+  }
+  
+  date.setDate(date.getDate() + daysToAdd);
+  return date;
+}
 
 /** Pilihan hari: label Indonesia, value Inggris */
 const DAY_CHOICES = [
@@ -88,25 +112,6 @@ export const data = new SlashCommandBuilder()
   .addSubcommand((sub) =>
     sub.setName('show').setDescription('Tampilkan jadwal streaming minggu ini'),
   )
-  // ── auto-post ──
-  .addSubcommand((sub) =>
-    sub
-      .setName('auto-post')
-      .setDescription('Atur channel auto-post jadwal')
-      .addChannelOption((opt) =>
-        opt
-          .setName('channel')
-          .setDescription('Channel untuk auto-post jadwal')
-          .addChannelTypes(ChannelType.GuildText)
-          .setRequired(true),
-      )
-      .addBooleanOption((opt) =>
-        opt
-          .setName('enabled')
-          .setDescription('Aktifkan auto-post? (default: true)')
-          .setRequired(false),
-      ),
-  )
   // ── clear ──
   .addSubcommand((sub) =>
     sub.setName('clear').setDescription('Hapus semua jadwal streaming server ini'),
@@ -150,6 +155,25 @@ export async function execute(interaction, client) {
 
         const dayName = ScheduleService.formatDay(dayOfWeek);
 
+        const nextDate = getNextDateForDay(dayOfWeek, time);
+        const endDate = new Date(nextDate.getTime() + 2 * 60 * 60 * 1000); // Durasi 2 jam default
+        
+        let eventId = null;
+        try {
+          const createdEvent = await interaction.guild.scheduledEvents.create({
+            name: title,
+            description: description || 'Stream Terjadwal',
+            scheduledStartTime: nextDate,
+            scheduledEndTime: endDate,
+            privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
+            entityType: GuildScheduledEventEntityType.External,
+            entityMetadata: { location: 'Stream' },
+          });
+          eventId = createdEvent.id;
+        } catch (err) {
+          console.error('[Schedule] Failed to create event:', err);
+        }
+
         // Simpan ke database
         client.db.schedule.addSchedule(
           interaction.guildId,
@@ -158,6 +182,7 @@ export async function execute(interaction, client) {
           'Asia/Jakarta',
           title,
           description,
+          eventId
         );
 
         const descLine = description ? `\n📝 ${description}` : '';
@@ -194,12 +219,20 @@ export async function execute(interaction, client) {
           return;
         }
 
-        const removed = client.db.schedule.removeSchedule(interaction.guildId, dayOfWeek, time);
         const dayName = ScheduleService.formatDay(dayOfWeek);
+        const entry = client.db.schedule.removeSchedule(interaction.guildId, dayOfWeek, time);
+        
+        if (entry) {
+          if (entry.event_id) {
+            try {
+              await interaction.guild.scheduledEvents.delete(entry.event_id);
+            } catch (err) {
+              console.error('[Schedule] Failed to delete event:', err);
+            }
+          }
 
-        if (removed) {
           await interaction.reply({
-            embeds: [successEmbed(`✅ Jadwal **${dayName}** pukul \`${time}\` berhasil dihapus.`)],
+            embeds: [successEmbed(`✅ Jadwal pada **${dayName}** pukul \`${time}\` berhasil dihapus.`)],
             ephemeral: true,
           });
         } else {
@@ -220,24 +253,7 @@ export async function execute(interaction, client) {
         break;
       }
 
-      // ── Auto-Post ──
-      case 'auto-post': {
-        const channel = interaction.options.getChannel('channel');
-        const enabled = interaction.options.getBoolean('enabled') ?? true;
 
-        client.db.schedule.setSettings(interaction.guildId, channel.id, enabled);
-
-        const status = enabled ? 'diaktifkan ✅' : 'dinonaktifkan ❌';
-        await interaction.reply({
-          embeds: [
-            successEmbed(
-              `📢 Auto-post jadwal ${status}\n📍 Channel: ${channel}`,
-            ),
-          ],
-          ephemeral: true,
-        });
-        break;
-      }
 
       // ── Hapus Semua ──
       case 'clear': {
@@ -274,6 +290,18 @@ export async function execute(interaction, client) {
           });
 
           if (buttonInteraction.customId === 'schedule_clear_confirm') {
+            const allEntries = client.db.schedule.getByGuild(interaction.guildId);
+            
+            for (const entry of allEntries) {
+              if (entry.event_id) {
+                try {
+                  await interaction.guild.scheduledEvents.delete(entry.event_id);
+                } catch (e) {
+                  // Ignore delete errors for individual events
+                }
+              }
+            }
+
             client.db.schedule.clearAll(interaction.guildId);
             await buttonInteraction.update({
               embeds: [successEmbed('✅ Semua jadwal streaming berhasil dihapus.')],

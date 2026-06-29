@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table';
 import { getFanArtSettings, getFanArtGallery, getFanArtPending } from '@/lib/database';
 import { FanArtSettingsForm } from '@/components/dashboard/FanArtSettingsForm';
+import { DeleteFanArtButton } from '@/components/dashboard/DeleteFanArtButton';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -102,6 +103,7 @@ export default async function FanArtPage({ params }: PageProps) {
                     <TableHead>Artist</TableHead>
                     <TableHead>Votes</TableHead>
                     <TableHead>Date</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -122,6 +124,9 @@ export default async function FanArtPage({ params }: PageProps) {
                           month: 'short',
                           day: 'numeric',
                         })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DeleteFanArtButton id={submission.id} guildId={guildId} />
                       </TableCell>
                     </TableRow>
                   ))}

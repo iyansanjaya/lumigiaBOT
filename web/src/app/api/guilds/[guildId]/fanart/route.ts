@@ -50,3 +50,39 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
+
+export async function DELETE(req: NextRequest, { params }: RouteParams) {
+  try {
+    const session = await auth();
+    if (!session?.accessToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { guildId } = await params;
+    const hasAccess = await canManageGuild(session.accessToken, guildId);
+    if (!hasAccess) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = parseInt(searchParams.get('id') || '', 10);
+
+    if (isNaN(id)) {
+      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+    }
+
+    // Dynamic import to avoid circular dependency issues if any
+    const { deleteFanArt } = await import('@/lib/database');
+    const success = deleteFanArt(id, guildId);
+
+    if (!success) {
+      return NextResponse.json({ error: 'Failed to delete fan art' }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[API fanart DELETE]', message);
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
+}

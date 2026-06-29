@@ -70,10 +70,10 @@ Paket fitur lengkap yang dirancang khusus untuk Streamer (Twitch/YouTube), Conte
 - **🎭 Reaction Roles** — Berikan role otomatis ke anggota berdasarkan reaksi emoji pada pesan (mode Toggle, Single, atau Verify).
 - **⭐ Sistem Leveling & XP** — Gamifikasi server dengan ranking, XP per pesan, multiplier, dan auto-role reward saat naik level. Termasuk perintah `/rank` dan `/leaderboard`.
 - **🎁 Giveaway** — Buat, kelola, dan acak ulang pemenang giveaway otomatis. Mendukung prasyarat role.
-- **📅 Stream Schedule** — Tampilkan jadwal streaming mingguan dengan zona waktu dan fitur auto-posting.
+- **📅 Stream Schedule** — Kelola jadwal streaming mingguan yang terintegrasi penuh secara real-time dengan sistem bawaan **Discord Scheduled Events**.
 - **🔴 Live Notifications** — Notifikasi otomatis saat Anda live di Twitch atau YouTube, lengkap dengan embed dan preview.
 - **🎨 Custom Embeds & Socials** — Buat embed cantik langsung dari Discord dan kelola link sosial media streamer secara terpusat.
-- **🖼️ Fan Art Gallery** — Sistem pengumpulan dan voting karya seni dari penggemar, dilengkapi dengan sistem approval moderator.
+- **🖼️ Fan Art Gallery** — Sistem pengumpulan dan voting karya seni dari penggemar, dilengkapi dengan sistem approval moderator dan penghapusan fan art.
 - **📊 Server Analytics** — Lacak pertumbuhan server, aktivitas member (join/leave), jumlah pesan harian, dan top channel paling aktif.
 
 ### 🎨 Web Dashboard & Dokumentasi
@@ -106,9 +106,9 @@ Dokumentasi terintegrasi menggunakan **Fumadocs** dan dapat di-deploy secara man
 | `/reaction-role`   | Buat dan atur panel reaction role       | `ManageRoles`     |
 | `/xp`, `/rank`     | Sistem ranking, XP, dan role reward     | `ManageGuild`*    |
 | `/giveaway`        | Mulai, end, dan reroll giveaway         | `ManageGuild`     |
-| `/schedule`        | Kelola jadwal streaming mingguan        | `ManageGuild`     |
+| `/schedule`        | Kelola sinkronisasi jadwal streaming    | `ManageGuild`     |
 | `/stream`          | Setup notifikasi live (Twitch/YouTube)  | `ManageGuild`     |
-| `/fanart`          | Submit dan moderasi galeri fan art      | `ManageGuild`*    |
+| `/fanart`          | Submit, hapus, & moderasi galeri        | `ManageGuild`*    |
 | `/embed`, `/socials`| Buat embed kustom & link sosmed        | `ManageGuild`     |
 | `/analytics`       | Statistik aktivitas dan pesan server    | `ManageGuild`     |
 

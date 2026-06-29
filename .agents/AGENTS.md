@@ -36,7 +36,7 @@ BotClient (extends discord.js Client)
 ### Database Layer (Repository Pattern)
 
 - `Database.js` → buat koneksi SQLite, jalankan migrasi, instantiate semua repository
-- Migrasi: `database/migrations/001_xxx.sql` ... `012_xxx.sql` (CREATE TABLE IF NOT EXISTS)
+- Migrasi: `database/migrations/001_xxx.sql` ... `014_xxx.sql` (CREATE TABLE IF NOT EXISTS & ALTER TABLE)
 - Akses: `client.db.<repoName>.<method>()` — contoh: `client.db.warnings.add(guildId, userId, ...)`
 
 #### Repositories (14 total)
@@ -70,9 +70,9 @@ commands/
 ├── voice/        — voice (8 subcommands)
 ├── roles/        — reaction-role (6 subcommands)
 ├── giveaway/     — giveaway (4 subcommands)
-├── community/    — schedule, embed, socials
+├── community/    — schedule (3 subcommands), embed, socials
 ├── leveling/     — rank, leaderboard, xp (8 subcommands)
-├── streaming/    — stream (4 subcommands), fanart (4), analytics (2)
+├── streaming/    — stream (4 subcommands), fanart (5 subcommands), analytics (2 subcommands)
 ```
 
 Setiap command file: `export const data = new SlashCommandBuilder(...)`, `export async function execute(interaction)`, optional `export const cooldown = 5000`.
@@ -88,10 +88,10 @@ modules/
 ├── voice/        — VoiceService.js (join-to-create temp channels)
 ├── reactionroles/— ReactionRoleService.js (panel + button toggle)
 ├── giveaway/     — GiveawayService.js, GiveawayScheduler.js
-├── schedule/     — ScheduleService.js (weekly embed builder)
+├── schedule/     — ScheduleService.js (Native Discord Events Sync)
 ├── leveling/     — LevelingService.js (XP processing, level-up, progress bar)
 ├── streaming/    — TwitchAPI.js, YouTubeChecker.js, StreamNotifService.js
-├── fanart/       — FanArtService.js (submit, approve, gallery)
+├── fanart/       — FanArtService.js (submit, approve, delete, gallery, votes)
 ├── analytics/    — AnalyticsService.js (message/member tracking)
 ```
 
