@@ -48,6 +48,20 @@ export async function createDiscordScheduledEvent(
   const startTime = getNextOccurrenceISO(dayOfWeek, timeStr);
   const endTime = getEndTimeISO(startTime);
 
+  const payload = {
+    name: title,
+    description: description || 'Stream Terjadwal',
+    scheduled_start_time: startTime,
+    scheduled_end_time: endTime,
+    privacy_level: 2, // GUILD_ONLY
+    entity_type: 3, // EXTERNAL
+    entity_metadata: {
+      location: 'Stream'
+    }
+  };
+
+  console.log('[discord-events] Creating event for guild:', guildId, 'payload:', JSON.stringify(payload));
+
   try {
     const res = await fetch(`${DISCORD_API_URL}/guilds/${guildId}/scheduled-events`, {
       method: 'POST',
@@ -55,22 +69,7 @@ export async function createDiscordScheduledEvent(
         'Authorization': `Bot ${TOKEN}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        name: title,
-        description: description || 'Stream Terjadwal',
-        scheduled_start_time: startTime,
-        scheduled_end_time: endTime,
-        privacy_level: 2, // GUILD_ONLY
-        entity_type: 3, // EXTERNAL
-        entity_metadata: {
-          location: 'Stream'
-        },
-        recurrence_rule: {
-          frequency: 2, // WEEKLY
-          interval: 1,
-          by_weekday: [dayOfWeek === 0 ? 6 : dayOfWeek - 1]
-        }
-      })
+      body: JSON.stringify(payload)
     });
 
     if (!res.ok) {
@@ -80,6 +79,7 @@ export async function createDiscordScheduledEvent(
     }
 
     const data = await res.json();
+    console.log('[discord-events] Event created successfully:', data.id);
     return data.id;
   } catch (err) {
     console.error('[discord-events] Error creating event:', err);
@@ -102,10 +102,12 @@ export async function deleteDiscordScheduledEvent(guildId: string, eventId: stri
     });
 
     if (!res.ok && res.status !== 404) {
-      console.error('[discord-events] Failed to delete event:', res.status);
+      const errText = await res.text();
+      console.error('[discord-events] Failed to delete event:', res.status, errText);
       return false;
     }
 
+    console.log('[discord-events] Event deleted:', eventId);
     return true;
   } catch (err) {
     console.error('[discord-events] Error deleting event:', err);
