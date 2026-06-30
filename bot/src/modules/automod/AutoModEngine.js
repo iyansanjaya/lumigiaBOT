@@ -27,6 +27,7 @@ import DeleteAction from './actions/DeleteAction.js';
 import WarnAction from './actions/WarnAction.js';
 import MuteAction from './actions/MuteAction.js';
 import KickAction from './actions/KickAction.js';
+import BanAction from './actions/BanAction.js';
 
 export default class AutoModEngine {
   /**
@@ -53,6 +54,7 @@ export default class AutoModEngine {
       ['warn', new WarnAction()],
       ['mute', new MuteAction()],
       ['kick', new KickAction()],
+      ['ban', new BanAction()],
     ]);
   }
 

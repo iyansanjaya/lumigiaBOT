@@ -24,7 +24,7 @@ export function t(client, guildId, key, options = {}) {
     try {
       const settings = client.db.guildSettings.get(guildId);
       if (settings?.language) {
-        language = settings.language;
+        language = settings.language === 'en' ? 'en-US' : settings.language;
       }
     } catch {
       // Gunakan default jika pembacaan DB gagal

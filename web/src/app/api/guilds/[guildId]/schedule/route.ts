@@ -39,7 +39,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
     // Validasi
     if (typeof body.day_of_week !== 'number' || body.day_of_week < 0 || body.day_of_week > 6) {
-      return NextResponse.json({ error: 'Hari harus 0 (Senin) - 6 (Minggu)' }, { status: 400 });
+      return NextResponse.json({ error: 'Hari harus 0 (Minggu) - 6 (Sabtu)' }, { status: 400 });
     }
     if (!body.time || !/^\d{2}:\d{2}$/.test(body.time)) {
       return NextResponse.json({ error: 'Format waktu harus HH:MM' }, { status: 400 });

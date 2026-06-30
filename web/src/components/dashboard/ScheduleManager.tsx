@@ -14,16 +14,16 @@ import type { StreamScheduleEntry } from "@/types/streamer";
 
 // ─── Constants ───
 const DAY_NAMES: Record<number, string> = {
-  0: "Senin",
-  1: "Selasa",
-  2: "Rabu",
-  3: "Kamis",
-  4: "Jumat",
-  5: "Sabtu",
-  6: "Minggu",
+  0: "Minggu",
+  1: "Senin",
+  2: "Selasa",
+  3: "Rabu",
+  4: "Kamis",
+  5: "Jumat",
+  6: "Sabtu",
 };
 
-const DAY_ORDER = [0, 1, 2, 3, 4, 5, 6];
+const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
 const DAY_OPTIONS = DAY_ORDER.map((i) => ({
   value: String(i),
@@ -54,7 +54,7 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
   const [addError, setAddError] = useState("");
 
   // Form fields
-  const [dayOfWeek, setDayOfWeek] = useState("0");
+  const [dayOfWeek, setDayOfWeek] = useState("1");
   const [time, setTime] = useState("");
   const [timezone, setTimezone] = useState("");
   const [title, setTitle] = useState("");
@@ -118,7 +118,7 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
         setTimezone("");
         setTitle("");
         setDescription("");
-        setDayOfWeek("0");
+        setDayOfWeek("1");
         setAdding(false);
         // Refresh server data
         router.refresh();

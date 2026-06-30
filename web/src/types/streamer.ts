@@ -66,6 +66,7 @@ export interface StreamScheduleEntry {
   timezone: string;
   title: string;
   description: string | null;
+  event_id: string | null;
 }
 
 export interface ScheduleSettings {

@@ -27,6 +27,7 @@ const ACTION_CHOICES = [
   { name: 'Warn User', value: 'warn' },
   { name: 'Mute User', value: 'mute' },
   { name: 'Kick User', value: 'kick' },
+  { name: 'Ban User', value: 'ban' },
 ];
 
 export const data = new SlashCommandBuilder()

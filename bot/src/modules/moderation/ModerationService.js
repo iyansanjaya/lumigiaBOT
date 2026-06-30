@@ -12,6 +12,23 @@ import { EscalationDefaults } from '../../config/constants.js';
 import { logger } from '../../utils/Logger.js';
 import ModerationLogger from './ModerationLogger.js';
 
+function parseEscalationMap(value) {
+  if (!value) return EscalationDefaults;
+  if (value === 'none') return {};
+  if (value === 'mute') return { 3: 'mute' };
+  if (value === 'kick') return { 3: 'mute', 5: 'kick' };
+  if (value === 'ban') return EscalationDefaults;
+
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? parsed
+      : EscalationDefaults;
+  } catch {
+    return EscalationDefaults;
+  }
+}
+
 export default class ModerationService {
   // ──────────────────────────────────────────────
   //  BLOKIR (BAN)
@@ -217,7 +234,7 @@ export default class ModerationService {
   static async _checkEscalation(client, guild, moderator, target, count) {
     try {
       const settings = client.db.guildSettings.get(guild.id);
-      let escalationMap = EscalationDefaults;
+      let escalationMap = parseEscalationMap(settings?.warn_escalation);
 
       // Parsing pengaturan eskalasi khusus server
       if (settings?.warn_escalation) {

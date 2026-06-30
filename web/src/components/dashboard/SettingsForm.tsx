@@ -41,6 +41,14 @@ interface Props {
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
+function normalizeEscalationValue(value: string | null | undefined) {
+  if (value === "none") return "{}";
+  if (value === "mute") return "{\"3\":\"mute\"}";
+  if (value === "kick") return "{\"3\":\"mute\",\"5\":\"kick\"}";
+  if (value === "ban") return "{\"3\":\"mute\",\"5\":\"kick\",\"7\":\"ban\"}";
+  return value;
+}
+
 // ─── Save helper ───
 async function saveSetting(
   guildId: string,
@@ -251,7 +259,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
   const s = initialSettings;
 
   const languageOptions = [
-    { value: "en", label: "🇬🇧 English" },
+    { value: "en-US", label: "English" },
     { value: "id", label: "🇮🇩 Bahasa Indonesia" },
   ];
 
@@ -288,10 +296,10 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
   ];
 
   const escalationOptions = [
-    { value: "none", label: "Tidak ada — hanya beri warning" },
-    { value: "mute", label: "Mute — bisukan user setelah batas warning" },
-    { value: "kick", label: "Kick — keluarkan user setelah batas warning" },
-    { value: "ban", label: "Ban — blokir user setelah batas warning" },
+    { value: "{}", label: "Tidak ada - hanya beri warning" },
+    { value: "{\"3\":\"mute\"}", label: "Mute otomatis pada 3 warning" },
+    { value: "{\"3\":\"mute\",\"5\":\"kick\"}", label: "Mute pada 3, kick pada 5 warning" },
+    { value: "{\"3\":\"mute\",\"5\":\"kick\",\"7\":\"ban\"}", label: "Mute pada 3, kick pada 5, ban pada 7 warning" },
   ];
 
   return (
@@ -308,7 +316,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
             <SelectInput
               label="Bahasa Bot"
               field="language"
-              value={s?.language}
+              value={s?.language === "en" ? "en-US" : s?.language}
               guildId={guildId}
               options={languageOptions}
               placeholder="— Pilih bahasa —"
@@ -492,7 +500,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
             <SelectInput
               label="Tindakan Eskalasi"
               field="warn_escalation"
-              value={s?.warn_escalation}
+              value={normalizeEscalationValue(s?.warn_escalation)}
               guildId={guildId}
               options={escalationOptions}
               placeholder="— Tidak ada —"
@@ -503,4 +511,3 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
     </div>
   );
 }
-

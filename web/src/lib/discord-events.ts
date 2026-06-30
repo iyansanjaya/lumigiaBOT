@@ -2,7 +2,7 @@ const DISCORD_API_URL = 'https://discord.com/api/v10';
 const TOKEN = process.env.DISCORD_TOKEN;
 
 /**
- * Mendapatkan ISO 8601 string untuk kejadian berikutnya dari hari dan jam tertentu
+ * dayOfWeek follows JavaScript Date.getDay(): 0=Sunday, 1=Monday, ..., 6=Saturday.
  */
 function getNextOccurrenceISO(dayOfWeek: number, timeStr: string): string {
   const [hours, minutes] = timeStr.split(':').map(Number);

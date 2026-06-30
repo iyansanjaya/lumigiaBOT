@@ -103,8 +103,8 @@ export class LevelingService {
       }
     }
 
-    // 6. Generate random XP: 10-25, dikali multiplier
-    const baseXP = Math.floor(Math.random() * 16) + 10;
+    // 6. Gunakan XP per pesan dari settings, lalu kalikan multiplier.
+    const baseXP = Math.max(1, Math.floor(Number(settings.xp_per_message) || 15));
     const xpGained = Math.floor(baseXP * multiplier);
 
     // 7. Simpan level lama sebelum menambah XP
