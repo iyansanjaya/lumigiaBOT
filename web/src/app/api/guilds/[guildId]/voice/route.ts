@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { updateVoiceSetting } from '@/lib/database';
 import { canManageGuild } from '@/lib/discord-api';
+import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -18,6 +19,11 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     if (!/^\d{17,20}$/.test(guildId)) {
       return NextResponse.json({ error: 'Invalid guild ID format' }, { status: 400 });
     }
+
+    const rateLimit = checkRateLimit(
+      buildRateLimitKey(req, `guild:${guildId}:voice`, session.accessToken),
+    );
+    if (!rateLimit.ok) return rateLimitResponse(rateLimit);
 
     const hasAccess = await canManageGuild(session.accessToken, guildId);
     if (!hasAccess) {

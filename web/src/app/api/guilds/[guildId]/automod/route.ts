@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { updateAutoModFilter } from '@/lib/database';
 import { canManageGuild } from '@/lib/discord-api';
+import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -23,6 +24,11 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     }
 
     // ── 3. Permission check via Discord API ──
+    const rateLimit = checkRateLimit(
+      buildRateLimitKey(req, `guild:${guildId}:automod`, session.accessToken),
+    );
+    if (!rateLimit.ok) return rateLimitResponse(rateLimit);
+
     const hasAccess = await canManageGuild(session.accessToken, guildId);
     if (!hasAccess) {
       return NextResponse.json(

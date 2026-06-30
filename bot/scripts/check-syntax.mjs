@@ -2,10 +2,11 @@ import { spawnSync } from 'node:child_process';
 import { readdir } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 
-const ROOTS = ['src', 'deploy-commands.js'];
+const ROOTS = ['src', 'scripts', 'deploy-commands.js'];
+const JAVASCRIPT_EXTENSIONS = new Set(['.js', '.mjs']);
 
 async function collectJavaScriptFiles(filePath) {
-  if (extname(filePath) === '.js') {
+  if (JAVASCRIPT_EXTENSIONS.has(extname(filePath))) {
     return [filePath];
   }
 
@@ -17,7 +18,7 @@ async function collectJavaScriptFiles(filePath) {
 
     if (entry.isDirectory()) {
       files.push(...await collectJavaScriptFiles(childPath));
-    } else if (entry.isFile() && extname(entry.name) === '.js') {
+    } else if (entry.isFile() && JAVASCRIPT_EXTENSIONS.has(extname(entry.name))) {
       files.push(childPath);
     }
   }

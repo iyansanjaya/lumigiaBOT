@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { addScheduleEntry, deleteScheduleEntry } from '@/lib/database';
 import { canManageGuild } from '@/lib/discord-api';
 import { createDiscordScheduledEvent, deleteDiscordScheduledEvent } from '@/lib/discord-events';
+import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -20,6 +21,12 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     if (!/^\d{17,20}$/.test(guildId)) {
       return NextResponse.json({ error: 'Invalid guild ID format' }, { status: 400 });
     }
+
+    const rateLimit = checkRateLimit(
+      buildRateLimitKey(req, `guild:${guildId}:schedule`, session.accessToken),
+      { limit: 20 },
+    );
+    if (!rateLimit.ok) return rateLimitResponse(rateLimit);
 
     const hasAccess = await canManageGuild(session.accessToken, guildId);
     if (!hasAccess) {
@@ -92,6 +99,12 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
     if (!/^\d{17,20}$/.test(guildId)) {
       return NextResponse.json({ error: 'Invalid guild ID format' }, { status: 400 });
     }
+
+    const rateLimit = checkRateLimit(
+      buildRateLimitKey(req, `guild:${guildId}:schedule`, session.accessToken),
+      { limit: 30 },
+    );
+    if (!rateLimit.ok) return rateLimitResponse(rateLimit);
 
     const hasAccess = await canManageGuild(session.accessToken, guildId);
     if (!hasAccess) {

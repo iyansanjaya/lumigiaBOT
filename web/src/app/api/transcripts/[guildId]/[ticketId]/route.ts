@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { canManageGuild } from '@/lib/discord-api';
+import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
@@ -20,7 +21,17 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: 'Invalid transcript path' }, { status: 400 });
   }
 
-  if (!session.accessToken || !(await canManageGuild(session.accessToken, guildId))) {
+  if (!session.accessToken) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  const rateLimit = checkRateLimit(
+    buildRateLimitKey(req, `guild:${guildId}:transcripts`, session.accessToken),
+    { limit: 120 },
+  );
+  if (!rateLimit.ok) return rateLimitResponse(rateLimit);
+
+  if (!(await canManageGuild(session.accessToken, guildId))) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

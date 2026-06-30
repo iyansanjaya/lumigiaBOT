@@ -1,5 +1,10 @@
-import { mkdirSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { existsSync, mkdirSync } from 'node:fs';
+import { dirname, isAbsolute, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const configDir = dirname(fileURLToPath(import.meta.url));
+const botDir = resolve(configDir, '..', '..');
+const rootDir = resolve(botDir, '..');
 
 const PLACEHOLDER_VALUES = new Set([
   'your_bot_token_here',
@@ -47,7 +52,21 @@ function buildError(errors) {
 }
 
 export function getDatabasePath() {
-  return resolve(process.env.DATABASE_PATH || './data/lumigiabot.db');
+  const configuredPath = process.env.DATABASE_PATH || './data/lumigiabot.db';
+
+  if (isAbsolute(configuredPath)) {
+    return configuredPath;
+  }
+
+  const candidates = [
+    resolve(process.cwd(), configuredPath),
+    resolve(rootDir, configuredPath),
+    resolve(botDir, configuredPath),
+  ];
+
+  return candidates.find((candidate) => (
+    existsSync(candidate) || existsSync(dirname(candidate))
+  )) || candidates[0];
 }
 
 export function validateBotEnv() {

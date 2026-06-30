@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { canManageGuild } from '@/lib/discord-api';
+import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -66,6 +67,12 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     if (!/^\d{17,20}$/.test(guildId)) {
       return NextResponse.json({ error: 'Invalid guild ID format' }, { status: 400 });
     }
+
+    const rateLimit = checkRateLimit(
+      buildRateLimitKey(req, `guild:${guildId}:discord-data`, session.accessToken),
+      { limit: 120 },
+    );
+    if (!rateLimit.ok) return rateLimitResponse(rateLimit);
 
     // 2. Permission check
     const hasAccess = await canManageGuild(session.accessToken, guildId);
