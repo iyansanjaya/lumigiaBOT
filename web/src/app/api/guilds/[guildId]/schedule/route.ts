@@ -65,6 +65,10 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       eventId
     );
     if (!success) {
+      if (eventId) {
+        await deleteDiscordScheduledEvent(guildId, eventId);
+      }
+
       return NextResponse.json({ error: 'Gagal menambah jadwal' }, { status: 500 });
     }
 

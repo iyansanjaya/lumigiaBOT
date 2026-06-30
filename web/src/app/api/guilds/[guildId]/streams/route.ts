@@ -40,6 +40,12 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     if (!body.platform || !['twitch', 'youtube'].includes(body.platform)) {
       return NextResponse.json({ error: 'Platform harus twitch atau youtube' }, { status: 400 });
     }
+    if (body.platform === 'twitch' && !(process.env.TWITCH_CLIENT_ID && process.env.TWITCH_CLIENT_SECRET)) {
+      return NextResponse.json(
+        { error: 'Twitch notifications are not enabled on this bot instance.' },
+        { status: 400 },
+      );
+    }
     if (!body.platform_user || typeof body.platform_user !== 'string') {
       return NextResponse.json({ error: 'Username/Channel ID wajib diisi' }, { status: 400 });
     }
@@ -48,11 +54,28 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     }
 
     // Sanitize optional fields
+    const platformUser = body.platform_user.trim();
     const pingRole = body.ping_role?.trim() || null;
     const customMessage = body.custom_message?.trim() || null;
 
+    if (!platformUser) {
+      return NextResponse.json({ error: 'Username/Channel ID wajib diisi' }, { status: 400 });
+    }
+
+    if (body.platform === 'youtube' && (!platformUser.startsWith('UC') || platformUser.length < 20)) {
+      return NextResponse.json({ error: 'YouTube Channel ID tidak valid' }, { status: 400 });
+    }
+
+    if (pingRole && !/^\d{17,20}$/.test(pingRole)) {
+      return NextResponse.json({ error: 'Ping role ID tidak valid' }, { status: 400 });
+    }
+
+    if (customMessage && customMessage.length > 1800) {
+      return NextResponse.json({ error: 'Pesan kustom terlalu panjang' }, { status: 400 });
+    }
+
     const success = addStreamNotification(
-      guildId, body.platform, body.platform_user.trim(),
+      guildId, body.platform, platformUser,
       body.notify_channel, pingRole, customMessage,
     );
     if (!success) {

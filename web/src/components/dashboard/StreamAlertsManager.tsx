@@ -26,6 +26,7 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
 
   // ─── Add form state ───
   const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState("");
   const [platform, setPlatform] = useState<"twitch" | "youtube">("twitch");
   const [platformUser, setPlatformUser] = useState("");
   const [notifyChannel, setNotifyChannel] = useState("");
@@ -69,7 +70,18 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
   // ─── Add handler ───
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
-    if (!platformUser.trim() || !notifyChannel.trim()) return;
+    setAddError("");
+
+    if (!platformUser.trim()) {
+      setAddError(platform === "twitch" ? "Username Twitch wajib diisi." : "Channel ID YouTube wajib diisi.");
+      return;
+    }
+
+    if (!notifyChannel.trim()) {
+      setAddError("Channel notifikasi wajib dipilih.");
+      return;
+    }
+
     setAdding(true);
     try {
       const res = await fetch(`/api/guilds/${guildId}/streams`, {
@@ -89,10 +101,14 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
         setNotifyChannel("");
         setPingRole("");
         setCustomMessage("");
+        setAddError("");
         router.refresh();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setAddError(data.error || "Gagal menambah notifikasi stream.");
       }
     } catch {
-      // silent fail
+      setAddError("Gagal menambah notifikasi stream.");
     }
     setAdding(false);
   }
@@ -293,6 +309,10 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
                 className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
+
+            {addError && (
+              <span className="text-xs text-red-400">{addError}</span>
+            )}
 
             <button
               type="submit"

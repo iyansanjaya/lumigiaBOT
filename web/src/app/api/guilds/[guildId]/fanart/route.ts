@@ -59,6 +59,10 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
     }
 
     const { guildId } = await params;
+    if (!/^\d{17,20}$/.test(guildId)) {
+      return NextResponse.json({ error: 'Invalid guild ID format' }, { status: 400 });
+    }
+
     const hasAccess = await canManageGuild(session.accessToken, guildId);
     if (!hasAccess) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
