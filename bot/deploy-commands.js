@@ -9,11 +9,13 @@ import { REST, Routes } from 'discord.js';
 import { readdir } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { validateDeployEnv } from './src/config/env.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const COMMANDS_DIR = join(__dirname, 'src', 'commands');
 
 async function deploy() {
+  const env = validateDeployEnv();
   const commands = [];
 
   // Kumpulkan semua data command
@@ -37,16 +39,19 @@ async function deploy() {
   }
 
   // Deploy ke Discord
-  const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+  const rest = new REST({ version: '10' }).setToken(env.discordToken);
 
   console.log(`Mendeploy ${commands.length} slash command...`);
 
   const data = await rest.put(
-    Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
+    Routes.applicationCommands(env.discordClientId),
     { body: commands },
   );
 
   console.log(`✅ Berhasil mendeploy ${data.length} command secara global.`);
 }
 
-deploy().catch(console.error);
+deploy().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

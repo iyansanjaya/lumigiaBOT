@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3';
-import path from 'path';
+import { getDatabasePath } from '@/lib/env';
 import type { GuildSettings } from '@/types/guild';
 import type { Ticket, TicketStats } from '@/types/ticket';
 import type { Warning, AuditLog, AutoModFilter, AutoModWhitelistEntry } from '@/types/moderation';
@@ -11,10 +11,7 @@ import type {
   DailyStats, ChannelActivity,
 } from '@/types/streamer';
 
-const DB_PATH = process.env.DATABASE_PATH || 
-  (process.env.NODE_ENV === 'production' 
-    ? '/app/data/lumigiabot.db' 
-    : path.join(process.cwd(), '..', 'data', 'lumigiabot.db'));
+const DB_PATH = getDatabasePath();
 
 let db: Database.Database | null = null;
 

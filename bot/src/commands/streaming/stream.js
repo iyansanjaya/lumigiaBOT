@@ -139,8 +139,7 @@ export async function execute(interaction, client) {
           if (!TwitchAPI.isConfigured()) {
             await interaction.reply({
               embeds: [errorEmbed(
-                '❌ Twitch integration not configured.\n' +
-                'Ask bot owner to set `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET`.',
+                '❌ Twitch notifications are not enabled on this bot instance.',
               )],
               ephemeral: true,
             });
@@ -289,8 +288,7 @@ export async function execute(interaction, client) {
         if (platform === 'twitch' && !TwitchAPI.isConfigured()) {
           await interaction.reply({
             embeds: [errorEmbed(
-              '❌ Twitch integration not configured.\n' +
-              'Ask bot owner to set `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET`.',
+              '❌ Twitch notifications are not enabled on this bot instance.',
             )],
             ephemeral: true,
           });
