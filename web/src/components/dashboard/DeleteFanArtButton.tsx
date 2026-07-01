@@ -14,7 +14,7 @@ export function DeleteFanArtButton({ id, guildId }: DeleteFanArtButtonProps) {
   const router = useRouter();
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this fan art submission? This action cannot be undone.')) {
+    if (!confirm('Yakin ingin menghapus submission fan art ini? Aksi ini tidak bisa dibatalkan.')) {
       return;
     }
 
@@ -26,13 +26,13 @@ export function DeleteFanArtButton({ id, guildId }: DeleteFanArtButtonProps) {
       });
 
       if (!res.ok) {
-        throw new Error('Failed to delete fan art');
+        throw new Error('Gagal menghapus fan art');
       }
 
       router.refresh();
     } catch (error) {
       console.error(error);
-      alert('Failed to delete fan art. Please try again.');
+      alert('Gagal menghapus fan art. Coba lagi.');
     } finally {
       setIsDeleting(false);
     }
@@ -43,7 +43,7 @@ export function DeleteFanArtButton({ id, guildId }: DeleteFanArtButtonProps) {
       onClick={handleDelete}
       disabled={isDeleting}
       className="p-2 text-foreground-muted hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors disabled:opacity-50"
-      title="Delete Submission"
+      title="Hapus Submission"
     >
       <Trash2 className="h-4 w-4" />
     </button>

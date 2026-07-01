@@ -25,25 +25,25 @@ export default async function ServerOverviewPage({ params }: PageProps) {
   }
 
   const statCards = [
-    { label: 'Total Warnings', value: warnings.length, icon: AlertTriangle },
-    { label: 'Open Tickets', value: ticketStats.open, icon: Ticket },
-    { label: 'Mod Actions', value: auditLogs.length, icon: ScrollText },
+    { label: 'Total Warning', value: warnings.length, icon: AlertTriangle },
+    { label: 'Tiket Terbuka', value: ticketStats.open, icon: Ticket },
+    { label: 'Aksi Moderasi', value: auditLogs.length, icon: ScrollText },
   ];
 
   const quickLinks = [
-    { label: 'Moderation', href: `/dashboard/servers/${guildId}/moderation`, icon: Shield },
+    { label: 'Moderasi', href: `/dashboard/servers/${guildId}/moderation`, icon: Shield },
     { label: 'AutoMod', href: `/dashboard/servers/${guildId}/automod`, icon: Zap },
-    { label: 'Tickets', href: `/dashboard/servers/${guildId}/tickets`, icon: Ticket },
-    { label: 'Logs', href: `/dashboard/servers/${guildId}/logs`, icon: ScrollText },
-    { label: 'Settings', href: `/dashboard/servers/${guildId}/settings`, icon: Settings },
+    { label: 'Tiket', href: `/dashboard/servers/${guildId}/tickets`, icon: Ticket },
+    { label: 'Log', href: `/dashboard/servers/${guildId}/logs`, icon: ScrollText },
+    { label: 'Pengaturan', href: `/dashboard/servers/${guildId}/settings`, icon: Settings },
   ];
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Server Overview</h1>
+        <h1 className="text-3xl font-bold text-foreground">Ringkasan Server</h1>
         <p className="mt-1 text-foreground-muted">
-          Quick look at your server&apos;s activity and stats.
+          Lihat cepat aktivitas dan statistik server Anda.
         </p>
       </div>
 
@@ -70,9 +70,9 @@ export default async function ServerOverviewPage({ params }: PageProps) {
       {/* Aktivitas Terbaru */}
       <Card>
         <CardContent className="space-y-4">
-          <h2 className="text-xl font-semibold text-foreground">Recent Activity</h2>
+          <h2 className="text-xl font-semibold text-foreground">Aktivitas Terbaru</h2>
           {auditLogs.length === 0 ? (
-            <p className="text-foreground-muted text-sm">No recent activity to display.</p>
+            <p className="text-foreground-muted text-sm">Belum ada aktivitas terbaru.</p>
           ) : (
             <div className="space-y-3">
               {auditLogs.map((log) => (
@@ -85,12 +85,12 @@ export default async function ServerOverviewPage({ params }: PageProps) {
                     <div>
                       <p className="text-sm font-medium text-foreground">{log.action}</p>
                       <p className="text-xs text-foreground-muted">
-                        {log.reason ?? 'No reason provided'}
+                        {log.reason ?? 'Tidak ada alasan'}
                       </p>
                     </div>
                   </div>
                   <span className="text-xs text-foreground-muted">
-                    {new Date(log.created_at).toLocaleDateString()}
+                    {new Date(log.created_at).toLocaleDateString('id-ID')}
                   </span>
                 </div>
               ))}
@@ -101,7 +101,7 @@ export default async function ServerOverviewPage({ params }: PageProps) {
 
       {/* Tautan Cepat */}
       <div>
-        <h2 className="mb-4 text-xl font-semibold text-foreground">Quick Links</h2>
+        <h2 className="mb-4 text-xl font-semibold text-foreground">Akses Cepat</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {quickLinks.map((link) => {
             const Icon = link.icon;

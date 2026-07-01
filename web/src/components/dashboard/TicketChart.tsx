@@ -7,15 +7,15 @@ const COLORS = ['#10B981', '#F59E0B', '#6B7280'];
 
 export function TicketChart({ stats }: { stats: TicketStats }) {
   const data = [
-    { name: 'Open', value: stats.open },
-    { name: 'Claimed', value: stats.claimed },
-    { name: 'Closed', value: stats.closed },
+    { name: 'Terbuka', value: stats.open },
+    { name: 'Diklaim', value: stats.claimed },
+    { name: 'Ditutup', value: stats.closed },
   ].filter(d => d.value > 0);
 
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-foreground-muted">
-        No ticket data available
+        Belum ada data tiket
       </div>
     );
   }

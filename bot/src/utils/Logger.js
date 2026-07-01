@@ -12,6 +12,37 @@ const LEVELS = {
 
 const RESET = '\x1b[0m';
 const MIN_LEVEL = LEVELS[process.env.LOG_LEVEL?.toUpperCase()] ?? LEVELS.INFO;
+const REDACTED_KEYS = new Set(['authorization', 'password', 'secret', 'token']);
+
+function shouldRedact(key) {
+  const normalized = key.toLowerCase();
+  return [...REDACTED_KEYS].some((sensitiveKey) => normalized.includes(sensitiveKey));
+}
+
+function formatContextValue(value) {
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
+  if (typeof value === 'string') return JSON.stringify(value);
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (value instanceof Date) return value.toISOString();
+  if (value instanceof Error) return JSON.stringify({ name: value.name, message: value.message });
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return '"[unserializable]"';
+  }
+}
+
+function formatContext(context = {}) {
+  const entries = Object.entries(context);
+  if (entries.length === 0) return '';
+
+  return entries
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key}=${shouldRedact(key) ? '"[redacted]"' : formatContextValue(value)}`)
+    .join(' ');
+}
 
 /**
  * Memformat pesan log dengan timestamp dan level.
@@ -38,3 +69,23 @@ export const logger = {
   warn:  (msg, ...args) => log(LEVELS.WARN, msg, ...args),
   error: (msg, ...args) => log(LEVELS.ERROR, msg, ...args),
 };
+
+export function createServiceLogger(service) {
+  function buildMessage(action, context) {
+    const contextText = formatContext({ service, action, ...context });
+    return contextText ? `[${contextText}]` : `[service=${service} action=${action}]`;
+  }
+
+  return {
+    debug: (action, context = {}) => logger.debug(buildMessage(action, context)),
+    info: (action, context = {}) => logger.info(buildMessage(action, context)),
+    warn: (action, context = {}) => logger.warn(buildMessage(action, context)),
+    error: (action, context = {}, error = undefined) => {
+      if (error) {
+        logger.error(buildMessage(action, context), error);
+      } else {
+        logger.error(buildMessage(action, context));
+      }
+    },
+  };
+}

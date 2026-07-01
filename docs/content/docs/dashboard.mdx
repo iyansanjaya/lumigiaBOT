@@ -1,9 +1,9 @@
 ---
 title: Dashboard
-description: Kelola bot dari web dashboard tanpa perlu menghafal commands
+description: Kelola konfigurasi utama bot dari web dashboard
 ---
 
-Dashboard adalah antarmuka web untuk mengonfigurasi semua fitur LumigiaBOT secara visual. Tidak perlu menghafal command — cukup klik, toggle, dan simpan.
+Dashboard adalah control panel web untuk mengelola konfigurasi utama LumigiaBOT secara visual. Beberapa halaman sudah mendukung perubahan langsung dari web, sementara beberapa halaman lain berfungsi sebagai monitoring agar admin bisa membaca data server tanpa membuka database.
 
 ## Cara Akses
 
@@ -34,60 +34,86 @@ Hanya server di mana kamu memiliki permission **Manage Server** yang akan muncul
 ### Settings
 
 Konfigurasi umum server, termasuk:
-- **Bahasa** — Pilih bahasa bot (Indonesia / English)
-- **Welcome message** — Atur pesan sambutan untuk member baru
-- **Channel log** — Pilih channel untuk log aktivitas
-- **Konfigurasi tiket** — Atur category dan channel untuk sistem ticketing
+- **Bahasa** - Pilih bahasa bot (Indonesia / English)
+- **Welcome message** - Atur pesan sambutan untuk member baru
+- **Channel log** - Pilih channel untuk log moderasi dan AutoMod
+- **Konfigurasi tiket** - Atur category, role support, channel log, batas tiket, dan auto-close
+- **Anti-raid** - Aktifkan proteksi raid dan sesuaikan threshold
+- **Warning escalation** - Pilih preset tindakan otomatis setelah warning tertentu
 
 ### AutoMod
 
 Kelola filter auto-moderasi server:
 - Toggle filter **on/off** dengan satu klik
-- Pilih **aksi** yang diambil untuk setiap filter (hapus pesan, warn, mute, dll.)
+- Pilih **aksi** yang diambil untuk setiap filter (delete, warn, mute, kick, ban)
 
 ### Voice
 
 Konfigurasi fitur voice channel otomatis:
-- **Hub channel** — Channel yang di-join untuk membuat voice sementara
-- **Category** — Category tempat voice channel dibuat
-- **Nama default** — Template nama untuk voice channel baru
-- **Limit** — Batas member per voice channel
+- **Hub channel** - Channel yang di-join untuk membuat voice sementara
+- **Category** - Category tempat voice channel dibuat
+- **Nama default** - Template nama untuk voice channel baru
+- **Limit** - Batas member per voice channel
 
 ### Leveling
 
 Atur sistem leveling server:
-- **XP rate** — Jumlah XP per pesan
-- **Cooldown** — Jeda antar pemberian XP
-- **Multiplier** — Pengali XP untuk event khusus
-- **Channel pengumuman** — Channel untuk notifikasi level up
+- **XP rate** - Jumlah XP per pesan
+- **Cooldown** - Jeda antar pemberian XP
+- **Multiplier** - Pengali XP untuk event khusus
+- **Channel pengumuman** - Channel untuk notifikasi level up
 
 ### Streams
 
 Kelola notifikasi live stream:
-- **Tambah** notifikasi untuk streamer Twitch atau YouTube
-- **Hapus** notifikasi yang tidak diperlukan
-- Konfigurasi pesan dan channel notifikasi
+- Tambah notifikasi untuk streamer Twitch atau YouTube
+- Hapus notifikasi yang tidak diperlukan
+- Atur channel notifikasi, role ping, dan pesan kustom
 
 ### Schedule
 
 Kelola jadwal streaming mingguan:
-- **Tambah** jadwal baru dengan hari, waktu, dan judul
-- **Hapus** jadwal yang sudah tidak relevan
-- Preview embed jadwal sebelum dikirim
+- Tambah jadwal baru dengan hari, waktu, timezone, judul, dan deskripsi
+- Hapus jadwal yang sudah tidak relevan
 
 ### Fan Art
 
 Konfigurasi sistem fan art gallery:
-- Atur **channel submit** dan **channel gallery**
-- Toggle **approval system** on/off
-- Konfigurasi pengaturan gallery lainnya
+- Atur channel submit dan channel gallery
+- Toggle approval system on/off
+- Lihat submission terbaru dan hapus karya yang sudah di-approve jika diperlukan
+
+### Tickets
+
+Pantau sistem tiket:
+- Lihat total tiket, tiket open, claimed, dan closed
+- Buka transcript HTML untuk tiket yang sudah ditutup
+- Konfigurasi tiket tetap berada di **Settings**, sedangkan pembuatan panel tiket dilakukan melalui command `/ticket-setup`
+
+### Reaction Roles
+
+Pantau panel reaction role yang sudah dibuat:
+- Lihat daftar panel, mode, jumlah entry, channel, dan status posting
+- Buat, edit, dan hapus panel melalui command `/reaction-role`
+
+### Giveaways
+
+Pantau giveaway server:
+- Lihat total giveaway, status active/ended, hadiah, jumlah pemenang, host, dan waktu selesai
+- Mulai, akhiri, atau reroll giveaway melalui command `/giveaway`
+
+### Moderation & Logs
+
+Audit data moderasi:
+- Lihat warning yang pernah diberikan di server
+- Lihat audit log tindakan moderasi dan bot
 
 ### Analytics
 
 Lihat statistik server secara visual (read-only):
-- Grafik pesan harian
-- Statistik member join/leave
-- Aktivitas per channel
+- Ringkasan pesan, join, leave, dan active users dalam 7 hari terakhir
+- Breakdown harian
+- Top channel berdasarkan jumlah pesan
 
 ## Keunggulan Dashboard vs Commands
 
@@ -96,7 +122,7 @@ Lihat statistik server secara visual (read-only):
 | Dropdown channel & role otomatis — tidak perlu copy-paste ID | Harus tahu ID channel atau mention manual |
 | Auto-save perubahan setiap kali toggle atau pilih opsi | Harus ketik ulang command jika ada kesalahan |
 | Visual yang mudah dipahami dengan preview langsung | Output berupa teks di chat |
-| Semua konfigurasi di satu tempat | Harus ingat berbagai command berbeda |
+| Konfigurasi inti dan monitoring server di satu tempat | Harus ingat berbagai command berbeda |
 
 <Callout type="info">
 Kamu harus memiliki permission **Manage Server** di Discord untuk bisa mengakses dan mengonfigurasi server melalui dashboard. Jika server tidak muncul di daftar, pastikan kamu memiliki permission yang cukup.

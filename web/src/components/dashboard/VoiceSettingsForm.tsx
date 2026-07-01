@@ -73,7 +73,7 @@ function ToggleInput({
           />
         </button>
         <span className="text-sm text-foreground">
-          {enabled ? "Enabled" : "Disabled"}
+          {enabled ? "Aktif" : "Nonaktif"}
         </span>
         {saveState === "saving" && (
           <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />
@@ -125,7 +125,7 @@ function SelectInput({
           onChange={handleChange}
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
         >
-          <option value="">{placeholder || "— Not configured —"}</option>
+          <option value="">{placeholder || "— Belum dikonfigurasi —"}</option>
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -192,7 +192,7 @@ function TextInput({
             setCurrentValue(e.target.value);
             if (saveState !== "idle") setSaveState("idle");
           }}
-          placeholder={placeholder || "Not configured"}
+          placeholder={placeholder || "Belum dikonfigurasi"}
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
         />
         <button
@@ -254,7 +254,7 @@ export function VoiceSettingsForm({ guildId, initialSettings }: Props) {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <ToggleInput
-              label="Aktifkan Voice Channels"
+              label="Aktifkan Voice Sementara"
               field="enabled"
               value={s?.enabled}
               guildId={guildId}
@@ -282,7 +282,7 @@ export function VoiceSettingsForm({ guildId, initialSettings }: Props) {
               field="default_name"
               value={s?.default_name}
               guildId={guildId}
-              placeholder="{user}'s Channel"
+              placeholder="Channel {user}"
             />
             <SelectInput
               label="Batas User Default"

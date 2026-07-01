@@ -20,9 +20,9 @@ export default async function VoicePage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Voice Channels</h1>
+        <h1 className="text-3xl font-bold text-foreground">Voice Sementara</h1>
         <p className="mt-1 text-foreground-muted">
-          Temporary voice channel settings for this server.
+          Pengaturan temporary voice channel untuk server ini.
         </p>
       </div>
 

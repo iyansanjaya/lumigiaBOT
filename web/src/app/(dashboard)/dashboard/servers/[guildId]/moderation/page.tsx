@@ -28,9 +28,9 @@ export default async function ModerationPage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Moderation</h1>
+        <h1 className="text-3xl font-bold text-foreground">Moderasi</h1>
         <p className="mt-1 text-foreground-muted">
-          View and manage warnings issued in this server.
+          Lihat warning yang pernah diberikan di server ini.
         </p>
       </div>
 
@@ -42,7 +42,7 @@ export default async function ModerationPage({ params }: PageProps) {
           </div>
           <div>
             <p className="text-2xl font-bold text-foreground">{warnings.length}</p>
-            <p className="text-sm text-foreground-muted">Total Warnings</p>
+            <p className="text-sm text-foreground-muted">Total Warning</p>
           </div>
         </CardContent>
       </Card>
@@ -51,9 +51,9 @@ export default async function ModerationPage({ params }: PageProps) {
       {warnings.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Shield className="h-12 w-12 text-foreground-muted mb-4" />
-          <h2 className="text-xl font-semibold text-foreground">No Warnings</h2>
+          <h2 className="text-xl font-semibold text-foreground">Belum Ada Warning</h2>
           <p className="mt-2 text-foreground-muted">
-            This server has no recorded warnings yet.
+            Server ini belum memiliki warning yang tercatat.
           </p>
         </div>
       ) : (
@@ -65,8 +65,8 @@ export default async function ModerationPage({ params }: PageProps) {
                   <TableHead>ID</TableHead>
                   <TableHead>User ID</TableHead>
                   <TableHead>Moderator ID</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead>Alasan</TableHead>
+                  <TableHead>Tanggal</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -76,10 +76,10 @@ export default async function ModerationPage({ params }: PageProps) {
                     <TableCell className="font-mono text-xs">{warning.user_id}</TableCell>
                     <TableCell className="font-mono text-xs">{warning.moderator_id}</TableCell>
                     <TableCell className="max-w-[300px] truncate">
-                      {warning.reason ?? 'No reason provided'}
+                      {warning.reason ?? 'Tidak ada alasan'}
                     </TableCell>
                     <TableCell className="text-foreground-muted whitespace-nowrap">
-                      {new Date(warning.created_at).toLocaleDateString('en-US', {
+                      {new Date(warning.created_at).toLocaleDateString('id-ID', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',

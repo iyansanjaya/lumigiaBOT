@@ -1,9 +1,11 @@
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
 
 // Sumber daftar domain phishing. Bisa ditambahkan lebih banyak jika perlu.
 const PHISHING_LIST_URLS = [
   'https://raw.githubusercontent.com/mitchellkrogza/Phishing.Database/master/phishing-domains-ACTIVE.txt'
 ];
+
+const log = createServiceLogger('phishing-service');
 
 class PhishingService {
   constructor() {
@@ -19,7 +21,7 @@ class PhishingService {
   async start() {
     if (this.isInitialized) return;
     
-    logger.info('Memulai PhishingService...');
+    log.info('starting', { sources: PHISHING_LIST_URLS.length });
     await this.fetchDatabases();
 
     // Update setiap 12 jam (12 * 60 * 60 * 1000)
@@ -36,6 +38,7 @@ class PhishingService {
       this.updateInterval = null;
     }
     this.isInitialized = false;
+    log.info('stopped');
   }
 
   /**
@@ -48,7 +51,7 @@ class PhishingService {
       try {
         const response = await fetch(url);
         if (!response.ok) {
-          logger.warn(`Gagal mengunduh daftar phishing dari ${url}: ${response.statusText}`);
+          log.warn('fetch_failed', { url, status: response.status, statusText: response.statusText });
           continue;
         }
 
@@ -64,17 +67,17 @@ class PhishingService {
             count++;
           }
         }
-        logger.debug(`Berhasil memuat ${count} domain phishing dari ${url}`);
+        log.debug('source_loaded', { url, count });
       } catch (error) {
-        logger.error(`Error saat mengunduh daftar phishing dari ${url}:`, error);
+        log.error('fetch_error', { url }, error);
       }
     }
 
     if (newDomains.size > 0) {
       this.phishingDomains = newDomains;
-      logger.info(`PhishingService: Total ${this.phishingDomains.size} domain berbahaya berhasil di-cache.`);
+      log.info('cache_updated', { domains: this.phishingDomains.size });
     } else if (this.phishingDomains.size === 0) {
-      logger.warn('PhishingService: Tidak ada domain yang berhasil dimuat. Layanan mungkin tidak optimal.');
+      log.warn('cache_empty', { sources: PHISHING_LIST_URLS.length });
     }
   }
 

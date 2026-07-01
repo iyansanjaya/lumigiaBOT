@@ -73,7 +73,7 @@ function ToggleInput({
           />
         </button>
         <span className="text-sm text-foreground">
-          {enabled ? "Enabled" : "Disabled"}
+          {enabled ? "Aktif" : "Nonaktif"}
         </span>
         {saveState === "saving" && (
           <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />
@@ -126,7 +126,7 @@ function TextInput({
             setCurrentValue(e.target.value);
             if (saveState !== "idle") setSaveState("idle");
           }}
-          placeholder={placeholder || "Not configured"}
+          placeholder={placeholder || "Belum dikonfigurasi"}
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
         />
         <button

@@ -72,7 +72,7 @@ Paket fitur lengkap yang dirancang khusus untuk Streamer (Twitch/YouTube), Conte
 - **🎁 Giveaway** — Buat, kelola, dan acak ulang pemenang giveaway otomatis. Mendukung prasyarat role.
 - **📅 Stream Schedule** — Kelola jadwal streaming mingguan yang terintegrasi penuh secara real-time dengan sistem bawaan **Discord Scheduled Events**.
 - **🔴 Live Notifications** — Notifikasi otomatis saat Anda live di Twitch atau YouTube, lengkap dengan embed dan preview.
-- **🎨 Custom Embeds & Socials** — Buat embed cantik langsung dari Discord dan kelola link sosial media streamer secara terpusat.
+- **🎨 Custom Embeds & Socials** — Buat embed cantik dan kelola link sosial media streamer melalui command Discord.
 - **🖼️ Fan Art Gallery** — Sistem pengumpulan dan voting karya seni dari penggemar, dilengkapi dengan sistem approval moderator dan penghapusan fan art.
 - **📊 Server Analytics** — Lacak pertumbuhan server, aktivitas member (join/leave), jumlah pesan harian, dan top channel paling aktif.
 
@@ -89,14 +89,14 @@ Dokumentasi terintegrasi menggunakan **Fumadocs** dan dapat di-deploy secara man
 | **Overview**   | Statistik server — total tiket, warnings, member                  |
 | **Moderation** | Lihat riwayat warning                                             |
 | **AutoMod**    | Toggle enable/disable filter + pilih action — langsung tersimpan  |
-| **Tickets**    | Daftar tiket dengan status + link transkrip HTML untuk tiket closed |
-| **Streamer**   | 8 Halaman baru: Voice, Reaction Roles, Giveaways, Schedule, Leveling, Streams, Fan Art, Analytics |
+| **Tickets**    | Statistik tiket, daftar status, dan link transkrip HTML untuk tiket closed |
+| **Streamer**   | Halaman Voice, Reaction Roles, Giveaways, Schedule, Leveling, Streams, Fan Art, dan Analytics |
 | **Logs**       | Audit log aktivitas moderasi bot                                  |
 | **Settings**   | Konfigurasi server interaktif (language, channels, roles, dll)    |
 | **Terms**      | Terms of Service                                                  |
 | **Privacy**    | Privacy Policy                                                    |
 
-> **Dashboard bukan read-only** — Anda bisa mengubah pengaturan server langsung dari web. Perubahan langsung tersimpan ke database dan berlaku di bot tanpa restart.
+> **Dashboard bukan hanya read-only** — pengaturan utama seperti Settings, AutoMod, Voice, Leveling, Streams, Schedule, dan Fan Art bisa diubah dari web. Halaman seperti Tickets, Reaction Roles, Giveaways, Moderation, Logs, dan Analytics berfungsi sebagai monitoring sampai kontrol penuhnya ditambahkan.
 
 ### 🎥 Command Streamer & Komunitas
 
@@ -332,8 +332,9 @@ lumigiabot/
    - 🛡️ Anti-raid (threshold, timeframe)
    - ⚠️ Warning escalation (mute/kick/ban otomatis)
 5. Gunakan halaman **AutoMod** untuk toggle filter & pilih action
+6. Gunakan halaman **Tickets**, **Reaction Roles**, **Giveaways**, **Moderation**, **Logs**, dan **Analytics** untuk monitoring data server
 
-> Semua perubahan dari dashboard langsung tersimpan dan berlaku tanpa restart bot.
+> Perubahan konfigurasi dari dashboard langsung tersimpan dan berlaku tanpa restart bot.
 
 ---
 

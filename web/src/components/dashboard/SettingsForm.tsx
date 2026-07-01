@@ -110,7 +110,7 @@ function ToggleInput({
           />
         </button>
         <span className="text-sm text-foreground">
-          {enabled ? "Enabled" : "Disabled"}
+          {enabled ? "Aktif" : "Nonaktif"}
         </span>
         {saveState === "saving" && (
           <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />
@@ -162,7 +162,7 @@ function SelectInput({
           onChange={handleChange}
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
         >
-          <option value="">{placeholder || "— Not configured —"}</option>
+          <option value="">{placeholder || "— Belum dikonfigurasi —"}</option>
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -229,7 +229,7 @@ function TextInput({
             setCurrentValue(e.target.value);
             if (saveState !== "idle") setSaveState("idle");
           }}
-          placeholder={placeholder || "Not configured"}
+          placeholder={placeholder || "Belum dikonfigurasi"}
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
         />
         <button
@@ -300,7 +300,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <Globe className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">General</h2>
+            <h2 className="text-lg font-semibold text-foreground">Umum</h2>
           </div>
           <p className="text-sm text-foreground-muted">Pengaturan umum bot untuk server ini.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -321,7 +321,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <Megaphone className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Welcome</h2>
+            <h2 className="text-lg font-semibold text-foreground">Sambutan</h2>
           </div>
           <p className="text-sm text-foreground-muted">
             Kirim pesan sambutan otomatis ketika member baru bergabung ke server.
@@ -358,7 +358,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <ScrollText className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Logging</h2>
+            <h2 className="text-lg font-semibold text-foreground">Log</h2>
           </div>
           <p className="text-sm text-foreground-muted">
             Channel untuk mencatat aktivitas moderasi dan automod. Bot akan mengirim log ke channel yang dipilih.
@@ -389,7 +389,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <Ticket className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Tickets</h2>
+            <h2 className="text-lg font-semibold text-foreground">Tiket</h2>
           </div>
           <p className="text-sm text-foreground-muted">
             Pengaturan sistem tiket support. User bisa membuat tiket untuk menghubungi staff server.
@@ -481,7 +481,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <ShieldAlert className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Warning Escalation</h2>
+            <h2 className="text-lg font-semibold text-foreground">Eskalasi Warning</h2>
           </div>
           <p className="text-sm text-foreground-muted">
             Tindakan otomatis yang diambil ketika user mendapat terlalu banyak warning.

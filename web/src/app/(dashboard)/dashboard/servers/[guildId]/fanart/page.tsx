@@ -36,7 +36,7 @@ export default async function FanArtPage({ params }: PageProps) {
       <div>
         <h1 className="text-3xl font-bold text-foreground">Fan Art</h1>
         <p className="mt-1 text-foreground-muted">
-          Fan art submissions and gallery for this server.
+          Submission fan art dan galeri untuk server ini.
         </p>
       </div>
 
@@ -49,7 +49,7 @@ export default async function FanArtPage({ params }: PageProps) {
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{gallery.length}</p>
-              <p className="text-sm text-foreground-muted">Approved</p>
+              <p className="text-sm text-foreground-muted">Disetujui</p>
             </div>
           </CardContent>
         </Card>
@@ -60,7 +60,7 @@ export default async function FanArtPage({ params }: PageProps) {
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{pending.length}</p>
-              <p className="text-sm text-foreground-muted">Pending Review</p>
+              <p className="text-sm text-foreground-muted">Menunggu Review</p>
             </div>
           </CardContent>
         </Card>
@@ -70,14 +70,14 @@ export default async function FanArtPage({ params }: PageProps) {
               <Palette className="h-6 w-6 text-primary" />
             </div>
             <div className="flex items-center gap-3">
-              <p className="text-lg font-semibold text-foreground">System</p>
+              <p className="text-lg font-semibold text-foreground">Sistem</p>
               {settings?.enabled === 1 ? (
                 <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
-                  Active
+                  Aktif
                 </span>
               ) : (
                 <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400">
-                  Disabled
+                  Nonaktif
                 </span>
               )}
             </div>
@@ -91,26 +91,26 @@ export default async function FanArtPage({ params }: PageProps) {
       {/* Approved Gallery */}
       <Card>
         <CardContent className="space-y-4">
-          <h2 className="text-xl font-semibold text-foreground">Recent Approved Submissions</h2>
+          <h2 className="text-xl font-semibold text-foreground">Submission Disetujui Terbaru</h2>
           {gallery.length === 0 ? (
-            <p className="text-foreground-muted text-sm">No approved submissions yet.</p>
+            <p className="text-foreground-muted text-sm">Belum ada submission yang disetujui.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Title</TableHead>
+                    <TableHead>Judul</TableHead>
                     <TableHead>Artist</TableHead>
-                    <TableHead>Votes</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Vote</TableHead>
+                    <TableHead>Tanggal</TableHead>
+                    <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {gallery.map((submission) => (
                     <TableRow key={submission.id}>
                       <TableCell className="font-medium max-w-[200px] truncate">
-                        {submission.title ?? 'Untitled'}
+                        {submission.title ?? 'Tanpa judul'}
                       </TableCell>
                       <TableCell className="font-mono text-xs">{submission.user_id}</TableCell>
                       <TableCell>
@@ -119,7 +119,7 @@ export default async function FanArtPage({ params }: PageProps) {
                         </span>
                       </TableCell>
                       <TableCell className="text-foreground-muted whitespace-nowrap">
-                        {new Date(submission.created_at).toLocaleDateString('en-US', {
+                        {new Date(submission.created_at).toLocaleDateString('id-ID', {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric',

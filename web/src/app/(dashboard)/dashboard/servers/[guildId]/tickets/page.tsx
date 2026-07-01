@@ -31,6 +31,19 @@ function getStatusVariant(status: string): 'success' | 'warning' | 'default' {
   }
 }
 
+function getStatusLabel(status: string): string {
+  switch (status) {
+    case 'open':
+      return 'Terbuka';
+    case 'claimed':
+      return 'Diklaim';
+    case 'closed':
+      return 'Ditutup';
+    default:
+      return status;
+  }
+}
+
 function hasTranscript(guildId: string, ticketId: number): boolean {
   return existsSync(join(getDataDir(), 'transcripts', guildId, `ticket-${ticketId}.html`));
 }
@@ -51,18 +64,18 @@ export default async function TicketsPage({ params }: PageProps) {
   }
 
   const statCards = [
-    { label: 'Total Tickets', value: ticketStats.total },
-    { label: 'Open', value: ticketStats.open },
-    { label: 'Claimed', value: ticketStats.claimed },
-    { label: 'Closed', value: ticketStats.closed },
+    { label: 'Total Tiket', value: ticketStats.total },
+    { label: 'Terbuka', value: ticketStats.open },
+    { label: 'Diklaim', value: ticketStats.claimed },
+    { label: 'Ditutup', value: ticketStats.closed },
   ];
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Tickets</h1>
+        <h1 className="text-3xl font-bold text-foreground">Tiket</h1>
         <p className="mt-1 text-foreground-muted">
-          View and manage support tickets for this server.
+          Pantau tiket support dan transcript untuk server ini.
         </p>
       </div>
 
@@ -81,7 +94,7 @@ export default async function TicketsPage({ params }: PageProps) {
       {/* Grafik Tiket */}
       <Card>
         <CardContent>
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Ticket Distribution</h2>
+          <h2 className="mb-4 text-lg font-semibold text-foreground">Distribusi Tiket</h2>
           <TicketChart stats={ticketStats} />
         </CardContent>
       </Card>
@@ -90,9 +103,9 @@ export default async function TicketsPage({ params }: PageProps) {
       {tickets.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Ticket className="h-12 w-12 text-foreground-muted mb-4" />
-          <h2 className="text-xl font-semibold text-foreground">No Tickets</h2>
+          <h2 className="text-xl font-semibold text-foreground">Belum Ada Tiket</h2>
           <p className="mt-2 text-foreground-muted">
-            No tickets have been created in this server yet.
+            Belum ada tiket yang dibuat di server ini.
           </p>
         </div>
       ) : (
@@ -103,10 +116,10 @@ export default async function TicketsPage({ params }: PageProps) {
                 <TableRow>
                   <TableHead>ID</TableHead>
                   <TableHead>User</TableHead>
-                  <TableHead>Category</TableHead>
+                  <TableHead>Kategori</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Closed</TableHead>
+                  <TableHead>Dibuat</TableHead>
+                  <TableHead>Ditutup</TableHead>
                   <TableHead>Transcript</TableHead>
                 </TableRow>
               </TableHeader>
@@ -121,11 +134,11 @@ export default async function TicketsPage({ params }: PageProps) {
                       <TableCell>{ticket.category ?? '—'}</TableCell>
                       <TableCell>
                         <Badge variant={getStatusVariant(ticket.status)}>
-                          {ticket.status}
+                          {getStatusLabel(ticket.status)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-foreground-muted whitespace-nowrap">
-                        {new Date(ticket.created_at).toLocaleDateString('en-US', {
+                        {new Date(ticket.created_at).toLocaleDateString('id-ID', {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric',
@@ -133,7 +146,7 @@ export default async function TicketsPage({ params }: PageProps) {
                       </TableCell>
                       <TableCell className="text-foreground-muted whitespace-nowrap">
                         {ticket.closed_at
-                          ? new Date(ticket.closed_at).toLocaleDateString('en-US', {
+                          ? new Date(ticket.closed_at).toLocaleDateString('id-ID', {
                               year: 'numeric',
                               month: 'short',
                               day: 'numeric',
@@ -148,7 +161,7 @@ export default async function TicketsPage({ params }: PageProps) {
                             className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
                           >
                             <ExternalLink className="h-3 w-3" />
-                            View
+                            Lihat
                           </Link>
                         ) : (
                           <span className="text-xs text-foreground-muted">—</span>

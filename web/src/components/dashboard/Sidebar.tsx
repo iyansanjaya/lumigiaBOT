@@ -32,73 +32,73 @@ interface NavItem {
 }
 
 const mainNavItems: NavItem[] = [
-  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Servers", href: "/dashboard/servers", icon: Server },
+  { label: "Ringkasan", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Server", href: "/dashboard/servers", icon: Server },
 ];
 
 function getGuildNavItems(guildId: string): NavItem[] {
   return [
     // ── Core ──
     {
-      label: "Overview",
+      label: "Ringkasan",
       href: `/dashboard/servers/${guildId}`,
       icon: LayoutDashboard,
-      section: "Core",
+      section: "Utama",
     },
     {
-      label: "Moderation",
+      label: "Moderasi",
       href: `/dashboard/servers/${guildId}/moderation`,
       icon: Shield,
-      section: "Core",
+      section: "Utama",
     },
     {
       label: "AutoMod",
       href: `/dashboard/servers/${guildId}/automod`,
       icon: Zap,
-      section: "Core",
+      section: "Utama",
     },
     {
-      label: "Tickets",
+      label: "Tiket",
       href: `/dashboard/servers/${guildId}/tickets`,
       icon: Ticket,
-      section: "Core",
+      section: "Utama",
     },
     {
-      label: "Logs",
+      label: "Log",
       href: `/dashboard/servers/${guildId}/logs`,
       icon: ScrollText,
-      section: "Core",
+      section: "Utama",
     },
 
     // ── Config ──
     {
-      label: "Settings",
+      label: "Pengaturan",
       href: `/dashboard/servers/${guildId}/settings`,
       icon: Settings,
-      section: "Config",
+      section: "Konfigurasi",
     },
 
     // ── Streamer ──
     {
-      label: "Voice Channels",
+      label: "Voice Sementara",
       href: `/dashboard/servers/${guildId}/voice`,
       icon: Mic,
       section: "Streamer",
     },
     {
-      label: "Reaction Roles",
+      label: "Role Reaksi",
       href: `/dashboard/servers/${guildId}/roles`,
       icon: Tags,
       section: "Streamer",
     },
     {
-      label: "Giveaways",
+      label: "Giveaway",
       href: `/dashboard/servers/${guildId}/giveaways`,
       icon: Gift,
       section: "Streamer",
     },
     {
-      label: "Schedule",
+      label: "Jadwal",
       href: `/dashboard/servers/${guildId}/schedule`,
       icon: Calendar,
       section: "Streamer",
@@ -110,7 +110,7 @@ function getGuildNavItems(guildId: string): NavItem[] {
       section: "Streamer",
     },
     {
-      label: "Stream Alerts",
+      label: "Notifikasi Live",
       href: `/dashboard/servers/${guildId}/streams`,
       icon: Radio,
       section: "Streamer",
@@ -122,7 +122,7 @@ function getGuildNavItems(guildId: string): NavItem[] {
       section: "Streamer",
     },
     {
-      label: "Analytics",
+      label: "Analitik",
       href: `/dashboard/servers/${guildId}/analytics`,
       icon: BarChart3,
       section: "Streamer",
@@ -159,11 +159,11 @@ export function Sidebar() {
       ? [
           {
             name: null,
-            items: navItems.filter((i) => !i.section || i.section === "Core"),
+            items: navItems.filter((i) => !i.section || i.section === "Utama"),
           },
           {
-            name: "Config",
-            items: navItems.filter((i) => i.section === "Config"),
+            name: "Konfigurasi",
+            items: navItems.filter((i) => i.section === "Konfigurasi"),
           },
           {
             name: "Streamer",
@@ -198,7 +198,7 @@ export function Sidebar() {
               className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs text-foreground-muted hover:text-foreground transition-colors"
             >
               <ChevronLeft className="h-3 w-3" />
-              Back to Servers
+              Kembali ke Server
             </Link>
           </div>
         )}
@@ -255,7 +255,7 @@ export function Sidebar() {
           ) : (
             <>
               <ChevronLeft className="h-5 w-5 shrink-0" />
-              <span>Collapse</span>
+              <span>Ciutkan</span>
             </>
           )}
         </button>

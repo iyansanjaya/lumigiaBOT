@@ -73,7 +73,7 @@ function ToggleInput({
           />
         </button>
         <span className="text-sm text-foreground">
-          {enabled ? "Enabled" : "Disabled"}
+          {enabled ? "Aktif" : "Nonaktif"}
         </span>
         {saveState === "saving" && (
           <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />
@@ -125,7 +125,7 @@ function SelectInput({
           onChange={handleChange}
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
         >
-          <option value="">{placeholder || "— Not configured —"}</option>
+          <option value="">{placeholder || "— Belum dikonfigurasi —"}</option>
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}

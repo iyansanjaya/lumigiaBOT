@@ -20,7 +20,7 @@ export default async function SchedulePage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Stream Schedule</h1>
+        <h1 className="text-3xl font-bold text-foreground">Jadwal Streaming</h1>
         <p className="mt-1 text-foreground-muted">
           Jadwal streaming mingguan untuk server ini.
         </p>

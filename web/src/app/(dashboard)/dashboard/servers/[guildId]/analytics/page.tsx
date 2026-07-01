@@ -41,18 +41,18 @@ export default async function AnalyticsPage({ params }: PageProps) {
   );
 
   const statCards = [
-    { label: 'Messages (7d)', value: totals.messages, icon: MessageSquare, color: 'bg-primary/20 text-primary' },
-    { label: 'Members Joined (7d)', value: totals.joined, icon: UserPlus, color: 'bg-green-500/20 text-green-400' },
-    { label: 'Members Left (7d)', value: totals.left, icon: UserMinus, color: 'bg-red-500/20 text-red-400' },
-    { label: 'Active Users (7d)', value: totals.activeUsers, icon: BarChart3, color: 'bg-primary/20 text-primary' },
+    { label: 'Pesan (7 hari)', value: totals.messages, icon: MessageSquare, color: 'bg-primary/20 text-primary' },
+    { label: 'Member Masuk (7 hari)', value: totals.joined, icon: UserPlus, color: 'bg-green-500/20 text-green-400' },
+    { label: 'Member Keluar (7 hari)', value: totals.left, icon: UserMinus, color: 'bg-red-500/20 text-red-400' },
+    { label: 'User Aktif (7 hari)', value: totals.activeUsers, icon: BarChart3, color: 'bg-primary/20 text-primary' },
   ];
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Analytics</h1>
+        <h1 className="text-3xl font-bold text-foreground">Analitik</h1>
         <p className="mt-1 text-foreground-muted">
-          Server activity overview for the last 7 days.
+          Ringkasan aktivitas server selama 7 hari terakhir.
         </p>
       </div>
 
@@ -60,9 +60,9 @@ export default async function AnalyticsPage({ params }: PageProps) {
       {dailyStats.length === 0 && topChannels.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <BarChart3 className="h-12 w-12 text-foreground-muted mb-4" />
-          <h2 className="text-xl font-semibold text-foreground">No Data</h2>
+          <h2 className="text-xl font-semibold text-foreground">Belum Ada Data</h2>
           <p className="mt-2 text-foreground-muted">
-            No analytics data has been collected yet.
+            Data analitik belum terkumpul.
           </p>
         </div>
       ) : (
@@ -92,23 +92,23 @@ export default async function AnalyticsPage({ params }: PageProps) {
           {dailyStats.length > 0 && (
             <Card>
               <CardContent className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">Daily Breakdown</h2>
+                <h2 className="text-xl font-semibold text-foreground">Rincian Harian</h2>
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Messages</TableHead>
-                        <TableHead>Joined</TableHead>
-                        <TableHead>Left</TableHead>
-                        <TableHead>Active Users</TableHead>
+                        <TableHead>Tanggal</TableHead>
+                        <TableHead>Pesan</TableHead>
+                        <TableHead>Masuk</TableHead>
+                        <TableHead>Keluar</TableHead>
+                        <TableHead>User Aktif</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {dailyStats.map((day) => (
                         <TableRow key={day.date}>
                           <TableCell className="whitespace-nowrap text-foreground-muted">
-                            {new Date(day.date).toLocaleDateString('en-US', {
+                            {new Date(day.date).toLocaleDateString('id-ID', {
                               weekday: 'short',
                               month: 'short',
                               day: 'numeric',
@@ -133,7 +133,7 @@ export default async function AnalyticsPage({ params }: PageProps) {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Hash className="h-5 w-5 text-primary" />
-                  <h2 className="text-xl font-semibold text-foreground">Top Channels</h2>
+                  <h2 className="text-xl font-semibold text-foreground">Channel Teratas</h2>
                 </div>
                 <div className="overflow-x-auto">
                   <Table>
@@ -141,7 +141,7 @@ export default async function AnalyticsPage({ params }: PageProps) {
                       <TableRow>
                         <TableHead>Rank</TableHead>
                         <TableHead>Channel ID</TableHead>
-                        <TableHead>Messages</TableHead>
+                        <TableHead>Pesan</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

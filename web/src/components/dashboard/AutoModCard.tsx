@@ -119,7 +119,7 @@ export function AutoModCard({
 
         <div className="flex items-center gap-2">
           <Badge variant={enabled ? 'success' : 'default'}>
-            {enabled ? 'Enabled' : 'Disabled'}
+            {enabled ? 'Aktif' : 'Nonaktif'}
           </Badge>
 
           {enabled && (
@@ -144,10 +144,10 @@ export function AutoModCard({
         {/* ── Advanced Settings (Link Filter Only) ── */}
         {enabled && filterKey === 'link' && (
           <div className="mt-4 pt-4 border-t border-border space-y-3">
-            <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">Advanced Settings</h4>
+            <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider">Pengaturan Lanjutan</h4>
             
             <label className="flex items-center justify-between text-sm cursor-pointer">
-              <span className="text-foreground-muted">Block Discord Invites</span>
+              <span className="text-foreground-muted">Blokir Invite Discord</span>
               <input 
                 type="checkbox" 
                 checked={config.blockInvites ?? true}
@@ -158,7 +158,7 @@ export function AutoModCard({
             </label>
 
             <label className="flex items-center justify-between text-sm cursor-pointer">
-              <span className="text-foreground-muted">Block Phishing Links (Beta)</span>
+              <span className="text-foreground-muted">Blokir Link Phishing (Beta)</span>
               <input 
                 type="checkbox" 
                 checked={config.blockPhishing ?? true}
@@ -169,7 +169,7 @@ export function AutoModCard({
             </label>
 
             <label className="flex items-center justify-between text-sm cursor-pointer">
-              <span className="text-foreground-muted">Block HTTP Links (Insecure)</span>
+              <span className="text-foreground-muted">Blokir Link HTTP (Tidak Aman)</span>
               <input 
                 type="checkbox" 
                 checked={config.blockHttp ?? false}
@@ -180,7 +180,7 @@ export function AutoModCard({
             </label>
 
             <label className="flex items-center justify-between text-sm cursor-pointer">
-              <span className="text-foreground-muted">Block All URLs</span>
+              <span className="text-foreground-muted">Blokir Semua URL</span>
               <input 
                 type="checkbox" 
                 checked={config.blockAllUrls ?? false}

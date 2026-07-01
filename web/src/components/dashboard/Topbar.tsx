@@ -26,7 +26,7 @@ export function Topbar({ user }: TopbarProps) {
           {user.image ? (
             <img
               src={user.image}
-              alt={user.name ?? "User avatar"}
+              alt={user.name ?? "Avatar pengguna"}
               className="h-8 w-8 rounded-full ring-2 ring-border"
             />
           ) : (
@@ -35,7 +35,7 @@ export function Topbar({ user }: TopbarProps) {
             </div>
           )}
           <span className="hidden text-sm font-medium text-foreground sm:inline-block">
-            {user.name ?? "User"}
+            {user.name ?? "Pengguna"}
           </span>
         </div>
 
@@ -48,7 +48,7 @@ export function Topbar({ user }: TopbarProps) {
         >
           <LogOut className="h-4 w-4" />
           <span className="hidden sm:inline-block cursor-pointer">
-            Sign Out
+            Keluar
           </span>
         </button>
       </div>

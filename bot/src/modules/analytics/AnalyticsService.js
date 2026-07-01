@@ -4,7 +4,9 @@
  * Menggunakan AnalyticsRepo untuk menyimpan data harian.
  */
 
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
+
+const log = createServiceLogger('analytics-service');
 
 export default class AnalyticsService {
   /**
@@ -15,7 +17,7 @@ export default class AnalyticsService {
     /** @type {import('../../core/BotClient.js').default} */
     this.client = client;
 
-    logger.info('[AnalyticsService] Analytics tracking initialized');
+    log.info('initialized');
   }
 
   /**
@@ -34,7 +36,11 @@ export default class AnalyticsService {
       this.client.db.analytics.trackMessage(guildId);
       this.client.db.analytics.trackChannelMessage(guildId, channelId);
     } catch (error) {
-      logger.error('[AnalyticsService] Error tracking message:', error);
+      log.error('track_message_failed', {
+        guildId: message.guild?.id,
+        channelId: message.channel?.id,
+        messageId: message.id,
+      }, error);
     }
   }
 
@@ -46,7 +52,7 @@ export default class AnalyticsService {
     try {
       this.client.db.analytics.trackMemberJoin(member.guild.id);
     } catch (error) {
-      logger.error('[AnalyticsService] Error tracking member join:', error);
+      log.error('track_member_join_failed', { guildId: member.guild?.id, userId: member.id }, error);
     }
   }
 
@@ -58,7 +64,7 @@ export default class AnalyticsService {
     try {
       this.client.db.analytics.trackMemberLeave(member.guild.id);
     } catch (error) {
-      logger.error('[AnalyticsService] Error tracking member leave:', error);
+      log.error('track_member_leave_failed', { guildId: member.guild?.id, userId: member.id }, error);
     }
   }
 }

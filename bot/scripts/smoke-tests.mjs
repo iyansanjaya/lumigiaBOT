@@ -20,6 +20,7 @@ import { getDataDir, getDatabasePath } from '../src/config/env.js';
 process.env.LOG_LEVEL = 'ERROR';
 
 const { default: BotDatabase } = await import('../src/database/Database.js');
+const { createServiceLogger } = await import('../src/utils/Logger.js');
 
 function withEnv(values, fn) {
   const previous = new Map();
@@ -131,4 +132,34 @@ test('database path helpers support the Docker shared volume path', () => {
       assert.equal(getDataDir(), '/app/data');
     },
   );
+});
+
+test('service logger formats context and redacts sensitive values', () => {
+  const serviceLog = createServiceLogger('smoke-test');
+  const originalConsoleLog = console.log;
+  const lines = [];
+
+  console.log = (...args) => {
+    lines.push(args.join(' '));
+  };
+
+  try {
+    serviceLog.error('event_failed', {
+      guildId: '123456789012345678',
+      count: 2,
+      authToken: 'super-secret-token',
+      ignored: undefined,
+    });
+  } finally {
+    console.log = originalConsoleLog;
+  }
+
+  assert.equal(lines.length, 1);
+  assert.match(lines[0], /service="smoke-test"/);
+  assert.match(lines[0], /action="event_failed"/);
+  assert.match(lines[0], /guildId="123456789012345678"/);
+  assert.match(lines[0], /count=2/);
+  assert.match(lines[0], /authToken="\[redacted\]"/);
+  assert.doesNotMatch(lines[0], /super-secret-token/);
+  assert.doesNotMatch(lines[0], /ignored=/);
 });

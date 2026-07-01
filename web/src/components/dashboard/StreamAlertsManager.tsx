@@ -138,8 +138,8 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
                   <TableRow>
                     <TableHead>Platform</TableHead>
                     <TableHead>Username</TableHead>
-                    <TableHead>Notify Channel</TableHead>
-                    <TableHead>Ping Role</TableHead>
+                    <TableHead>Channel Notifikasi</TableHead>
+                    <TableHead>Role Ping</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="w-[60px]" />
                   </TableRow>
@@ -175,7 +175,7 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
                           </span>
                         ) : (
                           <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400">
-                            Offline
+                            Tidak Live
                           </span>
                         )}
                       </TableCell>
@@ -284,7 +284,7 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
                   disabled={loadingDiscord}
                   className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
                 >
-                  <option value="">{loadingDiscord ? 'Memuat roles...' : '— Tidak ada —'}</option>
+                  <option value="">{loadingDiscord ? 'Memuat role...' : '— Tidak ada —'}</option>
                   {discordRoles.map(r => (
                     <option key={r.id} value={r.id}>@ {r.name}</option>
                   ))}

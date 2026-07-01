@@ -22,9 +22,9 @@ export default async function AutoModPage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Auto-Moderation</h1>
+        <h1 className="text-3xl font-bold text-foreground">Auto Moderasi</h1>
         <p className="mt-1 text-foreground-muted">
-          Configure automated moderation filters for this server. Changes are saved instantly.
+          Konfigurasi filter moderasi otomatis untuk server ini. Perubahan tersimpan secara instan.
         </p>
       </div>
 

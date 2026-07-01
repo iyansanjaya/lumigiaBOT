@@ -35,7 +35,7 @@ export default async function LevelingPage({ params }: PageProps) {
       <div>
         <h1 className="text-3xl font-bold text-foreground">Leveling</h1>
         <p className="mt-1 text-foreground-muted">
-          XP and leveling system for this server.
+          Sistem XP dan leveling untuk server ini.
         </p>
       </div>
 
@@ -47,7 +47,7 @@ export default async function LevelingPage({ params }: PageProps) {
         <CardContent className="space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Top 10 Leaderboard</h2>
           {leaderboard.length === 0 ? (
-            <p className="text-foreground-muted text-sm">No leveling data yet.</p>
+            <p className="text-foreground-muted text-sm">Belum ada data leveling.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -57,7 +57,7 @@ export default async function LevelingPage({ params }: PageProps) {
                     <TableHead>User ID</TableHead>
                     <TableHead>Level</TableHead>
                     <TableHead>XP</TableHead>
-                    <TableHead>Messages</TableHead>
+                    <TableHead>Pesan</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -86,10 +86,10 @@ export default async function LevelingPage({ params }: PageProps) {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <Award className="h-5 w-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">Role Rewards</h2>
+            <h2 className="text-xl font-semibold text-foreground">Reward Role</h2>
           </div>
           {rewards.length === 0 ? (
-            <p className="text-foreground-muted text-sm">No role rewards configured.</p>
+            <p className="text-foreground-muted text-sm">Belum ada reward role yang dikonfigurasi.</p>
           ) : (
             <div className="space-y-2">
               {rewards.map((reward) => (

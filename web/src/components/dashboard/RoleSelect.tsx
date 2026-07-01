@@ -19,7 +19,7 @@ async function fetchRoles(guildId: string): Promise<Role[]> {
   if (cached && Date.now() < cached.expires) return cached.data;
 
   const res = await fetch(`/api/guilds/${guildId}/discord-data`);
-  if (!res.ok) throw new Error('Gagal memuat roles');
+  if (!res.ok) throw new Error('Gagal memuat role');
   const { roles } = await res.json();
   roleCache.set(guildId, { data: roles, expires: Date.now() + 60_000 });
   return roles;
@@ -93,7 +93,7 @@ export function RoleSelect({
     return (
       <div className="flex flex-col gap-1.5">
         <label className="text-foreground-muted text-sm">{label}</label>
-        <span className="text-xs text-red-400">Gagal memuat roles. Pastikan bot sudah ada di server.</span>
+        <span className="text-xs text-red-400">Gagal memuat role. Pastikan bot sudah ada di server.</span>
       </div>
     );
   }
@@ -110,7 +110,7 @@ export function RoleSelect({
           className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
         >
           <option value="">
-            {loading ? 'Memuat roles...' : '— Pilih role —'}
+            {loading ? 'Memuat role...' : '— Pilih role —'}
           </option>
           {roles.map((r) => (
             <option key={r.id} value={r.id} style={{ color: colorToHex(r.color) }}>

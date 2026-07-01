@@ -23,9 +23,9 @@ export default async function StreamsPage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Stream Notifications</h1>
+        <h1 className="text-3xl font-bold text-foreground">Notifikasi Live Stream</h1>
         <p className="mt-1 text-foreground-muted">
-          Stream notification configurations for this server.
+          Konfigurasi notifikasi live stream untuk server ini.
         </p>
       </div>
 
@@ -38,7 +38,7 @@ export default async function StreamsPage({ params }: PageProps) {
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{notifications.length}</p>
-              <p className="text-sm text-foreground-muted">Total Configs</p>
+              <p className="text-sm text-foreground-muted">Total Konfigurasi</p>
             </div>
           </CardContent>
         </Card>
@@ -49,7 +49,7 @@ export default async function StreamsPage({ params }: PageProps) {
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{liveCount}</p>
-              <p className="text-sm text-foreground-muted">Currently Live</p>
+              <p className="text-sm text-foreground-muted">Sedang Live</p>
             </div>
           </CardContent>
         </Card>

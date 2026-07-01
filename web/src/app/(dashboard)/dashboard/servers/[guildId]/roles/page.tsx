@@ -45,9 +45,9 @@ export default async function RolesPage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Reaction Roles</h1>
+        <h1 className="text-3xl font-bold text-foreground">Role Reaksi</h1>
         <p className="mt-1 text-foreground-muted">
-          Manage reaction role panels and their entries.
+          Pantau panel role reaksi dan entry yang sudah dibuat.
         </p>
       </div>
 
@@ -59,7 +59,7 @@ export default async function RolesPage({ params }: PageProps) {
           </div>
           <div>
             <p className="text-2xl font-bold text-foreground">{panels.length}</p>
-            <p className="text-sm text-foreground-muted">Total Panels</p>
+            <p className="text-sm text-foreground-muted">Total Panel</p>
           </div>
         </CardContent>
       </Card>
@@ -68,9 +68,9 @@ export default async function RolesPage({ params }: PageProps) {
       {panelsWithCounts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Tags className="h-12 w-12 text-foreground-muted mb-4" />
-          <h2 className="text-xl font-semibold text-foreground">No Panels</h2>
+          <h2 className="text-xl font-semibold text-foreground">Belum Ada Panel</h2>
           <p className="mt-2 text-foreground-muted">
-            No reaction role panels have been created yet.
+            Belum ada panel role reaksi yang dibuat.
           </p>
         </div>
       ) : (
@@ -79,12 +79,12 @@ export default async function RolesPage({ params }: PageProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
+                  <TableHead>Judul</TableHead>
                   <TableHead>Mode</TableHead>
-                  <TableHead>Entries</TableHead>
+                  <TableHead>Entry</TableHead>
                   <TableHead>Channel</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead>Dibuat</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -101,7 +101,7 @@ export default async function RolesPage({ params }: PageProps) {
                     <TableCell>
                       {panel.message_id ? (
                         <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
-                          Posted
+                          Terpasang
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400">
@@ -110,7 +110,7 @@ export default async function RolesPage({ params }: PageProps) {
                       )}
                     </TableCell>
                     <TableCell className="text-foreground-muted whitespace-nowrap">
-                      {new Date(panel.created_at).toLocaleDateString('en-US', {
+                      {new Date(panel.created_at).toLocaleDateString('id-ID', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',

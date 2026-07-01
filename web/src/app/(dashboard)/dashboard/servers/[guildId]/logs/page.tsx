@@ -29,18 +29,18 @@ export default async function LogsPage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Audit Logs</h1>
+        <h1 className="text-3xl font-bold text-foreground">Audit Log</h1>
         <p className="mt-1 text-foreground-muted">
-          View all moderation and bot actions recorded in this server.
+          Lihat semua aksi moderasi dan bot yang tercatat di server ini.
         </p>
       </div>
 
       {auditLogs.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <ScrollText className="h-12 w-12 text-foreground-muted mb-4" />
-          <h2 className="text-xl font-semibold text-foreground">No Audit Logs</h2>
+          <h2 className="text-xl font-semibold text-foreground">Belum Ada Audit Log</h2>
           <p className="mt-2 text-foreground-muted">
-            No actions have been logged in this server yet.
+            Belum ada aksi yang tercatat di server ini.
           </p>
         </div>
       ) : (
@@ -50,11 +50,11 @@ export default async function LogsPage({ params }: PageProps) {
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead>Aksi</TableHead>
                   <TableHead>Moderator</TableHead>
                   <TableHead>Target</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead>Alasan</TableHead>
+                  <TableHead>Tanggal</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -67,10 +67,10 @@ export default async function LogsPage({ params }: PageProps) {
                     <TableCell className="font-mono text-xs">{log.moderator_id}</TableCell>
                     <TableCell className="font-mono text-xs">{log.target_id}</TableCell>
                     <TableCell className="max-w-[300px] truncate">
-                      {log.reason ?? 'No reason provided'}
+                      {log.reason ?? 'Tidak ada alasan'}
                     </TableCell>
                     <TableCell className="text-foreground-muted whitespace-nowrap">
-                      {new Date(log.created_at).toLocaleDateString('en-US', {
+                      {new Date(log.created_at).toLocaleDateString('id-ID', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',

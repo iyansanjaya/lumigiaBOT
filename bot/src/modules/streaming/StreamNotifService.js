@@ -7,7 +7,7 @@
 import { EmbedBuilder } from 'discord.js';
 import TwitchAPI from './TwitchAPI.js';
 import YouTubeChecker from './YouTubeChecker.js';
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
 
 /** Warna embed per platform */
 const COLORS = {
@@ -20,6 +20,7 @@ const COLORS = {
 /** Interval polling (ms) */
 const TWITCH_INTERVAL = 60_000;   // 60 detik
 const YOUTUBE_INTERVAL = 120_000; // 120 detik
+const log = createServiceLogger('stream-notifications');
 
 export default class StreamNotifService {
   /**
@@ -43,22 +44,22 @@ export default class StreamNotifService {
    * Memulai polling untuk kedua platform.
    */
   start() {
-    logger.info('StreamNotifService: Starting polling...');
+    log.info('starting');
 
     // Cek Twitch (hanya jika dikonfigurasi)
     if (TwitchAPI.isConfigured()) {
       // Delay awal 10 detik agar bot ready
       setTimeout(() => this.checkTwitch(), 10_000);
       this.twitchInterval = setInterval(() => this.checkTwitch(), TWITCH_INTERVAL);
-      logger.info(`StreamNotifService: Twitch polling every ${TWITCH_INTERVAL / 1000}s`);
+      log.info('polling_started', { platform: 'twitch', intervalMs: TWITCH_INTERVAL });
     } else {
-      logger.warn('StreamNotifService: Twitch not configured, skipping Twitch polling.');
+      log.warn('polling_skipped', { platform: 'twitch', reason: 'not_configured' });
     }
 
     // YouTube selalu bisa dicek (tanpa API key)
     setTimeout(() => this.checkYouTube(), 15_000);
     this.youtubeInterval = setInterval(() => this.checkYouTube(), YOUTUBE_INTERVAL);
-    logger.info(`StreamNotifService: YouTube polling every ${YOUTUBE_INTERVAL / 1000}s`);
+    log.info('polling_started', { platform: 'youtube', intervalMs: YOUTUBE_INTERVAL });
   }
 
   /**
@@ -73,7 +74,7 @@ export default class StreamNotifService {
       clearInterval(this.youtubeInterval);
       this.youtubeInterval = null;
     }
-    logger.info('StreamNotifService: Polling stopped.');
+    log.info('stopped');
   }
 
   /**
@@ -131,11 +132,15 @@ export default class StreamNotifService {
             }
           }
         } catch (error) {
-          logger.error(`Twitch check failed for ${username}:`, error);
+          log.error('stream_check_failed', {
+            platform: 'twitch',
+            platformUser: username,
+            configs: configs.length,
+          }, error);
         }
       }
     } catch (error) {
-      logger.error('StreamNotifService.checkTwitch error:', error);
+      log.error('poll_failed', { platform: 'twitch' }, error);
     }
   }
 
@@ -187,11 +192,15 @@ export default class StreamNotifService {
             }
           }
         } catch (error) {
-          logger.error(`YouTube check failed for ${channelId}:`, error);
+          log.error('stream_check_failed', {
+            platform: 'youtube',
+            platformUser: channelId,
+            configs: configs.length,
+          }, error);
         }
       }
     } catch (error) {
-      logger.error('StreamNotifService.checkYouTube error:', error);
+      log.error('poll_failed', { platform: 'youtube' }, error);
     }
   }
 
@@ -213,7 +222,13 @@ export default class StreamNotifService {
     try {
       const channel = await this.client.channels.fetch(config.notify_channel);
       if (!channel || !channel.isTextBased()) {
-        logger.warn(`StreamNotif: Channel ${config.notify_channel} not found or not text-based.`);
+        log.warn('notify_channel_unavailable', {
+          guildId: config.guild_id,
+          configId: config.id,
+          channelId: config.notify_channel,
+          platform: config.platform,
+          platformUser: config.platform_user,
+        });
         return;
       }
 
@@ -279,12 +294,23 @@ export default class StreamNotifService {
       // Simpan message ID untuk nanti bisa di-edit saat stream ended
       this.sentMessages.set(`${config.id}`, sentMsg.id);
 
-      logger.info(
-        `StreamNotif: Sent ${platformName} notification for ${streamData.username} ` +
-        `to #${channel.name} (${config.guild_id})`,
-      );
+      log.info('notification_sent', {
+        guildId: config.guild_id,
+        configId: config.id,
+        channelId: config.notify_channel,
+        platform: streamData.platform,
+        platformUser: streamData.username,
+        streamTitle: streamData.title,
+        messageId: sentMsg.id,
+      });
     } catch (error) {
-      logger.error(`StreamNotif: Failed to send notification for config ${config.id}:`, error);
+      log.error('notification_send_failed', {
+        guildId: config.guild_id,
+        configId: config.id,
+        channelId: config.notify_channel,
+        platform: config.platform,
+        platformUser: config.platform_user,
+      }, error);
     }
   }
 
@@ -298,11 +324,28 @@ export default class StreamNotifService {
       if (!messageId) return; // Tidak ada pesan untuk di-edit
 
       const channel = await this.client.channels.fetch(config.notify_channel);
-      if (!channel || !channel.isTextBased()) return;
+      if (!channel || !channel.isTextBased()) {
+        log.warn('ended_update_channel_unavailable', {
+          guildId: config.guild_id,
+          configId: config.id,
+          channelId: config.notify_channel,
+          platform: config.platform,
+          platformUser: config.platform_user,
+        });
+        return;
+      }
 
       const message = await channel.messages.fetch(messageId).catch(() => null);
       if (!message) {
         this.sentMessages.delete(`${config.id}`);
+        log.warn('ended_update_message_missing', {
+          guildId: config.guild_id,
+          configId: config.id,
+          channelId: config.notify_channel,
+          platform: config.platform,
+          platformUser: config.platform_user,
+          messageId,
+        });
         return;
       }
 
@@ -324,11 +367,22 @@ export default class StreamNotifService {
       await message.edit({ embeds: [endedEmbed] });
       this.sentMessages.delete(`${config.id}`);
 
-      logger.info(
-        `StreamNotif: Updated ended notification for ${config.platform_user} (${config.guild_id})`,
-      );
+      log.info('ended_notification_updated', {
+        guildId: config.guild_id,
+        configId: config.id,
+        channelId: config.notify_channel,
+        platform: config.platform,
+        platformUser: config.platform_user,
+        messageId,
+      });
     } catch (error) {
-      logger.error(`StreamNotif: Failed to update ended notification for config ${config.id}:`, error);
+      log.error('ended_notification_update_failed', {
+        guildId: config.guild_id,
+        configId: config.id,
+        channelId: config.notify_channel,
+        platform: config.platform,
+        platformUser: config.platform_user,
+      }, error);
     }
   }
 

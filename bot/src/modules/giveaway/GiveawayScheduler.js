@@ -4,10 +4,11 @@
  */
 
 import GiveawayService from './GiveawayService.js';
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
 
 /** Interval pengecekan dalam milidetik (30 detik) */
 const CHECK_INTERVAL_MS = 30_000;
+const log = createServiceLogger('giveaway-scheduler');
 
 export default class GiveawayScheduler {
   /**
@@ -26,7 +27,7 @@ export default class GiveawayScheduler {
    */
   start() {
     if (this.interval) {
-      logger.warn('GiveawayScheduler is already running.');
+      log.warn('start_skipped', { reason: 'already_running' });
       return;
     }
 
@@ -34,7 +35,7 @@ export default class GiveawayScheduler {
     this.checkExpired();
 
     this.interval = setInterval(() => this.checkExpired(), CHECK_INTERVAL_MS);
-    logger.info(`GiveawayScheduler started (interval: ${CHECK_INTERVAL_MS / 1000}s)`);
+    log.info('started', { intervalMs: CHECK_INTERVAL_MS });
   }
 
   /**
@@ -44,7 +45,7 @@ export default class GiveawayScheduler {
     if (this.interval) {
       clearInterval(this.interval);
       this.interval = null;
-      logger.info('GiveawayScheduler stopped.');
+      log.info('stopped');
     }
   }
 
@@ -57,17 +58,21 @@ export default class GiveawayScheduler {
 
       if (expired.length === 0) return;
 
-      logger.info(`Found ${expired.length} expired giveaway(s) to end.`);
+      log.info('expired_found', { count: expired.length });
 
       for (const giveaway of expired) {
         try {
           await GiveawayService.endGiveaway(this.client, giveaway);
         } catch (error) {
-          logger.error(`Failed to auto-end giveaway #${giveaway.id}:`, error);
+          log.error('auto_end_failed', {
+            guildId: giveaway.guild_id,
+            giveawayId: giveaway.id,
+            channelId: giveaway.channel_id,
+          }, error);
         }
       }
     } catch (error) {
-      logger.error('GiveawayScheduler.checkExpired error:', error);
+      log.error('check_expired_failed', {}, error);
     }
   }
 }

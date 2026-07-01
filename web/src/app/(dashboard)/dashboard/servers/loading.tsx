@@ -4,9 +4,9 @@ export default function ServersLoading() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Your Servers</h1>
+        <h1 className="text-3xl font-bold text-foreground">Server Anda</h1>
         <p className="mt-1 text-foreground-muted">
-          Loading your servers...
+          Memuat server Anda...
         </p>
       </div>
 

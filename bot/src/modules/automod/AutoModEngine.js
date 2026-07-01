@@ -12,7 +12,7 @@
 
 import { createEmbed } from '../../utils/EmbedBuilder.js';
 import { t } from '../../i18n/helpers.js';
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
 
 // Impor semua filter
 import SpamFilter from './filters/SpamFilter.js';
@@ -28,6 +28,8 @@ import WarnAction from './actions/WarnAction.js';
 import MuteAction from './actions/MuteAction.js';
 import KickAction from './actions/KickAction.js';
 import BanAction from './actions/BanAction.js';
+
+const log = createServiceLogger('automod');
 
 export default class AutoModEngine {
   /**
@@ -98,17 +100,38 @@ export default class AutoModEngine {
           const action = this.actions.get(filterConfig.action || 'delete');
           if (action) {
             await action.execute(message, this.client, { reason: result.reason, ...config });
+          } else {
+            log.warn('unknown_action', {
+              guildId: message.guild.id,
+              channelId: message.channel.id,
+              messageId: message.id,
+              filter: filterConfig.filter_name,
+              action: filterConfig.action,
+            });
           }
 
           // 5. Catat pelanggaran
           await this._logViolation(message, filterConfig.filter_name, result.reason, filterConfig.action);
+          log.info('filter_triggered', {
+            guildId: message.guild.id,
+            channelId: message.channel.id,
+            messageId: message.id,
+            userId: message.author.id,
+            filter: filterConfig.filter_name,
+            action: filterConfig.action,
+          });
 
           // Hentikan pemrosesan setelah pemicu pertama (satu tindakan per pesan)
           break;
         }
       }
     } catch (error) {
-      logger.error('AutoMod processing error:', error);
+      log.error('process_failed', {
+        guildId: message.guild?.id,
+        channelId: message.channel?.id,
+        messageId: message.id,
+        userId: message.author?.id,
+      }, error);
     }
   }
 
@@ -137,7 +160,12 @@ export default class AutoModEngine {
       }
 
       return false;
-    } catch {
+    } catch (error) {
+      log.error('whitelist_check_failed', {
+        guildId: message.guild?.id,
+        channelId: message.channel?.id,
+        messageId: message.id,
+      }, error);
       return false;
     }
   }
@@ -194,7 +222,13 @@ export default class AutoModEngine {
 
       await channel.send({ embeds: [embed] });
     } catch (error) {
-      logger.error('Failed to log automod violation:', error);
+      log.error('violation_log_failed', {
+        guildId: message.guild?.id,
+        channelId: message.channel?.id,
+        messageId: message.id,
+        filter: filterName,
+        action,
+      }, error);
     }
   }
 }

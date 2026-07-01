@@ -20,18 +20,18 @@ export default async function SettingsPage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Server Settings</h1>
+        <h1 className="text-3xl font-bold text-foreground">Pengaturan Server</h1>
         <p className="mt-1 text-foreground-muted">
-          Configure your server settings. Changes are saved instantly.
+          Konfigurasi pengaturan server. Perubahan tersimpan secara instan.
         </p>
       </div>
 
       {!settings ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Settings className="h-12 w-12 text-foreground-muted mb-4" />
-          <h2 className="text-xl font-semibold text-foreground">No Settings Configured</h2>
+          <h2 className="text-xl font-semibold text-foreground">Belum Ada Pengaturan</h2>
           <p className="mt-2 text-foreground-muted">
-            This server hasn&apos;t been configured yet. Start configuring below.
+            Server ini belum dikonfigurasi. Mulai atur dari form di bawah.
           </p>
         </div>
       ) : null}

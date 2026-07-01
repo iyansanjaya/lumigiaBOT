@@ -14,17 +14,17 @@ export default async function DashboardPage() {
 
   const statCards = [
     {
-      label: 'Total Servers',
+      label: 'Total Server',
       value: stats.totalGuilds,
       icon: Server,
     },
     {
-      label: 'Total Tickets',
+      label: 'Total Tiket',
       value: stats.totalTickets,
       icon: Ticket,
     },
     {
-      label: 'Total Warnings',
+      label: 'Total Warning',
       value: stats.totalWarnings,
       icon: AlertTriangle,
     },
@@ -33,9 +33,9 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard Overview</h1>
+        <h1 className="text-3xl font-bold text-foreground">Ringkasan Dashboard</h1>
         <p className="mt-1 text-foreground-muted">
-          Welcome back! Here&apos;s what&apos;s happening across your servers.
+          Selamat datang kembali. Berikut ringkasan aktivitas server Anda.
         </p>
       </div>
 
@@ -62,16 +62,16 @@ export default async function DashboardPage() {
       {/* Bagian Selamat Datang */}
       <Card>
         <CardContent className="space-y-4">
-          <h2 className="text-xl font-semibold text-foreground">Get Started</h2>
+          <h2 className="text-xl font-semibold text-foreground">Mulai Kelola Server</h2>
           <p className="text-foreground-muted">
-            Manage your Discord servers, configure moderation settings, and track activity all from one place.
+            Kelola server Discord, konfigurasi moderasi, dan pantau aktivitas dari satu tempat.
           </p>
           <Link
             href="/dashboard/servers"
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors"
           >
             <Server className="h-4 w-4" />
-            View Servers
+            Lihat Server
           </Link>
         </CardContent>
       </Card>
