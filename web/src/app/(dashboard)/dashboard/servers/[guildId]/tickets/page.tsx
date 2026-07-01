@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getTicketStats, getGuildTickets } from '@/lib/database';
+import { getDataDir } from '@/lib/env';
 import { TicketChart } from '@/components/dashboard/TicketChart';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -31,11 +32,7 @@ function getStatusVariant(status: string): 'success' | 'warning' | 'default' {
 }
 
 function hasTranscript(guildId: string, ticketId: number): boolean {
-  const dataDir = process.env.DATABASE_PATH
-    ? join(process.env.DATABASE_PATH, '..', 'transcripts', guildId)
-    : join(process.cwd(), '..', 'data', 'transcripts', guildId);
-
-  return existsSync(join(dataDir, `ticket-${ticketId}.html`));
+  return existsSync(join(getDataDir(), 'transcripts', guildId, `ticket-${ticketId}.html`));
 }
 
 export default async function TicketsPage({ params }: PageProps) {

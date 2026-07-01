@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { canManageGuild } from '@/lib/discord-api';
+import { getDataDir } from '@/lib/env';
 import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
 import { existsSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 
 interface RouteParams {
   params: Promise<{ guildId: string; ticketId: string }>;
@@ -36,11 +37,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   }
 
   // Path ke file transkrip
-  const dataDir = process.env.DATABASE_PATH
-    ? join(dirname(process.env.DATABASE_PATH), 'transcripts', guildId)
-    : join(process.cwd(), '..', 'data', 'transcripts', guildId);
-
-  const filePath = join(dataDir, `ticket-${ticketId}.html`);
+  const filePath = join(getDataDir(), 'transcripts', guildId, `ticket-${ticketId}.html`);
 
   if (!existsSync(filePath)) {
     return NextResponse.json(

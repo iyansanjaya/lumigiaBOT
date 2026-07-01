@@ -1,4 +1,5 @@
-import path from 'path';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 
 const PLACEHOLDER_VALUES = new Set([
   'your_bot_token_here',
@@ -31,10 +32,33 @@ function isPlaceholder(value: string) {
 }
 
 export function getDatabasePath() {
-  return process.env.DATABASE_PATH ||
-    (process.env.NODE_ENV === 'production'
+  const configuredPath = clean(process.env.DATABASE_PATH);
+
+  if (!configuredPath) {
+    return process.env.NODE_ENV === 'production'
       ? '/app/data/lumigiabot.db'
-      : path.join(process.cwd(), '..', 'data', 'lumigiabot.db'));
+      : path.join(process.cwd(), '..', 'data', 'lumigiabot.db');
+  }
+
+  if (path.isAbsolute(configuredPath)) {
+    return configuredPath;
+  }
+
+  const candidates = [
+    ...(process.env.NODE_ENV === 'production'
+      ? [path.resolve('/app', configuredPath)]
+      : []),
+    path.resolve(process.cwd(), '..', configuredPath),
+    path.resolve(process.cwd(), configuredPath),
+  ];
+
+  return candidates.find((candidate) => (
+    existsSync(candidate) || existsSync(path.dirname(candidate))
+  )) || candidates[0];
+}
+
+export function getDataDir() {
+  return path.dirname(getDatabasePath());
 }
 
 export function checkRequiredWebEnv(names: readonly RequiredWebEnv[] = REQUIRED_WEB_ENV): EnvCheck {

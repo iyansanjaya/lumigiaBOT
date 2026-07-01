@@ -13,11 +13,12 @@ import {
   AttachmentBuilder,
 } from 'discord.js';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { t } from '../../i18n/helpers.js';
 import { createEmbed } from '../../utils/EmbedBuilder.js';
 import { TicketDefaults } from '../../config/constants.js';
+import { getDataDir } from '../../config/env.js';
 import { logger } from '../../utils/Logger.js';
 import { generateTranscript } from './TicketTranscript.js';
 
@@ -171,10 +172,7 @@ export async function closeTicket(client, channel, closedBy) {
   // --- Simpan transkrip ke disk ---
   if (transcriptBuffer) {
     try {
-      const dataDir = process.env.DATABASE_PATH
-        ? dirname(process.env.DATABASE_PATH)
-        : join(process.cwd(), 'data');
-      const transcriptsDir = join(dataDir, 'transcripts', channel.guild.id);
+      const transcriptsDir = join(getDataDir(), 'transcripts', channel.guild.id);
 
       if (!existsSync(transcriptsDir)) {
         mkdirSync(transcriptsDir, { recursive: true });

@@ -8,6 +8,9 @@ services:
     volumes:
       - ./data:/app/data
     env_file: .env
+    environment:
+      DATABASE_PATH: /app/data/lumigiabot.db
+      NODE_ENV: production
     depends_on:
       - web
     networks:
@@ -24,6 +27,8 @@ services:
     volumes:
       - ./data:/app/data
     env_file: .env
+    environment:
+      DATABASE_PATH: /app/data/lumigiabot.db
     networks:
       - lumigiabot-network
 

@@ -59,14 +59,21 @@ export function getDatabasePath() {
   }
 
   const candidates = [
-    resolve(process.cwd(), configuredPath),
+    ...(process.env.NODE_ENV === 'production'
+      ? [resolve('/app', configuredPath)]
+      : []),
     resolve(rootDir, configuredPath),
+    resolve(process.cwd(), configuredPath),
     resolve(botDir, configuredPath),
   ];
 
   return candidates.find((candidate) => (
     existsSync(candidate) || existsSync(dirname(candidate))
   )) || candidates[0];
+}
+
+export function getDataDir() {
+  return dirname(getDatabasePath());
 }
 
 export function validateBotEnv() {
