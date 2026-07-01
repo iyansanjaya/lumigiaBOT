@@ -7,27 +7,19 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { t } from '../../i18n/helpers.js';
 import { createEmbed, successEmbed, errorEmbed } from '../../utils/EmbedBuilder.js';
 import { Cooldowns } from '../../config/constants.js';
+import { AUTOMOD_ACTION_CHOICES, AUTOMOD_FILTERS } from '../../../../shared/contracts.js';
 
 /** @type {number} */
 export const cooldown = Cooldowns.ADMIN;
 
 /** Nama-nama filter yang tersedia */
 const FILTER_CHOICES = [
-  { name: 'Spam', value: 'spam' },
-  { name: 'Link', value: 'link' },
-  { name: 'Word', value: 'word' },
-  { name: 'Caps', value: 'caps' },
-  { name: 'Emoji', value: 'emoji' },
-  { name: 'Mention', value: 'mention' },
+  ...AUTOMOD_FILTERS.map((filter) => ({ name: filter.name, value: filter.key })),
 ];
 
 /** Tindakan yang tersedia */
 const ACTION_CHOICES = [
-  { name: 'Delete Message', value: 'delete' },
-  { name: 'Warn User', value: 'warn' },
-  { name: 'Mute User', value: 'mute' },
-  { name: 'Kick User', value: 'kick' },
-  { name: 'Ban User', value: 'ban' },
+  ...AUTOMOD_ACTION_CHOICES.map((action) => ({ name: action.name, value: action.value })),
 ];
 
 export const data = new SlashCommandBuilder()

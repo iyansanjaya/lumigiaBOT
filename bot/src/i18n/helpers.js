@@ -4,6 +4,7 @@
  */
 
 import i18next from './index.js';
+import { normalizeLanguage } from '../../../shared/contracts.js';
 
 /**
  * Mendapatkan terjemahan untuk guild tertentu.
@@ -24,7 +25,7 @@ export function t(client, guildId, key, options = {}) {
     try {
       const settings = client.db.guildSettings.get(guildId);
       if (settings?.language) {
-        language = settings.language === 'en' ? 'en-US' : settings.language;
+        language = normalizeLanguage(settings.language);
       }
     } catch {
       // Gunakan default jika pembacaan DB gagal
@@ -43,5 +44,5 @@ export function t(client, guildId, key, options = {}) {
  * @returns {string}
  */
 export function tLang(language, key, options = {}) {
-  return i18next.t(key, { lng: language, ...options });
+  return i18next.t(key, { lng: normalizeLanguage(language), ...options });
 }

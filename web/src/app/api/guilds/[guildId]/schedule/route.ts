@@ -4,6 +4,7 @@ import { addScheduleEntry, deleteScheduleEntry } from '@/lib/database';
 import { canManageGuild } from '@/lib/discord-api';
 import { createDiscordScheduledEvent, deleteDiscordScheduledEvent } from '@/lib/discord-events';
 import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
+import { SCHEDULE_DAY_NAMES } from '@/lib/contracts';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -45,7 +46,10 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     }
 
     // Validasi
-    if (typeof body.day_of_week !== 'number' || body.day_of_week < 0 || body.day_of_week > 6) {
+    if (
+      typeof body.day_of_week !== 'number' ||
+      !Object.prototype.hasOwnProperty.call(SCHEDULE_DAY_NAMES, body.day_of_week)
+    ) {
       return NextResponse.json({ error: 'Hari harus 0 (Minggu) - 6 (Sabtu)' }, { status: 400 });
     }
     if (!body.time || !/^\d{2}:\d{2}$/.test(body.time)) {

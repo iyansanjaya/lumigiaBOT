@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname, isAbsolute, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SUPPORTED_LANGUAGE_INPUTS } from '../../../shared/contracts.js';
 
 const configDir = dirname(fileURLToPath(import.meta.url));
 const botDir = resolve(configDir, '..', '..');
@@ -14,7 +15,6 @@ const PLACEHOLDER_VALUES = new Set([
   'generate_a_random_secret_here',
 ]);
 
-const SUPPORTED_LANGUAGES = new Set(['id', 'en-US', 'en']);
 const SUPPORTED_LOG_LEVELS = new Set(['DEBUG', 'INFO', 'WARN', 'ERROR']);
 
 function clean(value) {
@@ -77,7 +77,7 @@ export function validateBotEnv() {
   const ownerId = clean(process.env.BOT_OWNER_ID);
   const logLevel = clean(process.env.LOG_LEVEL).toUpperCase();
 
-  if (!SUPPORTED_LANGUAGES.has(defaultLanguage)) {
+  if (!SUPPORTED_LANGUAGE_INPUTS.includes(defaultLanguage)) {
     errors.push('DEFAULT_LANGUAGE must be one of: id, en-US, en.');
   }
 

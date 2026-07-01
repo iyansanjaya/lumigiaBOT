@@ -11,24 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 import type { StreamScheduleEntry } from "@/types/streamer";
-
-// ─── Constants ───
-const DAY_NAMES: Record<number, string> = {
-  0: "Minggu",
-  1: "Senin",
-  2: "Selasa",
-  3: "Rabu",
-  4: "Kamis",
-  5: "Jumat",
-  6: "Sabtu",
-};
-
-const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
-
-const DAY_OPTIONS = DAY_ORDER.map((i) => ({
-  value: String(i),
-  label: DAY_NAMES[i],
-}));
+import { SCHEDULE_DAY_NAMES, SCHEDULE_DAY_OPTIONS, SCHEDULE_DAY_ORDER } from "@/lib/contracts";
 
 // ─── Props ───
 interface Props {
@@ -169,14 +152,14 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
             </div>
           ) : (
             <div className="space-y-4">
-              {DAY_ORDER.map((day) => {
+              {SCHEDULE_DAY_ORDER.map((day) => {
                 const dayEntries = grouped[day];
                 if (!dayEntries || dayEntries.length === 0) return null;
 
                 return (
                   <div key={day} className="space-y-2">
                     <h3 className="text-sm font-semibold text-foreground-muted uppercase tracking-wide">
-                      {DAY_NAMES[day]}
+                      {SCHEDULE_DAY_NAMES[day as keyof typeof SCHEDULE_DAY_NAMES]}
                     </h3>
                     <div className="space-y-2">
                       {dayEntries.map((entry) => (
@@ -253,7 +236,7 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
                     onChange={(e) => setDayOfWeek(e.target.value)}
                     className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                   >
-                    {DAY_OPTIONS.map((opt) => (
+                    {SCHEDULE_DAY_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>

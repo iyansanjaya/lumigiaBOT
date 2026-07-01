@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { updateGuildSetting } from '@/lib/database';
 import { canManageGuild } from '@/lib/discord-api';
 import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
+import { normalizeLanguage } from '@/lib/contracts';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -56,6 +57,10 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     }
 
     // ── 5. Update database (whitelist validation inside) ──
+    if (body.field === 'language' && typeof body.value === 'string') {
+      body.value = normalizeLanguage(body.value);
+    }
+
     const success = updateGuildSetting(guildId, body.field, body.value);
     if (!success) {
       return NextResponse.json({ error: 'Failed to update setting' }, { status: 500 });

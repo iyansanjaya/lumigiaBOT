@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { addStreamNotification, deleteStreamNotification } from '@/lib/database';
 import { canManageGuild } from '@/lib/discord-api';
 import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
+import { isValidStreamPlatform } from '@/lib/contracts';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     }
 
     // Validasi field wajib
-    if (!body.platform || !['twitch', 'youtube'].includes(body.platform)) {
+    if (!body.platform || !isValidStreamPlatform(body.platform)) {
       return NextResponse.json({ error: 'Platform harus twitch atau youtube' }, { status: 400 });
     }
     if (body.platform === 'twitch' && !(process.env.TWITCH_CLIENT_ID && process.env.TWITCH_CLIENT_SECRET)) {

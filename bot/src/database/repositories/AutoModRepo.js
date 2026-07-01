@@ -2,6 +2,12 @@
  * LumigiaBOT — Repository AutoMod
  */
 
+import {
+  AUTOMOD_WHITELIST_TYPES,
+  isValidAutomodAction,
+  isValidAutomodFilter,
+} from '../../../../shared/contracts.js';
+
 export default class AutoModRepo {
   /** @param {import('better-sqlite3').Database} db */
   constructor(db) {
@@ -42,6 +48,13 @@ export default class AutoModRepo {
   }
 
   setFilter(guildId, filterName, enabled, action, config = '{}') {
+    if (!isValidAutomodFilter(filterName)) {
+      throw new Error(`Invalid automod filter: ${filterName}`);
+    }
+    if (!isValidAutomodAction(action)) {
+      throw new Error(`Invalid automod action: ${action}`);
+    }
+
     this._upsertFilter.run(guildId, filterName, enabled ? 1 : 0, action, config);
   }
 
@@ -50,10 +63,18 @@ export default class AutoModRepo {
   }
 
   addWhitelist(guildId, type, targetId) {
+    if (!AUTOMOD_WHITELIST_TYPES.includes(type)) {
+      throw new Error(`Invalid automod whitelist type: ${type}`);
+    }
+
     this._addWhitelist.run(guildId, type, targetId);
   }
 
   removeWhitelist(guildId, type, targetId) {
+    if (!AUTOMOD_WHITELIST_TYPES.includes(type)) {
+      throw new Error(`Invalid automod whitelist type: ${type}`);
+    }
+
     return this._removeWhitelist.run(guildId, type, targetId).changes > 0;
   }
 

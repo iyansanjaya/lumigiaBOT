@@ -9,6 +9,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, ChannelType } from 'discord.j
 import { t } from '../../i18n/helpers.js';
 import { createEmbed, successEmbed, errorEmbed } from '../../utils/EmbedBuilder.js';
 import { logger } from '../../utils/Logger.js';
+import { LANGUAGE_OPTIONS } from '../../../../shared/contracts.js';
 
 export const cooldown = 5000;
 
@@ -27,10 +28,10 @@ export const data = new SlashCommandBuilder()
           .setName('language')
           .setDescription('Language to use')
           .setRequired(true)
-          .addChoices(
-            { name: 'English (US)', value: 'en-US' },
-            { name: 'Bahasa Indonesia', value: 'id' },
-          ),
+          .addChoices(...LANGUAGE_OPTIONS.map((language) => ({
+            name: language.label,
+            value: language.value,
+          }))),
       ),
   )
   .addSubcommand((sub) =>

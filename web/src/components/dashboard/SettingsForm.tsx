@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { ChannelSelect } from "@/components/dashboard/ChannelSelect";
 import { RoleSelect } from "@/components/dashboard/RoleSelect";
+import { LANGUAGE_OPTIONS, WARN_ESCALATION_PRESETS } from "@/lib/contracts";
 
 interface GuildSettings {
   guild_id: string;
@@ -136,7 +137,7 @@ function SelectInput({
   field: string;
   value: string | number | null | undefined;
   guildId: string;
-  options: { value: string; label: string }[];
+  options: readonly { value: string; label: string }[];
   placeholder?: string;
 }) {
   const [currentValue, setCurrentValue] = useState(String(value ?? ""));
@@ -258,10 +259,6 @@ function TextInput({
 export function SettingsForm({ guildId, initialSettings }: Props) {
   const s = initialSettings;
 
-  const languageOptions = [
-    { value: "en-US", label: "English" },
-    { value: "id", label: "🇮🇩 Bahasa Indonesia" },
-  ];
 
   const maxOpenOptions = [
     { value: "1", label: "1 tiket per user" },
@@ -295,12 +292,6 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
     { value: "60", label: "60 detik (1 menit)" },
   ];
 
-  const escalationOptions = [
-    { value: "{}", label: "Tidak ada - hanya beri warning" },
-    { value: "{\"3\":\"mute\"}", label: "Mute otomatis pada 3 warning" },
-    { value: "{\"3\":\"mute\",\"5\":\"kick\"}", label: "Mute pada 3, kick pada 5 warning" },
-    { value: "{\"3\":\"mute\",\"5\":\"kick\",\"7\":\"ban\"}", label: "Mute pada 3, kick pada 5, ban pada 7 warning" },
-  ];
 
   return (
     <div className="space-y-6">
@@ -318,7 +309,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
               field="language"
               value={s?.language === "en" ? "en-US" : s?.language}
               guildId={guildId}
-              options={languageOptions}
+              options={LANGUAGE_OPTIONS}
               placeholder="— Pilih bahasa —"
             />
           </div>
@@ -502,7 +493,7 @@ export function SettingsForm({ guildId, initialSettings }: Props) {
               field="warn_escalation"
               value={normalizeEscalationValue(s?.warn_escalation)}
               guildId={guildId}
-              options={escalationOptions}
+              options={WARN_ESCALATION_PRESETS}
               placeholder="— Tidak ada —"
             />
           </div>

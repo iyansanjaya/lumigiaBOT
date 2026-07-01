@@ -1,5 +1,14 @@
 import Database from 'better-sqlite3';
 import { getDatabasePath } from '@/lib/env';
+import {
+  AUTOMOD_ACTIONS,
+  AUTOMOD_FILTER_KEYS,
+  FANART_SETTINGS_FIELDS,
+  GUILD_SETTINGS_FIELDS,
+  LEVELING_SETTINGS_FIELDS,
+  STREAM_PLATFORMS,
+  VOICE_SETTINGS_FIELDS,
+} from '@/lib/contracts';
 import type { GuildSettings } from '@/types/guild';
 import type { Ticket, TicketStats } from '@/types/ticket';
 import type { Warning, AuditLog, AutoModFilter, AutoModWhitelistEntry } from '@/types/moderation';
@@ -203,21 +212,9 @@ export function getTopChannels(guildId: string, days = 7, limit = 10): ChannelAc
 // ═══════════════════════════ CORE WRITE ═══════════════════════════
 
 /** Whitelist field yang diizinkan — sama persis dengan bot GuildSettingsRepo.js */
-const ALLOWED_SETTINGS_FIELDS = new Set([
-  'language', 'mod_log_channel', 'automod_log_channel',
-  'ticket_category', 'ticket_support_role', 'ticket_log_channel',
-  'ticket_max_open', 'ticket_auto_close_hours', 'warn_escalation',
-  'anti_raid_enabled', 'anti_raid_threshold', 'anti_raid_timeframe',
-  'welcome_enabled', 'welcome_channel', 'welcome_message',
-]);
-
-const ALLOWED_FILTER_NAMES = new Set([
-  'spam', 'link', 'word', 'caps', 'emoji', 'mention',
-]);
-
-const ALLOWED_ACTIONS = new Set([
-  'delete', 'warn', 'mute', 'kick', 'ban',
-]);
+const ALLOWED_SETTINGS_FIELDS = new Set(GUILD_SETTINGS_FIELDS);
+const ALLOWED_FILTER_NAMES = new Set(AUTOMOD_FILTER_KEYS);
+const ALLOWED_ACTIONS = new Set(AUTOMOD_ACTIONS);
 
 /**
  * Update satu field guild settings.
@@ -278,11 +275,8 @@ export function updateAutoModFilter(
 
 // ═══════════════════════════ STREAMER WRITE ═══════════════════════════
 
-const ALLOWED_VOICE_FIELDS = new Set(['enabled', 'default_limit', 'default_name', 'hub_channel_id', 'category_id']);
-const ALLOWED_LEVELING_FIELDS = new Set([
-  'enabled', 'xp_per_message', 'xp_cooldown', 'multiplier',
-  'announce_channel', 'ignored_channels', 'ignored_roles',
-]);
+const ALLOWED_VOICE_FIELDS = new Set(VOICE_SETTINGS_FIELDS);
+const ALLOWED_LEVELING_FIELDS = new Set(LEVELING_SETTINGS_FIELDS);
 
 /** Update voice channel settings */
 export function updateVoiceSetting(guildId: string, field: string, value: string | number | null): boolean {
@@ -307,7 +301,7 @@ export function updateLevelingSetting(guildId: string, field: string, value: str
 }
 
 // ── Fan Art Settings Write ──
-const ALLOWED_FANART_FIELDS = new Set(['enabled', 'submit_channel', 'gallery_channel', 'approval_required', 'vote_emoji']);
+const ALLOWED_FANART_FIELDS = new Set(FANART_SETTINGS_FIELDS);
 
 /** Update fan art settings */
 export function updateFanArtSetting(guildId: string, field: string, value: string | number | null): boolean {
@@ -327,7 +321,7 @@ export function addStreamNotification(
   guildId: string, platform: string, platformUser: string,
   notifyChannel: string, pingRole: string | null, customMessage: string | null,
 ): boolean {
-  if (!['twitch', 'youtube'].includes(platform)) throw new Error(`Platform tidak valid: ${platform}`);
+  if (!STREAM_PLATFORMS.includes(platform)) throw new Error(`Platform tidak valid: ${platform}`);
   try {
     getDb().prepare(`
       INSERT INTO stream_notifications (guild_id, platform, platform_user, notify_channel, ping_role, custom_message)

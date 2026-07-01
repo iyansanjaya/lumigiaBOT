@@ -3,6 +3,8 @@
  * Mengelola XP user, level, rewards, dan settings per guild.
  */
 
+import { LEVELING_SETTINGS_FIELDS } from '../../../../shared/contracts.js';
+
 export default class LevelingRepo {
   /**
    * @param {import('better-sqlite3').Database} db
@@ -144,11 +146,7 @@ export default class LevelingRepo {
    * @param {*} value
    */
   updateSetting(guildId, field, value) {
-    const ALLOWED = new Set([
-      'enabled', 'xp_per_message', 'xp_cooldown', 'multiplier',
-      'multiplier_expires', 'announce_channel', 'ignored_channels', 'ignored_roles',
-    ]);
-    if (!ALLOWED.has(field)) throw new Error(`Field tidak diizinkan: ${field}`);
+    if (!LEVELING_SETTINGS_FIELDS.includes(field)) throw new Error(`Field tidak diizinkan: ${field}`);
 
     // Use direct query since we can't use template in prepare
     this.db.prepare(`UPDATE leveling_settings SET ${field} = ? WHERE guild_id = ?`).run(value, guildId);

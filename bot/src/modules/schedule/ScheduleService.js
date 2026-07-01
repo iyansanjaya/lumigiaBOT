@@ -5,13 +5,12 @@
  */
 
 import { EmbedBuilder } from 'discord.js';
+import { SCHEDULE_DAY_NAMES, SCHEDULE_DAY_ORDER } from '../../../../shared/contracts.js';
 
 /** Warna embed jadwal (#9B59B6) */
 const SCHEDULE_COLOR = 0x9B59B6;
 
 /** Nama hari dalam Bahasa Indonesia, diindeks 0=Minggu */
-const DAY_NAMES_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-
 /**
  * Peta nama hari (lowercase) → nomor hari.
  * Mendukung nama hari dalam Bahasa Indonesia maupun Inggris.
@@ -62,7 +61,6 @@ export default class ScheduleService {
     }
 
     // Kelompokkan jadwal berdasarkan hari (urutan Senin=1 ... Sabtu=6, Minggu=0)
-    const dayOrder = [1, 2, 3, 4, 5, 6, 0]; // Senin – Minggu
     /** @type {Map<number, object[]>} */
     const grouped = new Map();
 
@@ -74,7 +72,7 @@ export default class ScheduleService {
     }
 
     // Bangun field untuk setiap hari yang memiliki jadwal
-    for (const day of dayOrder) {
+    for (const day of SCHEDULE_DAY_ORDER) {
       const entries = grouped.get(day);
       if (!entries || entries.length === 0) continue;
 
@@ -101,7 +99,7 @@ export default class ScheduleService {
    * @returns {string} Nama hari dalam Bahasa Indonesia
    */
   static formatDay(dayNumber) {
-    return DAY_NAMES_ID[dayNumber] ?? 'Unknown';
+    return SCHEDULE_DAY_NAMES[dayNumber] ?? 'Unknown';
   }
 
   /**

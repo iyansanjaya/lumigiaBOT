@@ -7,6 +7,7 @@ import {
   Check, Loader2,
   MessageSquare, Link2, Type, ShieldAlert, SmilePlus, AtSign,
 } from 'lucide-react';
+import { AUTOMOD_ACTION_CHOICES } from '@/lib/contracts';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   spam: MessageSquare,
@@ -26,8 +27,6 @@ interface AutoModCardProps {
   initialAction: string;
   initialConfig?: Record<string, any>;
 }
-
-const ACTIONS = ['delete', 'warn', 'mute', 'kick', 'ban'];
 
 export function AutoModCard({
   guildId,
@@ -130,9 +129,9 @@ export function AutoModCard({
               disabled={saving}
               className="rounded-lg border border-border bg-background px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
-              {ACTIONS.map((a) => (
-                <option key={a} value={a}>
-                  {a.charAt(0).toUpperCase() + a.slice(1)}
+              {AUTOMOD_ACTION_CHOICES.map((a) => (
+                <option key={a.value} value={a.value}>
+                  {a.label}
                 </option>
               ))}
             </select>

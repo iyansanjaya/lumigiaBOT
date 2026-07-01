@@ -7,6 +7,7 @@ import i18next from 'i18next';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { GUILD_SETTINGS_DEFAULTS, normalizeLanguage } from '../../../shared/contracts.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -19,8 +20,8 @@ export async function initI18n() {
   const id = JSON.parse(readFileSync(join(__dirname, 'locales', 'id.json'), 'utf-8'));
 
   await i18next.init({
-    lng: process.env.DEFAULT_LANGUAGE || 'en-US',
-    fallbackLng: 'en-US',
+    lng: normalizeLanguage(process.env.DEFAULT_LANGUAGE),
+    fallbackLng: GUILD_SETTINGS_DEFAULTS.language,
     interpolation: {
       escapeValue: false, // Discord menangani escaping-nya sendiri
     },

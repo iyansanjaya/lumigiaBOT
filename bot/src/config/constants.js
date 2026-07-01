@@ -3,6 +3,8 @@
  * Nilai konfigurasi terpusat yang digunakan di seluruh bot.
  */
 
+import { DEFAULT_WARN_ESCALATION } from '../../../shared/contracts.js';
+
 /** Warna embed untuk tema visual yang konsisten */
 export const Colors = {
   PRIMARY: 0x7C3AED,    // Ungu - warna brand
@@ -50,11 +52,7 @@ export const AntiRaidDefaults = {
 };
 
 /** Nilai default eskalasi peringatan */
-export const EscalationDefaults = {
-  3: 'mute',
-  5: 'kick',
-  7: 'ban',
-};
+export const EscalationDefaults = DEFAULT_WARN_ESCALATION;
 
 /** Batasan bot */
 export const Limits = {

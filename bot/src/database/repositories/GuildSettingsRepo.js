@@ -2,6 +2,8 @@
  * LumigiaBOT — Repository Pengaturan Guild
  */
 
+import { GUILD_SETTINGS_FIELDS, normalizeLanguage } from '../../../../shared/contracts.js';
+
 export default class GuildSettingsRepo {
   /** @param {import('better-sqlite3').Database} db */
   constructor(db) {
@@ -29,17 +31,12 @@ export default class GuildSettingsRepo {
   /** Memperbarui satu field untuk guild. */
   set(guildId, field, value) {
     this.ensureExists(guildId);
-    // Gunakan pendekatan aman: hanya izinkan field yang diketahui
-    const allowedFields = [
-      'language', 'mod_log_channel', 'automod_log_channel',
-      'ticket_category', 'ticket_support_role', 'ticket_log_channel',
-      'ticket_max_open', 'ticket_auto_close_hours', 'warn_escalation',
-      'anti_raid_enabled', 'anti_raid_threshold', 'anti_raid_timeframe',
-      'welcome_enabled', 'welcome_channel', 'welcome_message',
-    ];
-
-    if (!allowedFields.includes(field)) {
+    if (!GUILD_SETTINGS_FIELDS.includes(field)) {
       throw new Error(`Invalid field: ${field}`);
+    }
+
+    if (field === 'language') {
+      value = normalizeLanguage(value);
     }
 
     const stmt = this.db.prepare(

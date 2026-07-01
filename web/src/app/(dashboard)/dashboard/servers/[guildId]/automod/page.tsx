@@ -1,18 +1,10 @@
 import { getAutoModFilters } from '@/lib/database';
 import { AutoModCard } from '@/components/dashboard/AutoModCard';
+import { AUTOMOD_DEFAULT_ACTION, AUTOMOD_FILTERS } from '@/lib/contracts';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
 }
-
-const defaultFilters = [
-  { key: 'spam', name: 'Spam Detection', description: 'Automatically detect and remove spam messages.' },
-  { key: 'link', name: 'Link Filter', description: 'Block or restrict links from being posted.' },
-  { key: 'word', name: 'Word Filter', description: 'Filter messages containing banned words or phrases.' },
-  { key: 'caps', name: 'Caps Lock Filter', description: 'Prevent excessive use of capital letters.' },
-  { key: 'emoji', name: 'Emoji Spam Filter', description: 'Limit excessive emoji usage in messages.' },
-  { key: 'mention', name: 'Mention Spam Filter', description: 'Prevent mass mention abuse.' },
-];
 
 export default async function AutoModPage({ params }: PageProps) {
   const { guildId } = await params;
@@ -37,10 +29,10 @@ export default async function AutoModPage({ params }: PageProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {defaultFilters.map((filter) => {
+        {AUTOMOD_FILTERS.map((filter) => {
           const configured = filterMap.get(filter.key);
           const enabled = configured?.enabled ?? false;
-          const action = configured?.action ?? 'delete';
+          const action = configured?.action ?? AUTOMOD_DEFAULT_ACTION;
           const configString = configured?.config ?? '{}';
 
           let parsedConfig = {};
@@ -55,7 +47,7 @@ export default async function AutoModPage({ params }: PageProps) {
               key={filter.key}
               guildId={guildId}
               filterKey={filter.key}
-              name={filter.name}
+              name={filter.dashboardName}
               description={filter.description}
               initialEnabled={!!enabled}
               initialAction={action}
