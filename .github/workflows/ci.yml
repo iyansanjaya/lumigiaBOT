@@ -36,4 +36,5 @@ jobs:
       - run: corepack enable
       - run: corepack prepare pnpm@11.7.0 --activate
       - run: pnpm install --frozen-lockfile
+      - run: pnpm smoke
       - run: pnpm build

@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "smoke": "node --test scripts/smoke-tests.mjs",
+    "test": "pnpm run smoke",
     "start": "next start",
     "lint": "next lint"
   },
