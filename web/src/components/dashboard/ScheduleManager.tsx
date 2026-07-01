@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import type { StreamScheduleEntry } from "@/types/streamer";
 import { SCHEDULE_DAY_NAMES, SCHEDULE_DAY_OPTIONS, SCHEDULE_DAY_ORDER } from "@/lib/contracts";
+import { dashboardRequest, getDashboardErrorMessage } from "./dashboardApi";
 
 // ─── Props ───
 interface Props {
@@ -30,6 +31,7 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
 
   // Delete state per entry id
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [actionError, setActionError] = useState("");
 
   // Add form state
   const [adding, setAdding] = useState(false);
@@ -46,17 +48,16 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
   // ─── Delete handler ───
   async function handleDelete(id: number) {
     setDeletingId(id);
+    setActionError("");
     try {
-      const res = await fetch(`/api/guilds/${guildId}/schedule`, {
+      await dashboardRequest(`/api/guilds/${guildId}/schedule`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      if (res.ok) {
-        setEntries((prev) => prev.filter((e) => e.id !== id));
-      }
-    } catch {
-      // silent fail
+      setEntries((prev) => prev.filter((e) => e.id !== id));
+    } catch (error) {
+      setActionError(getDashboardErrorMessage(error, "Gagal menghapus jadwal."));
     } finally {
       setDeletingId(null);
     }
@@ -79,10 +80,11 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
     }
 
     setAddError("");
+    setActionError("");
     setAddState("saving");
 
     try {
-      const res = await fetch(`/api/guilds/${guildId}/schedule`, {
+      await dashboardRequest(`/api/guilds/${guildId}/schedule`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -94,26 +96,17 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
         }),
       });
 
-      if (res.ok) {
-        setAddState("saved");
-        // Reset form
-        setTime("");
-        setTimezone("");
-        setTitle("");
-        setDescription("");
-        setDayOfWeek("1");
-        setAdding(false);
-        // Refresh server data
-        router.refresh();
-        setTimeout(() => setAddState("idle"), 2000);
-      } else {
-        const data = await res.json().catch(() => ({}));
-        setAddError(data.error || "Gagal menambah jadwal. Coba lagi.");
-        setAddState("error");
-        setTimeout(() => setAddState("idle"), 3000);
-      }
-    } catch {
-      setAddError("Gagal menambah jadwal. Coba lagi.");
+      setAddState("saved");
+      setTime("");
+      setTimezone("");
+      setTitle("");
+      setDescription("");
+      setDayOfWeek("1");
+      setAdding(false);
+      router.refresh();
+      setTimeout(() => setAddState("idle"), 2000);
+    } catch (error) {
+      setAddError(getDashboardErrorMessage(error, "Gagal menambah jadwal. Coba lagi."));
       setAddState("error");
       setTimeout(() => setAddState("idle"), 3000);
     }
@@ -200,6 +193,10 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
                 );
               })}
             </div>
+          )}
+
+          {actionError && (
+            <p className="text-sm text-red-400">{actionError}</p>
           )}
         </CardContent>
       </Card>

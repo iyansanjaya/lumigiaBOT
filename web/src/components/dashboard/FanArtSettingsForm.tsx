@@ -5,6 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Palette, Save, Check, Loader2 } from "lucide-react";
 import { ChannelSelect } from "@/components/dashboard/ChannelSelect";
 import type { FanArtSettings } from "@/types/streamer";
+import {
+  getDashboardErrorMessage,
+  patchDashboardField,
+  type DashboardFieldValue,
+} from "./dashboardApi";
 
 interface Props {
   guildId: string;
@@ -12,22 +17,22 @@ interface Props {
 }
 
 type SaveState = "idle" | "saving" | "saved" | "error";
+type SaveResult = { ok: true } | { ok: false; error: string };
 
 // ─── Save helper ───
 async function saveSetting(
   guildId: string,
   field: string,
-  value: string | number | null,
-): Promise<boolean> {
+  value: DashboardFieldValue,
+): Promise<SaveResult> {
   try {
-    const res = await fetch(`/api/guilds/${guildId}/fanart`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ field, value }),
-    });
-    return res.ok;
-  } catch {
-    return false;
+    await patchDashboardField(`/api/guilds/${guildId}/fanart`, field, value);
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      error: getDashboardErrorMessage(error, "Gagal menyimpan fan art."),
+    };
   }
 }
 
@@ -45,15 +50,23 @@ function ToggleInput({
 }) {
   const [enabled, setEnabled] = useState(value === 1);
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState("");
 
   async function toggle() {
     const newVal = enabled ? 0 : 1;
     setEnabled(!enabled);
     setSaveState("saving");
-    const ok = await saveSetting(guildId, field, newVal);
-    setSaveState(ok ? "saved" : "error");
-    if (!ok) setEnabled(enabled);
-    setTimeout(() => setSaveState("idle"), 2000);
+    setSaveError("");
+    const result = await saveSetting(guildId, field, newVal);
+    setSaveState(result.ok ? "saved" : "error");
+    if (!result.ok) {
+      setEnabled(enabled);
+      setSaveError(result.error);
+    }
+    setTimeout(() => {
+      setSaveState("idle");
+      setSaveError("");
+    }, 3000);
   }
 
   return (
@@ -83,6 +96,7 @@ function ToggleInput({
           <span className="text-xs text-red-400">Gagal</span>
         )}
       </div>
+      {saveError && <span className="text-xs text-red-400">{saveError}</span>}
     </div>
   );
 }
@@ -105,13 +119,19 @@ function TextInput({
 }) {
   const [currentValue, setCurrentValue] = useState(String(value ?? ""));
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState("");
 
   const save = useCallback(async () => {
     setSaveState("saving");
+    setSaveError("");
     const sendValue = currentValue === "" ? null : currentValue;
-    const ok = await saveSetting(guildId, field, sendValue);
-    setSaveState(ok ? "saved" : "error");
-    setTimeout(() => setSaveState("idle"), ok ? 2000 : 3000);
+    const result = await saveSetting(guildId, field, sendValue);
+    setSaveState(result.ok ? "saved" : "error");
+    if (!result.ok) setSaveError(result.error);
+    setTimeout(() => {
+      setSaveState("idle");
+      setSaveError("");
+    }, result.ok ? 2000 : 3000);
   }, [currentValue, field, guildId]);
 
   return (
@@ -145,7 +165,7 @@ function TextInput({
       </div>
       {saveState === "error" && (
         <span className="text-xs text-red-400">
-          Gagal menyimpan. Coba lagi.
+          {saveError || "Gagal menyimpan. Coba lagi."}
         </span>
       )}
     </div>

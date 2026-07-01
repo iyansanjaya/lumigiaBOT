@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { dashboardRequest, getDashboardErrorMessage } from './dashboardApi';
 
 interface DeleteFanArtButtonProps {
   id: number;
@@ -21,18 +22,14 @@ export function DeleteFanArtButton({ id, guildId }: DeleteFanArtButtonProps) {
     setIsDeleting(true);
 
     try {
-      const res = await fetch(`/api/guilds/${guildId}/fanart?id=${id}`, {
+      await dashboardRequest(`/api/guilds/${guildId}/fanart?id=${id}`, {
         method: 'DELETE',
       });
-
-      if (!res.ok) {
-        throw new Error('Gagal menghapus fan art');
-      }
 
       router.refresh();
     } catch (error) {
       console.error(error);
-      alert('Gagal menghapus fan art. Coba lagi.');
+      alert(getDashboardErrorMessage(error, 'Gagal menghapus fan art. Coba lagi.'));
     } finally {
       setIsDeleting(false);
     }

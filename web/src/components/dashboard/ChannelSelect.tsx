@@ -7,6 +7,7 @@ import {
   getGuildDiscordData,
   type DiscordChannel,
 } from './discordDataClient';
+import { dashboardRequest, getDashboardErrorMessage } from './dashboardApi';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -67,6 +68,7 @@ export function ChannelSelect({
   const [error, setError] = useState(false);
   const [currentValue, setCurrentValue] = useState(value ?? '');
   const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [saveError, setSaveError] = useState('');
   const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
@@ -97,23 +99,30 @@ export function ChannelSelect({
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {
       const newVal = e.target.value;
+      const previousValue = currentValue;
       setCurrentValue(newVal);
       setSaveState('saving');
+      setSaveError('');
 
       const endpoint = apiEndpoint ?? `/api/guilds/${guildId}/settings`;
       try {
-        const res = await fetch(endpoint, {
+        await dashboardRequest(endpoint, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ field, value: newVal || null }),
         });
-        setSaveState(res.ok ? 'saved' : 'error');
-      } catch {
+        setSaveState('saved');
+      } catch (error) {
+        setCurrentValue(previousValue);
         setSaveState('error');
+        setSaveError(getDashboardErrorMessage(error, 'Gagal menyimpan channel.'));
       }
-      setTimeout(() => setSaveState('idle'), 2000);
+      setTimeout(() => {
+        setSaveState('idle');
+        setSaveError('');
+      }, 3000);
     },
-    [guildId, field, apiEndpoint],
+    [currentValue, guildId, field, apiEndpoint],
   );
 
   if (error) {
@@ -160,6 +169,7 @@ export function ChannelSelect({
         {saveState === 'saved' && <Check className="h-4 w-4 text-green-500" />}
         {saveState === 'error' && <span className="text-xs text-red-400">Gagal</span>}
       </div>
+      {saveError && <span className="text-xs text-red-400">{saveError}</span>}
     </div>
   );
 }

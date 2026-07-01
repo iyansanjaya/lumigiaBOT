@@ -15,6 +15,11 @@ import {
 import { ChannelSelect } from "@/components/dashboard/ChannelSelect";
 import { RoleSelect } from "@/components/dashboard/RoleSelect";
 import { LANGUAGE_OPTIONS, WARN_ESCALATION_PRESETS } from "@/lib/contracts";
+import {
+  getDashboardErrorMessage,
+  patchDashboardField,
+  type DashboardFieldValue,
+} from "./dashboardApi";
 
 interface GuildSettings {
   guild_id: string;
@@ -41,6 +46,7 @@ interface Props {
 }
 
 type SaveState = "idle" | "saving" | "saved" | "error";
+type SaveResult = { ok: true } | { ok: false; error: string };
 
 function normalizeEscalationValue(value: string | null | undefined) {
   if (value === "none") return "{}";
@@ -54,17 +60,16 @@ function normalizeEscalationValue(value: string | null | undefined) {
 async function saveSetting(
   guildId: string,
   field: string,
-  value: string | number | null,
-): Promise<boolean> {
+  value: DashboardFieldValue,
+): Promise<SaveResult> {
   try {
-    const res = await fetch(`/api/guilds/${guildId}/settings`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ field, value }),
-    });
-    return res.ok;
-  } catch {
-    return false;
+    await patchDashboardField(`/api/guilds/${guildId}/settings`, field, value);
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      error: getDashboardErrorMessage(error, "Gagal menyimpan pengaturan."),
+    };
   }
 }
 
@@ -82,15 +87,23 @@ function ToggleInput({
 }) {
   const [enabled, setEnabled] = useState(value === 1);
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState("");
 
   async function toggle() {
     const newVal = enabled ? 0 : 1;
     setEnabled(!enabled);
     setSaveState("saving");
-    const ok = await saveSetting(guildId, field, newVal);
-    setSaveState(ok ? "saved" : "error");
-    if (!ok) setEnabled(enabled);
-    setTimeout(() => setSaveState("idle"), 2000);
+    setSaveError("");
+    const result = await saveSetting(guildId, field, newVal);
+    setSaveState(result.ok ? "saved" : "error");
+    if (!result.ok) {
+      setEnabled(enabled);
+      setSaveError(result.error);
+    }
+    setTimeout(() => {
+      setSaveState("idle");
+      setSaveError("");
+    }, 3000);
   }
 
   return (
@@ -120,6 +133,7 @@ function ToggleInput({
           <span className="text-xs text-red-400">Gagal</span>
         )}
       </div>
+      {saveError && <span className="text-xs text-red-400">{saveError}</span>}
     </div>
   );
 }
@@ -142,15 +156,25 @@ function SelectInput({
 }) {
   const [currentValue, setCurrentValue] = useState(String(value ?? ""));
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState("");
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const newVal = e.target.value;
+    const previousValue = currentValue;
     setCurrentValue(newVal);
     setSaveState("saving");
+    setSaveError("");
     const sendVal = newVal === "" ? null : newVal;
-    const ok = await saveSetting(guildId, field, sendVal);
-    setSaveState(ok ? "saved" : "error");
-    setTimeout(() => setSaveState("idle"), 2000);
+    const result = await saveSetting(guildId, field, sendVal);
+    setSaveState(result.ok ? "saved" : "error");
+    if (!result.ok) {
+      setCurrentValue(previousValue);
+      setSaveError(result.error);
+    }
+    setTimeout(() => {
+      setSaveState("idle");
+      setSaveError("");
+    }, 3000);
   }
 
   return (
@@ -177,6 +201,7 @@ function SelectInput({
           <span className="text-xs text-red-400">Gagal</span>
         )}
       </div>
+      {saveError && <span className="text-xs text-red-400">{saveError}</span>}
     </div>
   );
 }
@@ -201,9 +226,11 @@ function TextInput({
 }) {
   const [currentValue, setCurrentValue] = useState(String(value ?? ""));
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState("");
 
   const save = useCallback(async () => {
     setSaveState("saving");
+    setSaveError("");
     const sendValue =
       type === "number"
         ? currentValue === ""
@@ -212,9 +239,13 @@ function TextInput({
         : currentValue === ""
           ? null
           : currentValue;
-    const ok = await saveSetting(guildId, field, sendValue);
-    setSaveState(ok ? "saved" : "error");
-    setTimeout(() => setSaveState("idle"), ok ? 2000 : 3000);
+    const result = await saveSetting(guildId, field, sendValue);
+    setSaveState(result.ok ? "saved" : "error");
+    if (!result.ok) setSaveError(result.error);
+    setTimeout(() => {
+      setSaveState("idle");
+      setSaveError("");
+    }, result.ok ? 2000 : 3000);
   }, [currentValue, field, guildId, type]);
 
   return (
@@ -248,7 +279,7 @@ function TextInput({
       </div>
       {saveState === "error" && (
         <span className="text-xs text-red-400">
-          Gagal menyimpan. Coba lagi.
+          {saveError || "Gagal menyimpan. Coba lagi."}
         </span>
       )}
     </div>

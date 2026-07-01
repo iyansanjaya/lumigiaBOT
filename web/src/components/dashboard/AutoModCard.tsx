@@ -8,6 +8,7 @@ import {
   MessageSquare, Link2, Type, ShieldAlert, SmilePlus, AtSign,
 } from 'lucide-react';
 import { AUTOMOD_ACTION_CHOICES } from '@/lib/contracts';
+import { dashboardRequest, getDashboardErrorMessage } from './dashboardApi';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   spam: MessageSquare,
@@ -42,14 +43,21 @@ export function AutoModCard({
   const [config, setConfig] = useState<Record<string, any>>(initialConfig);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   const Icon = ICON_MAP[filterKey] || ShieldAlert;
 
-  async function save(newEnabled: boolean, newAction: string, newConfig: Record<string, any> = config) {
+  async function save(
+    newEnabled: boolean,
+    newAction: string,
+    newConfig: Record<string, any> = config,
+    previous = { enabled, action, config },
+  ) {
     setSaving(true);
     setSaved(false);
+    setSaveError('');
     try {
-      const res = await fetch(`/api/guilds/${guildId}/automod`, {
+      await dashboardRequest(`/api/guilds/${guildId}/automod`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -59,12 +67,13 @@ export function AutoModCard({
           config: newConfig,
         }),
       });
-      if (!res.ok) throw new Error();
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch {
-      setEnabled(initialEnabled);
-      setAction(initialAction);
+    } catch (error) {
+      setEnabled(previous.enabled);
+      setAction(previous.action);
+      setConfig(previous.config);
+      setSaveError(getDashboardErrorMessage(error, 'Gagal menyimpan filter AutoMod.'));
     } finally {
       setSaving(false);
     }
@@ -140,6 +149,7 @@ export function AutoModCard({
           {saving && <Loader2 className="h-4 w-4 animate-spin text-foreground-muted" />}
           {saved && <Check className="h-4 w-4 text-green-500" />}
         </div>
+        {saveError && <p className="text-xs text-red-400">{saveError}</p>}
 
         {/* ── Advanced Settings (Link Filter Only) ── */}
         {enabled && filterKey === 'link' && (

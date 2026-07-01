@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/table";
 import { Trash2, Plus, Loader2, Radio } from "lucide-react";
 import type { StreamNotification } from "@/types/streamer";
+import { dashboardRequest, getDashboardErrorMessage } from "./dashboardApi";
+import { getGuildDiscordData } from "./discordDataClient";
 
 interface Props {
   guildId: string;
@@ -23,6 +25,7 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
   const router = useRouter();
   const [notifications, setNotifications] = useState(initialNotifications);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [actionError, setActionError] = useState("");
 
   // ─── Add form state ───
   const [adding, setAdding] = useState(false);
@@ -39,30 +42,38 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
   const [loadingDiscord, setLoadingDiscord] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/guilds/${guildId}/discord-data`)
-      .then(r => r.json())
-      .then(data => {
-        setDiscordChannels(data.channels?.filter((c: any) => c.type === 0 || c.type === 5) ?? []);
-        setDiscordRoles(data.roles ?? []);
+    let cancelled = false;
+
+    setLoadingDiscord(true);
+    getGuildDiscordData(guildId)
+      .then(({ channels, roles }) => {
+        if (cancelled) return;
+        setDiscordChannels(channels.filter((c) => c.type === 0 || c.type === 5));
+        setDiscordRoles(roles);
       })
       .catch(() => {})
-      .finally(() => setLoadingDiscord(false));
+      .finally(() => {
+        if (!cancelled) setLoadingDiscord(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [guildId]);
 
   // ─── Delete handler ───
   async function handleDelete(id: number) {
     setDeletingId(id);
+    setActionError("");
     try {
-      const res = await fetch(`/api/guilds/${guildId}/streams`, {
+      await dashboardRequest(`/api/guilds/${guildId}/streams`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      if (res.ok) {
-        setNotifications((prev) => prev.filter((n) => n.id !== id));
-      }
-    } catch {
-      // silent fail
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    } catch (error) {
+      setActionError(getDashboardErrorMessage(error, "Gagal menghapus notifikasi stream."));
     }
     setDeletingId(null);
   }
@@ -84,7 +95,7 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
 
     setAdding(true);
     try {
-      const res = await fetch(`/api/guilds/${guildId}/streams`, {
+      await dashboardRequest(`/api/guilds/${guildId}/streams`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,20 +106,15 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
           custom_message: customMessage.trim() || null,
         }),
       });
-      if (res.ok) {
-        setPlatform("twitch");
-        setPlatformUser("");
-        setNotifyChannel("");
-        setPingRole("");
-        setCustomMessage("");
-        setAddError("");
-        router.refresh();
-      } else {
-        const data = await res.json().catch(() => ({}));
-        setAddError(data.error || "Gagal menambah notifikasi stream.");
-      }
-    } catch {
-      setAddError("Gagal menambah notifikasi stream.");
+      setPlatform("twitch");
+      setPlatformUser("");
+      setNotifyChannel("");
+      setPingRole("");
+      setCustomMessage("");
+      setAddError("");
+      router.refresh();
+    } catch (error) {
+      setAddError(getDashboardErrorMessage(error, "Gagal menambah notifikasi stream."));
     }
     setAdding(false);
   }
@@ -199,6 +205,10 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {actionError && (
+        <p className="text-sm text-red-400">{actionError}</p>
       )}
 
       {/* Add New Notification Form */}
