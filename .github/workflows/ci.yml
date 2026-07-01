@@ -6,7 +6,7 @@ on:
 
 jobs:
   bot:
-    name: Bot syntax check
+    name: Bot checks
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -20,6 +20,7 @@ jobs:
           cache-dependency-path: bot/package-lock.json
       - run: npm ci
       - run: npm run check
+      - run: npm run smoke
 
   web:
     name: Web build

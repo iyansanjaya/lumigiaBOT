@@ -10,6 +10,8 @@
     "dev": "node --watch src/index.js",
     "backup": "node scripts/backup-db.mjs",
     "check": "node scripts/check-syntax.mjs",
+    "smoke": "node --test scripts/smoke-tests.mjs",
+    "test": "npm run check && npm run smoke",
     "lint": "eslint src/"
   },
   "keywords": ["discord", "bot", "moderation", "ticketing"],

@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import { NextResponse } from 'next/server';
-import { checkRequiredWebEnv, getDatabasePath } from '@/lib/env';
+import { checkRequiredWebEnv, getDataDir, getDatabasePath } from '@/lib/env';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,15 +10,19 @@ function shouldExposeDetails() {
 
 function checkDatabase() {
   let db: Database.Database | null = null;
+  const path = getDatabasePath();
+  const dataDir = getDataDir();
 
   try {
-    db = new Database(getDatabasePath(), { fileMustExist: true });
+    db = new Database(path, { fileMustExist: true });
     db.prepare('SELECT 1').get();
 
-    return { ok: true };
+    return { ok: true, path, dataDir };
   } catch (error) {
     return {
       ok: false,
+      path,
+      dataDir,
       error: error instanceof Error ? error.message : 'Unknown database error',
     };
   } finally {

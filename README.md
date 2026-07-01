@@ -183,6 +183,8 @@ TWITCH_CLIENT_ID=your_twitch_client_id
 TWITCH_CLIENT_SECRET=your_twitch_client_secret
 ```
 
+Catatan Docker: `compose.yml` akan override `DATABASE_PATH` menjadi `/app/data/lumigiabot.db` di dalam container supaya bot dan dashboard selalu membaca volume database yang sama. Nilai relatif di `.env` tetap cocok untuk mode lokal.
+
 ### 2A. Jalankan dengan Docker (Direkomendasikan) 🐳
 
 ```bash
