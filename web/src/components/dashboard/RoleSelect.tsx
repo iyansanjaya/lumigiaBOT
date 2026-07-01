@@ -2,28 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Loader2, Check } from 'lucide-react';
-
-interface Role {
-  id: string;
-  name: string;
-  color: number;
-}
+import {
+  clearGuildDiscordDataCache,
+  getGuildDiscordData,
+  type DiscordRole,
+} from './discordDataClient';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
-
-// ── Cache roles per guild (shared dengan ChannelSelect fetch) ──
-const roleCache = new Map<string, { data: Role[]; expires: number }>();
-
-async function fetchRoles(guildId: string): Promise<Role[]> {
-  const cached = roleCache.get(guildId);
-  if (cached && Date.now() < cached.expires) return cached.data;
-
-  const res = await fetch(`/api/guilds/${guildId}/discord-data`);
-  if (!res.ok) throw new Error('Gagal memuat role');
-  const { roles } = await res.json();
-  roleCache.set(guildId, { data: roles, expires: Date.now() + 60_000 });
-  return roles;
-}
 
 /** Konversi Discord int color ke hex CSS string */
 function colorToHex(color: number): string {
@@ -49,23 +34,35 @@ export function RoleSelect({
   hint,
   apiEndpoint,
 }: RoleSelectProps) {
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<DiscordRole[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [currentValue, setCurrentValue] = useState(value ?? '');
   const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
-    fetchRoles(guildId)
-      .then((r) => {
-        setRoles(r);
-        setLoading(false);
+    let cancelled = false;
+
+    setLoading(true);
+    setError(false);
+
+    getGuildDiscordData(guildId)
+      .then(({ roles: r }) => {
+        if (!cancelled) setRoles(r);
       })
       .catch(() => {
+        if (cancelled) return;
         setError(true);
-        setLoading(false);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
-  }, [guildId]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [guildId, retryKey]);
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -93,7 +90,17 @@ export function RoleSelect({
     return (
       <div className="flex flex-col gap-1.5">
         <label className="text-foreground-muted text-sm">{label}</label>
-        <span className="text-xs text-red-400">Gagal memuat role. Pastikan bot sudah ada di server.</span>
+        <span className="text-xs text-red-400">Gagal memuat role Discord. Coba lagi, atau pastikan bot masih ada di server.</span>
+        <button
+          type="button"
+          onClick={() => {
+            clearGuildDiscordDataCache(guildId);
+            setRetryKey((key) => key + 1);
+          }}
+          className="w-fit text-xs font-medium text-primary hover:text-primary-light"
+        >
+          Coba lagi
+        </button>
       </div>
     );
   }

@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Loader2, Check, Hash, Volume2, FolderOpen, Megaphone } from 'lucide-react';
-
-interface Channel {
-  id: string;
-  name: string;
-  type: number; // 0=text, 2=voice, 4=category, 5=announcement, 13=stage, 15=forum
-  parent_id: string | null;
-}
+import {
+  clearGuildDiscordDataCache,
+  getGuildDiscordData,
+  type DiscordChannel,
+} from './discordDataClient';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -43,20 +41,6 @@ function ChannelIcon({ type }: { type: number }) {
   }
 }
 
-// ── Cache channels per guild ──
-const channelCache = new Map<string, { data: Channel[]; expires: number }>();
-
-async function fetchChannels(guildId: string): Promise<Channel[]> {
-  const cached = channelCache.get(guildId);
-  if (cached && Date.now() < cached.expires) return cached.data;
-
-  const res = await fetch(`/api/guilds/${guildId}/discord-data`);
-  if (!res.ok) throw new Error('Gagal memuat channel');
-  const { channels } = await res.json();
-  channelCache.set(guildId, { data: channels, expires: Date.now() + 60_000 });
-  return channels;
-}
-
 interface ChannelSelectProps {
   guildId: string;
   label: string;
@@ -78,24 +62,37 @@ export function ChannelSelect({
   channelType = 'text',
   apiEndpoint,
 }: ChannelSelectProps) {
-  const [channels, setChannels] = useState<Channel[]>([]);
+  const [channels, setChannels] = useState<DiscordChannel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [currentValue, setCurrentValue] = useState(value ?? '');
   const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
-    fetchChannels(guildId)
-      .then((ch) => {
+    let cancelled = false;
+
+    setLoading(true);
+    setError(false);
+
+    getGuildDiscordData(guildId)
+      .then(({ channels: ch }) => {
+        if (cancelled) return;
         const allowed = TYPE_FILTER[channelType] ?? TYPE_FILTER.all;
         setChannels(ch.filter((c) => allowed.includes(c.type)));
-        setLoading(false);
       })
       .catch(() => {
+        if (cancelled) return;
         setError(true);
-        setLoading(false);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
-  }, [guildId, channelType]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [guildId, channelType, retryKey]);
 
   const handleChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -123,7 +120,17 @@ export function ChannelSelect({
     return (
       <div className="flex flex-col gap-1.5">
         <label className="text-foreground-muted text-sm">{label}</label>
-        <span className="text-xs text-red-400">Gagal memuat channel. Pastikan bot sudah ada di server.</span>
+        <span className="text-xs text-red-400">Gagal memuat channel Discord. Coba lagi, atau pastikan bot masih ada di server.</span>
+        <button
+          type="button"
+          onClick={() => {
+            clearGuildDiscordDataCache(guildId);
+            setRetryKey((key) => key + 1);
+          }}
+          className="w-fit text-xs font-medium text-primary hover:text-primary-light"
+        >
+          Coba lagi
+        </button>
       </div>
     );
   }
