@@ -59,6 +59,17 @@ test('sensitive transcript route validates ticket id before reading files', () =
   assert.match(source, /guard\.guildId/, 'file path must use guarded guild id');
 });
 
+test('health endpoint checks env, database, schema, and runtime metadata', () => {
+  const source = read('src/app/api/health/route.ts');
+
+  assert.match(source, /checkRequiredWebEnv/, 'health route must check required web env');
+  assert.match(source, /getDatabasePath/, 'health route must resolve database path');
+  assert.match(source, /REQUIRED_TABLES/, 'health route must validate expected schema tables');
+  assert.match(source, /missingTables/, 'health response must expose missing database tables when detailed');
+  assert.match(source, /packageJson\.version/, 'health route must include app version metadata');
+  assert.match(source, /Cache-Control': 'no-store'/, 'health response must not be cached');
+});
+
 test('web contracts re-export the shared contract source of truth', async () => {
   const webContracts = read('src/lib/contracts.ts');
 
