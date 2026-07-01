@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { updateGuildSetting } from '@/lib/database';
-import { canManageGuild } from '@/lib/discord-api';
-import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
+import { requireGuildManager } from '@/lib/api-guard';
 import { normalizeLanguage } from '@/lib/contracts';
+import { updateGuildSetting } from '@/lib/database';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -11,34 +9,9 @@ interface RouteParams {
 
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
   try {
-    // ── 1. Auth check ──
-    const session = await auth();
-    if (!session?.accessToken) {
-      return NextResponse.json({ error: 'Unauthorized — please log in again' }, { status: 401 });
-    }
+    const guard = await requireGuildManager(req, params, { scope: 'settings' });
+    if (!guard.ok) return guard.response;
 
-    const { guildId } = await params;
-
-    // ── 2. Validate guildId format (hanya angka, keamanan) ──
-    if (!/^\d{17,20}$/.test(guildId)) {
-      return NextResponse.json({ error: 'Invalid guild ID format' }, { status: 400 });
-    }
-
-    // ── 3. Permission check via Discord API ──
-    const rateLimit = checkRateLimit(
-      buildRateLimitKey(req, `guild:${guildId}:settings`, session.accessToken),
-    );
-    if (!rateLimit.ok) return rateLimitResponse(rateLimit);
-
-    const hasAccess = await canManageGuild(session.accessToken, guildId);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Forbidden — you do not have Manage Server permission' },
-        { status: 403 },
-      );
-    }
-
-    // ── 4. Parse & validate body ──
     let body: { field: string; value: string | number | null };
     try {
       body = await req.json();
@@ -50,18 +23,16 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Missing or invalid field' }, { status: 400 });
     }
 
-    // Sanitize value — strip leading/trailing whitespace on strings
     if (typeof body.value === 'string') {
       body.value = body.value.trim();
       if (body.value === '') body.value = null;
     }
 
-    // ── 5. Update database (whitelist validation inside) ──
     if (body.field === 'language' && typeof body.value === 'string') {
       body.value = normalizeLanguage(body.value);
     }
 
-    const success = updateGuildSetting(guildId, body.field, body.value);
+    const success = updateGuildSetting(guard.guildId, body.field, body.value);
     if (!success) {
       return NextResponse.json({ error: 'Failed to update setting' }, { status: 500 });
     }

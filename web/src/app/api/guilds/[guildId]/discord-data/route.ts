@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { canManageGuild } from '@/lib/discord-api';
-import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
+import { requireGuildManager } from '@/lib/api-guard';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -23,9 +21,19 @@ interface DiscordRole {
   managed: boolean;
 }
 
-// ── In-memory cache (60 detik) ──
 const cache = new Map<string, { data: unknown; expires: number }>();
 const CACHE_TTL = 60_000;
+
+const CHANNEL_TYPE = {
+  GUILD_TEXT: 0,
+  GUILD_VOICE: 2,
+  GUILD_CATEGORY: 4,
+  GUILD_ANNOUNCEMENT: 5,
+  GUILD_STAGE_VOICE: 13,
+  GUILD_FORUM: 15,
+} as const;
+
+const BOT_TOKEN = process.env.DISCORD_TOKEN;
 
 function getCached<T>(key: string): T | null {
   const entry = cache.get(key);
@@ -38,65 +46,26 @@ function setCache(key: string, data: unknown) {
   cache.set(key, { data, expires: Date.now() + CACHE_TTL });
 }
 
-// Discord channel types
-const CHANNEL_TYPE = {
-  GUILD_TEXT: 0,
-  GUILD_VOICE: 2,
-  GUILD_CATEGORY: 4,
-  GUILD_ANNOUNCEMENT: 5,
-  GUILD_STAGE_VOICE: 13,
-  GUILD_FORUM: 15,
-} as const;
-
-const BOT_TOKEN = process.env.DISCORD_TOKEN;
-
-/**
- * GET /api/guilds/[guildId]/discord-data
- * Fetch channels & roles dari Discord API menggunakan Bot Token.
- * Response: { channels, roles }
- */
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
-    // 1. Auth check
-    const session = await auth();
-    if (!session?.accessToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { guildId } = await params;
-    if (!/^\d{17,20}$/.test(guildId)) {
-      return NextResponse.json({ error: 'Invalid guild ID format' }, { status: 400 });
-    }
-
-    const rateLimit = checkRateLimit(
-      buildRateLimitKey(req, `guild:${guildId}:discord-data`, session.accessToken),
-      { limit: 120 },
-    );
-    if (!rateLimit.ok) return rateLimitResponse(rateLimit);
-
-    // 2. Permission check
-    const hasAccess = await canManageGuild(session.accessToken, guildId);
-    if (!hasAccess) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const guard = await requireGuildManager(req, params, { scope: 'discord-data', limit: 120 });
+    if (!guard.ok) return guard.response;
 
     if (!BOT_TOKEN) {
       return NextResponse.json({ error: 'Bot token not configured' }, { status: 500 });
     }
 
-    // 3. Check cache
-    const cacheKey = `guild-data:${guildId}`;
+    const cacheKey = `guild-data:${guard.guildId}`;
     const cached = getCached<{ channels: unknown[]; roles: unknown[] }>(cacheKey);
     if (cached) {
       return NextResponse.json(cached);
     }
 
-    // 4. Fetch dari Discord API (parallel)
     const headers = { Authorization: `Bot ${BOT_TOKEN}` };
 
     const [channelsRes, rolesRes] = await Promise.all([
-      fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, { headers, cache: 'no-store' }),
-      fetch(`https://discord.com/api/v10/guilds/${guildId}/roles`, { headers, cache: 'no-store' }),
+      fetch(`https://discord.com/api/v10/guilds/${guard.guildId}/channels`, { headers, cache: 'no-store' }),
+      fetch(`https://discord.com/api/v10/guilds/${guard.guildId}/roles`, { headers, cache: 'no-store' }),
     ]);
 
     if (!channelsRes.ok || !rolesRes.ok) {
@@ -110,7 +79,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     const rawChannels: DiscordChannel[] = await channelsRes.json();
     const rawRoles: DiscordRole[] = await rolesRes.json();
 
-    // 5. Filter & format channels
     const allowedTypes: Set<number> = new Set([
       CHANNEL_TYPE.GUILD_TEXT,
       CHANNEL_TYPE.GUILD_VOICE,
@@ -121,23 +89,22 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     ]);
 
     const channels = rawChannels
-      .filter((ch) => allowedTypes.has(ch.type))
+      .filter((channel) => allowedTypes.has(channel.type))
       .sort((a, b) => a.position - b.position)
-      .map((ch) => ({
-        id: ch.id,
-        name: ch.name,
-        type: ch.type,
-        parent_id: ch.parent_id,
+      .map((channel) => ({
+        id: channel.id,
+        name: channel.name,
+        type: channel.type,
+        parent_id: channel.parent_id,
       }));
 
-    // 6. Filter & format roles (hilangkan @everyone dan bot-managed roles)
     const roles = rawRoles
-      .filter((r) => r.name !== '@everyone' && !r.managed)
+      .filter((role) => role.name !== '@everyone' && !role.managed)
       .sort((a, b) => b.position - a.position)
-      .map((r) => ({
-        id: r.id,
-        name: r.name,
-        color: r.color,
+      .map((role) => ({
+        id: role.id,
+        name: role.name,
+        color: role.color,
       }));
 
     const result = { channels, roles };

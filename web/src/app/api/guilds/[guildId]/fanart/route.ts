@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { updateFanArtSetting } from '@/lib/database';
-import { canManageGuild } from '@/lib/discord-api';
-import { buildRateLimitKey, checkRateLimit, rateLimitResponse } from '@/lib/rate-limit';
+import { requireGuildManager } from '@/lib/api-guard';
+import { deleteFanArt, updateFanArtSetting } from '@/lib/database';
 
 interface RouteParams {
   params: Promise<{ guildId: string }>;
@@ -10,28 +8,13 @@ interface RouteParams {
 
 export async function PATCH(req: NextRequest, { params }: RouteParams) {
   try {
-    const session = await auth();
-    if (!session?.accessToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { guildId } = await params;
-    if (!/^\d{17,20}$/.test(guildId)) {
-      return NextResponse.json({ error: 'Invalid guild ID format' }, { status: 400 });
-    }
-
-    const rateLimit = checkRateLimit(
-      buildRateLimitKey(req, `guild:${guildId}:fanart`, session.accessToken),
-    );
-    if (!rateLimit.ok) return rateLimitResponse(rateLimit);
-
-    const hasAccess = await canManageGuild(session.accessToken, guildId);
-    if (!hasAccess) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const guard = await requireGuildManager(req, params, { scope: 'fanart' });
+    if (!guard.ok) return guard.response;
 
     let body: { field: string; value: string | number | null };
-    try { body = await req.json(); } catch {
+    try {
+      body = await req.json();
+    } catch {
       return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     }
 
@@ -44,7 +27,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       if (body.value === '') body.value = null;
     }
 
-    const success = updateFanArtSetting(guildId, body.field, body.value);
+    const success = updateFanArtSetting(guard.guildId, body.field, body.value);
     if (!success) {
       return NextResponse.json({ error: 'Failed to update fan art setting' }, { status: 500 });
     }
@@ -59,38 +42,17 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
 
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
-    const session = await auth();
-    if (!session?.accessToken) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { guildId } = await params;
-    if (!/^\d{17,20}$/.test(guildId)) {
-      return NextResponse.json({ error: 'Invalid guild ID format' }, { status: 400 });
-    }
-
-    const rateLimit = checkRateLimit(
-      buildRateLimitKey(req, `guild:${guildId}:fanart`, session.accessToken),
-      { limit: 30 },
-    );
-    if (!rateLimit.ok) return rateLimitResponse(rateLimit);
-
-    const hasAccess = await canManageGuild(session.accessToken, guildId);
-    if (!hasAccess) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const guard = await requireGuildManager(req, params, { scope: 'fanart', limit: 30 });
+    if (!guard.ok) return guard.response;
 
     const { searchParams } = new URL(req.url);
-    const id = parseInt(searchParams.get('id') || '', 10);
+    const id = Number.parseInt(searchParams.get('id') || '', 10);
 
-    if (isNaN(id)) {
+    if (Number.isNaN(id)) {
       return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
 
-    // Dynamic import to avoid circular dependency issues if any
-    const { deleteFanArt } = await import('@/lib/database');
-    const success = deleteFanArt(id, guildId);
-
+    const success = deleteFanArt(id, guard.guildId);
     if (!success) {
       return NextResponse.json({ error: 'Failed to delete fan art' }, { status: 500 });
     }
