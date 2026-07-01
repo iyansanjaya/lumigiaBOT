@@ -1,4 +1,4 @@
-node_modules
+**/node_modules
 .git
 .gitignore
 .env
@@ -6,6 +6,9 @@ node_modules
 *.md
 logs/
 data/
-.next
+**/.next
 .vscode
 .idea
+.agents/
+.github/
+docs/

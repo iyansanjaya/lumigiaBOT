@@ -1,8 +1,8 @@
 services:
   bot:
     build:
-      context: ./bot
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: bot/Dockerfile
     container_name: lumigiabot
     restart: always
     volumes:
@@ -15,8 +15,8 @@ services:
 
   web:
     build:
-      context: ./web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: web/Dockerfile
     container_name: lumigiabot-web
     restart: always
     ports:
