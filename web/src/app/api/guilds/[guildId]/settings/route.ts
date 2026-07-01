@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireGuildManager } from '@/lib/api-guard';
-import { normalizeLanguage } from '@/lib/contracts';
+import { validateGuildSettingValue } from '@/lib/contracts';
 import { updateGuildSetting } from '@/lib/database';
 
 interface RouteParams {
@@ -23,16 +23,12 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Missing or invalid field' }, { status: 400 });
     }
 
-    if (typeof body.value === 'string') {
-      body.value = body.value.trim();
-      if (body.value === '') body.value = null;
+    const validation = validateGuildSettingValue(body.field, body.value);
+    if ('error' in validation) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    if (body.field === 'language' && typeof body.value === 'string') {
-      body.value = normalizeLanguage(body.value);
-    }
-
-    const success = updateGuildSetting(guard.guildId, body.field, body.value);
+    const success = updateGuildSetting(guard.guildId, body.field, validation.value);
     if (!success) {
       return NextResponse.json({ error: 'Failed to update setting' }, { status: 500 });
     }

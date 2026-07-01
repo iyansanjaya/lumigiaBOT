@@ -33,6 +33,23 @@ export function formatDuration(milliseconds) {
 }
 
 /**
+ * Parse timestamp dari SQLite datetime('now') atau ISO string.
+ * @param {string|null|undefined} value
+ * @returns {number|null} Unix timestamp dalam ms, atau null jika tidak valid
+ */
+export function parseStoredTimestamp(value) {
+  if (!value || typeof value !== 'string') return null;
+
+  const trimmed = value.trim();
+  const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(trimmed);
+  const normalizedBody = trimmed.includes('T') ? trimmed : trimmed.replace(' ', 'T');
+  const normalized = hasTimezone ? normalizedBody : `${normalizedBody}Z`;
+  const timestamp = Date.parse(normalized);
+
+  return Number.isNaN(timestamp) ? null : timestamp;
+}
+
+/**
  * Membuat timestamp relatif Discord.
  * @param {Date|number} date
  * @param {'t'|'T'|'d'|'D'|'f'|'F'|'R'} [style='R'] - R = relatif ("2 hours ago")

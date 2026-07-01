@@ -10,6 +10,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, EmbedBuilder } f
 import { LevelingService } from '../../modules/leveling/LevelingService.js';
 import { successEmbed, errorEmbed, createEmbed } from '../../utils/EmbedBuilder.js';
 import { logger } from '../../utils/Logger.js';
+import { discordTimestamp, parseStoredTimestamp } from '../../utils/TimeFormatter.js';
 
 /** Warna embed leveling */
 const COLORS = {
@@ -314,8 +315,9 @@ export async function execute(interaction, client) {
         try { ignoredChannels = JSON.parse(settings.ignored_channels || '[]'); } catch { /* noop */ }
         try { ignoredRoles = JSON.parse(settings.ignored_roles || '[]'); } catch { /* noop */ }
 
+        const multiplierExpiresAt = parseStoredTimestamp(settings.multiplier_expires);
         const multiplierDisplay = settings.multiplier !== 1.0
-          ? `${settings.multiplier}x${settings.multiplier_expires ? ` (expires <t:${Math.floor(new Date(settings.multiplier_expires + 'Z').getTime() / 1000)}:R>)` : ' (permanent)'}`
+          ? `${settings.multiplier}x${multiplierExpiresAt ? ` (expires ${discordTimestamp(multiplierExpiresAt)})` : ' (permanent)'}`
           : '1.0x (default)';
 
         const embed = new EmbedBuilder()

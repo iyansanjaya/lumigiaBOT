@@ -156,6 +156,179 @@ export const WARN_ESCALATION_PRESETS = Object.freeze([
   },
 ]);
 
+export const DISCORD_SNOWFLAKE_PATTERN = '^\\d{17,20}$';
+export const DASHBOARD_VALIDATION_LIMITS = Object.freeze({
+  ticketMaxOpen: { min: 1, max: 5 },
+  ticketAutoCloseHours: { min: 1, max: 168 },
+  antiRaidThreshold: { min: 1, max: 100 },
+  antiRaidTimeframe: { min: 1, max: 300 },
+  welcomeMessageMaxLength: 1800,
+  voiceDefaultLimit: { min: 0, max: 99 },
+  voiceDefaultNameMaxLength: 100,
+  xpPerMessage: { min: 1, max: 100 },
+  xpCooldown: { min: 1, max: 3600 },
+  xpMultiplier: { min: 1, max: 5 },
+  fanArtVoteEmojiMaxLength: 100,
+});
+
+const DISCORD_SNOWFLAKE_RE = new RegExp(DISCORD_SNOWFLAKE_PATTERN);
+const WARN_ESCALATION_ACTIONS = Object.freeze(['mute', 'kick', 'ban']);
+
+/**
+ * @template T
+ * @param {T} value
+ * @returns {{ ok: true, value: T }}
+ */
+function valid(value) {
+  return { ok: true, value };
+}
+
+/**
+ * @param {string} error
+ * @returns {{ ok: false, error: string }}
+ */
+function invalid(error) {
+  return { ok: false, error };
+}
+
+function normalizeNullableString(value) {
+  if (value === null || value === undefined) return { ok: true, value: null };
+  if (typeof value !== 'string') return invalid('Value must be a string or null.');
+
+  const trimmed = value.trim();
+  return valid(trimmed === '' ? null : trimmed);
+}
+
+function normalizeRequiredString(field, value, maxLength) {
+  const normalized = normalizeNullableString(value);
+  if (!normalized.ok) return normalized;
+  if (!normalized.value) return invalid(`${field} is required.`);
+  if (normalized.value.length > maxLength) {
+    return invalid(`${field} is too long. Maximum ${maxLength} characters.`);
+  }
+
+  return normalized;
+}
+
+function normalizeNullableSnowflake(field, value) {
+  const normalized = normalizeNullableString(value);
+  if (!normalized.ok || normalized.value === null) return normalized;
+  if (!DISCORD_SNOWFLAKE_RE.test(normalized.value)) {
+    return invalid(`${field} must be a valid Discord ID.`);
+  }
+
+  return normalized;
+}
+
+function normalizeBooleanNumber(field, value) {
+  if (value === true || value === 1 || value === '1') return valid(1);
+  if (value === false || value === 0 || value === '0') return valid(0);
+  return invalid(`${field} must be 0 or 1.`);
+}
+
+function normalizeInteger(field, value, { min, max }, fallback = undefined) {
+  if ((value === null || value === undefined || value === '') && fallback !== undefined) {
+    return valid(fallback);
+  }
+
+  const numberValue = typeof value === 'number' ? value : Number(value);
+  if (!Number.isInteger(numberValue) || numberValue < min || numberValue > max) {
+    return invalid(`${field} must be an integer between ${min} and ${max}.`);
+  }
+
+  return valid(numberValue);
+}
+
+function normalizeNumber(field, value, { min, max }, fallback = undefined) {
+  if ((value === null || value === undefined || value === '') && fallback !== undefined) {
+    return valid(fallback);
+  }
+
+  const numberValue = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numberValue) || numberValue < min || numberValue > max) {
+    return invalid(`${field} must be a number between ${min} and ${max}.`);
+  }
+
+  return valid(numberValue);
+}
+
+function normalizeJsonSnowflakeArray(field, value) {
+  if (value === null || value === undefined || value === '') return valid('[]');
+
+  let parsed = value;
+  if (typeof value === 'string') {
+    try {
+      parsed = JSON.parse(value);
+    } catch {
+      return invalid(`${field} must be a JSON array.`);
+    }
+  }
+
+  if (!Array.isArray(parsed) || !parsed.every((entry) => typeof entry === 'string' && DISCORD_SNOWFLAKE_RE.test(entry))) {
+    return invalid(`${field} must contain only valid Discord IDs.`);
+  }
+
+  return valid(JSON.stringify([...new Set(parsed)]));
+}
+
+function normalizeWarnEscalation(value) {
+  const normalized = normalizeNullableString(value);
+  if (!normalized.ok) return normalized;
+  if (normalized.value === null) return valid(DEFAULT_WARN_ESCALATION_JSON);
+
+  const legacyValues = {
+    none: '{}',
+    mute: '{"3":"mute"}',
+    kick: '{"3":"mute","5":"kick"}',
+    ban: DEFAULT_WARN_ESCALATION_JSON,
+  };
+  const raw = legacyValues[normalized.value] || normalized.value;
+
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return invalid('warn_escalation must be valid JSON.');
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return invalid('warn_escalation must be a JSON object.');
+  }
+
+  const entries = Object.entries(parsed)
+    .map(([count, action]) => [Number(count), action])
+    .sort(([left], [right]) => left - right);
+  const cleaned = {};
+
+  for (const [count, action] of entries) {
+    if (!Number.isInteger(count) || count < 1 || count > 100) {
+      return invalid('warn_escalation counts must be integers between 1 and 100.');
+    }
+    if (!WARN_ESCALATION_ACTIONS.includes(action)) {
+      return invalid('warn_escalation actions must be mute, kick, or ban.');
+    }
+    cleaned[String(count)] = action;
+  }
+
+  return valid(JSON.stringify(cleaned));
+}
+
+function normalizeOptionalIsoDate(field, value) {
+  const normalized = normalizeNullableString(value);
+  if (!normalized.ok || normalized.value === null) return normalized;
+
+  const date = new Date(normalized.value);
+  if (Number.isNaN(date.getTime())) {
+    return invalid(`${field} must be a valid ISO date.`);
+  }
+
+  return valid(date.toISOString());
+}
+
+export function isDiscordSnowflake(value) {
+  return typeof value === 'string' && DISCORD_SNOWFLAKE_RE.test(value);
+}
+
 export function normalizeLanguage(value, fallback = GUILD_SETTINGS_DEFAULTS.language) {
   const normalized = LANGUAGE_ALIASES[value] || value;
   return SUPPORTED_LANGUAGES.includes(normalized) ? normalized : fallback;
@@ -175,4 +348,127 @@ export function isValidAutomodAction(action) {
 
 export function isValidStreamPlatform(platform) {
   return STREAM_PLATFORMS.includes(platform);
+}
+
+export function validateGuildSettingValue(field, value) {
+  if (!GUILD_SETTINGS_FIELDS.includes(field)) return invalid(`Field is not allowed: ${field}`);
+
+  switch (field) {
+    case 'language': {
+      const normalized = normalizeNullableString(value);
+      if (!normalized.ok || normalized.value === null) return invalid('language must be a supported language.');
+      const language = LANGUAGE_ALIASES[normalized.value] || normalized.value;
+      return SUPPORTED_LANGUAGES.includes(language)
+        ? valid(language)
+        : invalid('language must be a supported language.');
+    }
+    case 'mod_log_channel':
+    case 'automod_log_channel':
+    case 'ticket_category':
+    case 'ticket_support_role':
+    case 'ticket_log_channel':
+    case 'welcome_channel':
+      return normalizeNullableSnowflake(field, value);
+    case 'ticket_max_open':
+      return normalizeInteger(field, value, DASHBOARD_VALIDATION_LIMITS.ticketMaxOpen, GUILD_SETTINGS_DEFAULTS.ticket_max_open);
+    case 'ticket_auto_close_hours':
+      return normalizeInteger(
+        field,
+        value,
+        DASHBOARD_VALIDATION_LIMITS.ticketAutoCloseHours,
+        GUILD_SETTINGS_DEFAULTS.ticket_auto_close_hours,
+      );
+    case 'warn_escalation':
+      return normalizeWarnEscalation(value);
+    case 'anti_raid_enabled':
+    case 'welcome_enabled':
+      return normalizeBooleanNumber(field, value);
+    case 'anti_raid_threshold':
+      return normalizeInteger(
+        field,
+        value,
+        DASHBOARD_VALIDATION_LIMITS.antiRaidThreshold,
+        GUILD_SETTINGS_DEFAULTS.anti_raid_threshold,
+      );
+    case 'anti_raid_timeframe':
+      return normalizeInteger(
+        field,
+        value,
+        DASHBOARD_VALIDATION_LIMITS.antiRaidTimeframe,
+        GUILD_SETTINGS_DEFAULTS.anti_raid_timeframe,
+      );
+    case 'welcome_message': {
+      const normalized = normalizeNullableString(value);
+      if (!normalized.ok || normalized.value === null) return normalized;
+      if (normalized.value.length > DASHBOARD_VALIDATION_LIMITS.welcomeMessageMaxLength) {
+        return invalid(`welcome_message is too long. Maximum ${DASHBOARD_VALIDATION_LIMITS.welcomeMessageMaxLength} characters.`);
+      }
+      return normalized;
+    }
+    default:
+      return invalid(`Field is not supported: ${field}`);
+  }
+}
+
+export function validateVoiceSettingValue(field, value) {
+  if (!VOICE_SETTINGS_FIELDS.includes(field)) return invalid(`Field is not allowed: ${field}`);
+
+  switch (field) {
+    case 'enabled':
+      return normalizeBooleanNumber(field, value);
+    case 'default_limit':
+      return normalizeInteger(field, value, DASHBOARD_VALIDATION_LIMITS.voiceDefaultLimit, 0);
+    case 'default_name':
+      return normalizeRequiredString(field, value, DASHBOARD_VALIDATION_LIMITS.voiceDefaultNameMaxLength);
+    case 'hub_channel_id':
+    case 'category_id':
+      return normalizeNullableSnowflake(field, value);
+    default:
+      return invalid(`Field is not supported: ${field}`);
+  }
+}
+
+export function validateLevelingSettingValue(field, value) {
+  if (!LEVELING_SETTINGS_FIELDS.includes(field)) return invalid(`Field is not allowed: ${field}`);
+
+  switch (field) {
+    case 'enabled':
+      return normalizeBooleanNumber(field, value);
+    case 'xp_per_message':
+      return normalizeInteger(field, value, DASHBOARD_VALIDATION_LIMITS.xpPerMessage, 15);
+    case 'xp_cooldown':
+      return normalizeInteger(field, value, DASHBOARD_VALIDATION_LIMITS.xpCooldown, 60);
+    case 'multiplier':
+      return normalizeNumber(field, value, DASHBOARD_VALIDATION_LIMITS.xpMultiplier, 1);
+    case 'multiplier_expires':
+      return normalizeOptionalIsoDate(field, value);
+    case 'announce_channel':
+      return normalizeNullableSnowflake(field, value);
+    case 'ignored_channels':
+    case 'ignored_roles':
+      return normalizeJsonSnowflakeArray(field, value);
+    default:
+      return invalid(`Field is not supported: ${field}`);
+  }
+}
+
+export function validateFanArtSettingValue(field, value) {
+  if (!FANART_SETTINGS_FIELDS.includes(field)) return invalid(`Field is not allowed: ${field}`);
+
+  switch (field) {
+    case 'enabled':
+    case 'approval_required':
+      return normalizeBooleanNumber(field, value);
+    case 'submit_channel':
+    case 'gallery_channel':
+      return normalizeNullableSnowflake(field, value);
+    case 'vote_emoji':
+      return normalizeRequiredString(
+        field,
+        value === null || value === undefined || value === '' ? '\u2b50' : value,
+        DASHBOARD_VALIDATION_LIMITS.fanArtVoteEmojiMaxLength,
+      );
+    default:
+      return invalid(`Field is not supported: ${field}`);
+  }
 }

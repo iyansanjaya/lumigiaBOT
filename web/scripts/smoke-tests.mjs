@@ -74,11 +74,37 @@ test('web contracts re-export the shared contract source of truth', async () => 
   const webContracts = read('src/lib/contracts.ts');
 
   assert.match(webContracts, /from '..\/..\/..\/shared\/contracts\.js'/);
+  assert.match(webContracts, /validateGuildSettingValue/);
+  assert.match(webContracts, /validateVoiceSettingValue/);
+  assert.match(webContracts, /validateLevelingSettingValue/);
+  assert.match(webContracts, /validateFanArtSettingValue/);
 
   const shared = await import('../../shared/contracts.js');
   assert.deepEqual(shared.SCHEDULE_DAY_ORDER, [1, 2, 3, 4, 5, 6, 0]);
   assert.ok(shared.AUTOMOD_ACTIONS.includes('ban'));
   assert.equal(shared.normalizeLanguage('en'), 'en-US');
+  assert.deepEqual(shared.validateGuildSettingValue('ticket_max_open', '3'), { ok: true, value: 3 });
+  assert.equal(shared.validateGuildSettingValue('mod_log_channel', 'not-a-snowflake').ok, false);
+  assert.deepEqual(shared.validateVoiceSettingValue('default_limit', '25'), { ok: true, value: 25 });
+  assert.deepEqual(shared.validateLevelingSettingValue('multiplier', '2.5'), { ok: true, value: 2.5 });
+  assert.equal(shared.validateFanArtSettingValue('vote_emoji', '').value, '\u2b50');
+});
+
+test('dashboard write routes validate values before database updates', () => {
+  const routeValidators = {
+    'src/app/api/guilds/[guildId]/settings/route.ts': 'validateGuildSettingValue',
+    'src/app/api/guilds/[guildId]/voice/route.ts': 'validateVoiceSettingValue',
+    'src/app/api/guilds/[guildId]/leveling/route.ts': 'validateLevelingSettingValue',
+    'src/app/api/guilds/[guildId]/fanart/route.ts': 'validateFanArtSettingValue',
+  };
+
+  for (const [rel, validator] of Object.entries(routeValidators)) {
+    const source = read(rel);
+    assert.match(source, new RegExp(`import \\{ ${validator} \\}`), `${rel} must import ${validator}`);
+    assert.match(source, new RegExp(`const validation = ${validator}\\(body\\.field, body\\.value\\)`));
+    assert.match(source, /if \('error' in validation\)/);
+    assert.match(source, /validation\.value/);
+  }
 });
 
 test('dashboard discord data loading is deduped and reused by channel and role controls', () => {

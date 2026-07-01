@@ -5,6 +5,7 @@
 
 import { EmbedBuilder } from 'discord.js';
 import { logger } from '../../utils/Logger.js';
+import { parseStoredTimestamp } from '../../utils/TimeFormatter.js';
 
 /** Warna embed leveling */
 const COLORS = {
@@ -86,16 +87,16 @@ export class LevelingService {
     // 4. Cek cooldown
     const userData = client.db.leveling.getUser(guildId, userId);
     if (userData?.last_xp_at) {
-      const lastXpTime = new Date(userData.last_xp_at + 'Z').getTime();
+      const lastXpTime = parseStoredTimestamp(userData.last_xp_at);
       const cooldownMs = (settings.xp_cooldown ?? 60) * 1000;
-      if (Date.now() - lastXpTime < cooldownMs) return;
+      if (lastXpTime && Date.now() - lastXpTime < cooldownMs) return;
     }
 
     // 5. Hitung multiplier (cek apakah expired)
     let multiplier = settings.multiplier ?? 1.0;
     if (settings.multiplier_expires) {
-      const expiresAt = new Date(settings.multiplier_expires + 'Z').getTime();
-      if (Date.now() > expiresAt) {
+      const expiresAt = parseStoredTimestamp(settings.multiplier_expires);
+      if (!expiresAt || Date.now() > expiresAt) {
         // Multiplier sudah expired, reset ke 1.0
         client.db.leveling.updateSetting(guildId, 'multiplier', 1.0);
         client.db.leveling.updateSetting(guildId, 'multiplier_expires', null);

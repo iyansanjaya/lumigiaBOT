@@ -14,6 +14,10 @@ import {
   isValidAutomodAction,
   isValidAutomodFilter,
   normalizeLanguage,
+  validateFanArtSettingValue,
+  validateGuildSettingValue,
+  validateLevelingSettingValue,
+  validateVoiceSettingValue,
 } from '../../shared/contracts.js';
 import { getDataDir, getDatabasePath } from '../src/config/env.js';
 
@@ -21,6 +25,7 @@ process.env.LOG_LEVEL = 'ERROR';
 
 const { default: BotDatabase } = await import('../src/database/Database.js');
 const { createServiceLogger } = await import('../src/utils/Logger.js');
+const { parseStoredTimestamp } = await import('../src/utils/TimeFormatter.js');
 
 function withEnv(values, fn) {
   const previous = new Map();
@@ -66,6 +71,13 @@ test('shared contracts keep bot and dashboard values aligned', () => {
   assert.ok(isValidAutomodAction('ban'));
   assert.ok(AUTOMOD_FILTER_KEYS.every((filter) => isValidAutomodFilter(filter)));
   assert.equal(isValidAutomodFilter('unknown'), false);
+
+  assert.deepEqual(validateGuildSettingValue('language', 'en'), { ok: true, value: 'en-US' });
+  assert.deepEqual(validateGuildSettingValue('ticket_auto_close_hours', '24'), { ok: true, value: 24 });
+  assert.equal(validateGuildSettingValue('mod_log_channel', 'invalid').ok, false);
+  assert.deepEqual(validateVoiceSettingValue('default_limit', '10'), { ok: true, value: 10 });
+  assert.deepEqual(validateLevelingSettingValue('ignored_channels', '[]'), { ok: true, value: '[]' });
+  assert.equal(validateFanArtSettingValue('vote_emoji', '').value, '\u2b50');
 });
 
 test('database migrations and core repositories can read and write', (t) => {
@@ -132,6 +144,15 @@ test('database path helpers support the Docker shared volume path', () => {
       assert.equal(getDataDir(), '/app/data');
     },
   );
+});
+
+test('stored timestamp parser supports sqlite and ISO timestamps', () => {
+  const sqliteTimestamp = parseStoredTimestamp('2026-07-01 12:30:00');
+  const isoTimestamp = parseStoredTimestamp('2026-07-01T12:30:00.000Z');
+
+  assert.equal(sqliteTimestamp, Date.parse('2026-07-01T12:30:00Z'));
+  assert.equal(isoTimestamp, Date.parse('2026-07-01T12:30:00.000Z'));
+  assert.equal(parseStoredTimestamp('not-a-date'), null);
 });
 
 test('service logger formats context and redacts sensitive values', () => {
