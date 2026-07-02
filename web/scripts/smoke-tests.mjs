@@ -59,6 +59,16 @@ test('sensitive transcript route validates ticket id before reading files', () =
   assert.match(source, /guard\.guildId/, 'file path must use guarded guild id');
 });
 
+test('dashboard guild pages require page-level guild access guard', () => {
+  const source = read('src/app/(dashboard)/dashboard/servers/[guildId]/layout.tsx');
+
+  assert.match(source, /await auth\(\)/, 'guild dashboard layout must require a session');
+  assert.match(source, /DISCORD_SNOWFLAKE_PATTERN/, 'guild dashboard layout must validate guild id format');
+  assert.match(source, /await params/, 'guild dashboard layout must read dynamic route params');
+  assert.match(source, /canManageGuild/, 'guild dashboard layout must verify Manage Guild access');
+  assert.match(source, /redirect\('\/dashboard\/servers'\)/, 'invalid or forbidden guilds must leave the page');
+});
+
 test('health endpoint checks env, database, schema, and runtime metadata', () => {
   const source = read('src/app/api/health/route.ts');
 
