@@ -38,3 +38,19 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm smoke
       - run: pnpm build
+
+  docs:
+    name: Docs build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: corepack prepare pnpm@11.7.0 --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
