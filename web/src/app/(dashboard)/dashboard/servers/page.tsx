@@ -2,13 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Server, AlertCircle } from 'lucide-react';
 import { auth } from '@/lib/auth';
-import { getUserGuilds, getManageableGuilds, getGuildIconUrl } from '@/lib/discord-api';
+import { getUserGuilds, getManageableBotGuilds, getGuildIconUrl } from '@/lib/discord-api';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default async function ServersPage() {
   const session = await auth();
 
-  let guilds: Awaited<ReturnType<typeof getManageableGuilds>> = [];
+  let guilds: Awaited<ReturnType<typeof getManageableBotGuilds>> = [];
   let error: string | null = null;
 
   try {
@@ -17,7 +17,7 @@ export default async function ServersPage() {
     }
 
     const allGuilds = await getUserGuilds(session.accessToken);
-    guilds = getManageableGuilds(allGuilds);
+    guilds = await getManageableBotGuilds(allGuilds);
   } catch {
     error = 'Gagal mengambil daftar server. Sesi Anda mungkin sudah kedaluwarsa. Coba keluar lalu login kembali.';
   }

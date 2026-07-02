@@ -74,15 +74,16 @@ test('server picker avoids prefetching protected guild routes', () => {
 
   assert.match(source, /prefetch=\{false\}/, 'guild manage links must not prefetch protected guild routes');
   assert.match(source, /session\?\.accessToken/, 'server picker must require a Discord access token before fetching guilds');
+  assert.match(source, /getManageableBotGuilds/, 'server picker must only show guilds where the bot is installed');
 });
 
-test('dashboard overview scopes aggregate stats to manageable guilds', () => {
+test('dashboard overview scopes aggregate stats to manageable bot guilds', () => {
   const page = read('src/app/(dashboard)/dashboard/page.tsx');
 
   assert.match(page, /await auth\(\)/, 'dashboard overview must read the active session');
   assert.match(page, /session\?\.accessToken/, 'dashboard overview must require the Discord access token');
   assert.match(page, /getUserGuilds/, 'dashboard overview must fetch guilds for the current user');
-  assert.match(page, /getManageableGuilds/, 'dashboard overview must filter by Manage Guild permission');
+  assert.match(page, /getManageableBotGuilds/, 'dashboard overview must filter by Manage Guild permission and bot presence');
   assert.match(page, /getDashboardStatsForGuilds/, 'dashboard overview must use scoped stats');
   assert.doesNotMatch(page, /getDashboardStats\(/, 'dashboard overview must not read global stats');
 
@@ -100,9 +101,14 @@ test('discord guild permissions are cached and checked with full bitfields', () 
 
   assert.match(source, /userGuildsCache/, 'user guild fetches should be cached briefly');
   assert.match(source, /userGuildsInflight/, 'concurrent user guild fetches should be deduped');
+  assert.match(source, /botGuildCache/, 'bot guild membership checks should be cached briefly');
+  assert.match(source, /botGuildInflight/, 'concurrent bot guild membership checks should be deduped');
+  assert.match(source, /export async function isBotInGuild/, 'dashboard access must verify bot guild membership');
+  assert.match(source, /export async function getManageableBotGuilds/, 'server lists must combine user permission and bot presence');
   assert.match(source, /BigInt\(guild\.permissions\)/, 'permission checks should support Discord permission bitfields safely');
   assert.match(source, /ADMINISTRATOR/, 'Administrator permission should allow dashboard management');
   assert.match(source, /MANAGE_GUILD/, 'Manage Guild permission should allow dashboard management');
+  assert.match(source, /return isBotInGuild\(guildId\)/, 'canManageGuild must require the bot to still be in the guild');
 });
 
 test('health endpoint checks env, database, schema, and runtime metadata', () => {

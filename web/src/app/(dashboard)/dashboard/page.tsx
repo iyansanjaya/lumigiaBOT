@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Server, Ticket, AlertTriangle, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { auth } from '@/lib/auth';
-import { getManageableGuilds, getUserGuilds } from '@/lib/discord-api';
+import { getManageableBotGuilds, getUserGuilds } from '@/lib/discord-api';
 import { getDashboardStatsForGuilds, type DashboardStats } from '@/lib/database';
 
 export default async function DashboardPage() {
@@ -14,7 +14,7 @@ export default async function DashboardPage() {
     if (!session?.accessToken) throw new Error('Missing Discord access token');
 
     const allGuilds = await getUserGuilds(session.accessToken);
-    const manageableGuilds = getManageableGuilds(allGuilds);
+    const manageableGuilds = await getManageableBotGuilds(allGuilds);
     stats = getDashboardStatsForGuilds(manageableGuilds.map((guild) => guild.id));
   } catch {
     overviewError = 'Gagal memuat ringkasan server. Sesi Anda mungkin sudah kedaluwarsa. Coba keluar lalu login kembali.';

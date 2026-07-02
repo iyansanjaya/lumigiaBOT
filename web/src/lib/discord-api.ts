@@ -8,10 +8,15 @@ export interface DiscordGuild {
 
 const ADMINISTRATOR = BigInt(0x8);
 const MANAGE_GUILD = BigInt(0x20);
+const DISCORD_API_URL = 'https://discord.com/api/v10';
+const BOT_TOKEN = process.env.DISCORD_TOKEN;
 const USER_GUILDS_CACHE_TTL_MS = 30_000;
+const BOT_GUILD_CACHE_TTL_MS = 60_000;
 
 const userGuildsCache = new Map<string, { guilds: DiscordGuild[]; expires: number }>();
 const userGuildsInflight = new Map<string, Promise<DiscordGuild[]>>();
+const botGuildCache = new Map<string, { exists: boolean; expires: number }>();
+const botGuildInflight = new Map<string, Promise<boolean>>();
 
 function hasGuildManagementPermission(guild: DiscordGuild) {
   if (guild.owner) return true;
@@ -59,7 +64,7 @@ export async function getUserGuilds(accessToken: string): Promise<DiscordGuild[]
 }
 
 async function fetchUserGuilds(accessToken: string): Promise<DiscordGuild[]> {
-  const res = await fetch('https://discord.com/api/v10/users/@me/guilds', {
+  const res = await fetch(`${DISCORD_API_URL}/users/@me/guilds`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -74,6 +79,40 @@ async function fetchUserGuilds(accessToken: string): Promise<DiscordGuild[]> {
   return res.json();
 }
 
+export async function isBotInGuild(guildId: string): Promise<boolean> {
+  if (!BOT_TOKEN) return false;
+
+  const cached = botGuildCache.get(guildId);
+  if (cached && Date.now() < cached.expires) {
+    return cached.exists;
+  }
+
+  const pending = botGuildInflight.get(guildId);
+  if (pending) return pending;
+
+  const request = fetch(`${DISCORD_API_URL}/guilds/${guildId}`, {
+    headers: {
+      Authorization: `Bot ${BOT_TOKEN}`,
+    },
+    cache: 'no-store',
+  })
+    .then((res) => res.ok)
+    .catch(() => false)
+    .then((exists) => {
+      botGuildCache.set(guildId, {
+        exists,
+        expires: Date.now() + BOT_GUILD_CACHE_TTL_MS,
+      });
+      return exists;
+    })
+    .finally(() => {
+      botGuildInflight.delete(guildId);
+    });
+
+  botGuildInflight.set(guildId, request);
+  return request;
+}
+
 /**
  * Cek apakah user punya Manage Guild permission.
  * Menggunakan bitwise check pada permissions field.
@@ -82,15 +121,25 @@ export function getManageableGuilds(guilds: DiscordGuild[]): DiscordGuild[] {
   return guilds.filter(hasGuildManagementPermission);
 }
 
+export async function getManageableBotGuilds(guilds: DiscordGuild[]): Promise<DiscordGuild[]> {
+  const manageableGuilds = getManageableGuilds(guilds);
+  const membership = await Promise.all(
+    manageableGuilds.map(async (guild) => [guild, await isBotInGuild(guild.id)] as const),
+  );
+
+  return membership.filter(([, exists]) => exists).map(([guild]) => guild);
+}
+
 /**
- * Cek apakah user bisa manage guild tertentu.
+ * Cek apakah user bisa manage guild tertentu dan bot masih ada di guild itu.
  * Shortcut function untuk API routes.
  */
 export async function canManageGuild(accessToken: string, guildId: string): Promise<boolean> {
   try {
     const allGuilds = await getUserGuilds(accessToken);
     const manageable = getManageableGuilds(allGuilds);
-    return manageable.some((g) => g.id === guildId);
+    if (!manageable.some((g) => g.id === guildId)) return false;
+    return isBotInGuild(guildId);
   } catch {
     return false;
   }
