@@ -23,20 +23,20 @@ LumigiaBOT menyediakan **6 jenis filter** yang bisa diaktifkan sesuai kebutuhan 
 Gunakan command `/automod-config` untuk mengaktifkan atau menonaktifkan filter:
 
 ```
-/automod-config filter:spam aktif:true aksi:mute
-/automod-config filter:link aktif:true aksi:delete
-/automod-config filter:kata_terlarang aktif:true aksi:warn
+/automod-config filter:spam enabled:true action:mute
+/automod-config filter:link enabled:true action:delete
+/automod-config filter:word enabled:true action:warn
 ```
 
 <Steps>
 <Step>
 ### Pilih Filter
-Tentukan filter mana yang ingin diaktifkan (spam, link, kata_terlarang, caps, emoji, mention).
+Tentukan filter mana yang ingin diaktifkan (`spam`, `link`, `word`, `caps`, `emoji`, `mention`).
 </Step>
 
 <Step>
 ### Aktifkan atau Nonaktifkan
-Set parameter `aktif` ke `true` untuk mengaktifkan atau `false` untuk menonaktifkan.
+Set parameter `enabled` ke `true` untuk mengaktifkan atau `false` untuk menonaktifkan.
 </Step>
 
 <Step>
@@ -97,7 +97,7 @@ Berikut contoh konfigurasi AutoMod yang direkomendasikan untuk server umum:
 <Step>
 ### Aktifkan Anti-Spam
 ```
-/automod-config filter:spam aktif:true aksi:mute
+/automod-config filter:spam enabled:true action:mute
 ```
 Pesan spam otomatis dihapus dan pengirimnya di-mute.
 </Step>
@@ -105,7 +105,7 @@ Pesan spam otomatis dihapus dan pengirimnya di-mute.
 <Step>
 ### Aktifkan Filter Link
 ```
-/automod-config filter:link aktif:true aksi:delete
+/automod-config filter:link enabled:true action:delete
 ```
 Link yang tidak diizinkan otomatis dihapus.
 </Step>
