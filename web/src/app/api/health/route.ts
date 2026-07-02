@@ -1,22 +1,10 @@
 import Database from 'better-sqlite3';
 import { NextResponse } from 'next/server';
+import { REQUIRED_DATABASE_TABLES } from '@/lib/contracts';
 import { checkRequiredWebEnv, getDataDir, getDatabasePath } from '@/lib/env';
 import packageJson from '../../../../package.json';
 
 export const dynamic = 'force-dynamic';
-
-const REQUIRED_TABLES = [
-  'guild_settings',
-  'automod_filters',
-  'tickets',
-  'warnings',
-  'audit_logs',
-  'stream_notifications',
-  'stream_schedule',
-  'voice_settings',
-  'leveling_settings',
-  'fanart_settings',
-] as const;
 
 function shouldExposeDetails() {
   return process.env.NODE_ENV !== 'production' || process.env.HEALTHCHECK_DETAILS === 'true';
@@ -35,7 +23,7 @@ function checkDatabase() {
       .prepare("SELECT name FROM sqlite_master WHERE type = 'table'")
       .all() as { name: string }[];
     const tables = new Set(tableRows.map((row) => row.name));
-    const missingTables = REQUIRED_TABLES.filter((table) => !tables.has(table));
+    const missingTables = REQUIRED_DATABASE_TABLES.filter((table) => !tables.has(table));
 
     return {
       ok: missingTables.length === 0,
@@ -48,7 +36,7 @@ function checkDatabase() {
       ok: false,
       path,
       dataDir,
-      missingTables: [...REQUIRED_TABLES],
+      missingTables: [...REQUIRED_DATABASE_TABLES],
       error: error instanceof Error ? error.message : 'Unknown database error',
     };
   } finally {

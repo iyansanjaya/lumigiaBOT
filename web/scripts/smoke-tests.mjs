@@ -64,7 +64,7 @@ test('health endpoint checks env, database, schema, and runtime metadata', () =>
 
   assert.match(source, /checkRequiredWebEnv/, 'health route must check required web env');
   assert.match(source, /getDatabasePath/, 'health route must resolve database path');
-  assert.match(source, /REQUIRED_TABLES/, 'health route must validate expected schema tables');
+  assert.match(source, /REQUIRED_DATABASE_TABLES/, 'health route must validate expected schema tables');
   assert.match(source, /missingTables/, 'health response must expose missing database tables when detailed');
   assert.match(source, /packageJson\.version/, 'health route must include app version metadata');
   assert.match(source, /Cache-Control': 'no-store'/, 'health response must not be cached');
@@ -78,10 +78,15 @@ test('web contracts re-export the shared contract source of truth', async () => 
   assert.match(webContracts, /validateVoiceSettingValue/);
   assert.match(webContracts, /validateLevelingSettingValue/);
   assert.match(webContracts, /validateFanArtSettingValue/);
+  assert.match(webContracts, /ALL_DATABASE_TABLES/);
+  assert.match(webContracts, /REQUIRED_DATABASE_TABLES/);
 
   const shared = await import('../../shared/contracts.js');
   assert.deepEqual(shared.SCHEDULE_DAY_ORDER, [1, 2, 3, 4, 5, 6, 0]);
   assert.ok(shared.AUTOMOD_ACTIONS.includes('ban'));
+  assert.ok(shared.ALL_DATABASE_TABLES.includes('guild_settings'));
+  assert.ok(shared.ALL_DATABASE_TABLES.includes('fanart_votes'));
+  assert.ok(shared.REQUIRED_DATABASE_TABLES.every((table) => shared.ALL_DATABASE_TABLES.includes(table)));
   assert.equal(shared.normalizeLanguage('en'), 'en-US');
   assert.deepEqual(shared.validateGuildSettingValue('ticket_max_open', '3'), { ok: true, value: 3 });
   assert.equal(shared.validateGuildSettingValue('mod_log_channel', 'not-a-snowflake').ok, false);

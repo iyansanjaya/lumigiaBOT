@@ -156,6 +156,35 @@ export const WARN_ESCALATION_PRESETS = Object.freeze([
   },
 ]);
 
+export const DATABASE_TABLES = Object.freeze({
+  CORE: Object.freeze(['guild_settings', 'warnings', 'audit_logs']),
+  TICKETS: Object.freeze(['tickets']),
+  AUTOMOD: Object.freeze(['automod_filters', 'automod_whitelist', 'word_filter']),
+  VOICE: Object.freeze(['voice_settings', 'temp_channels']),
+  REACTION_ROLES: Object.freeze(['reaction_role_panels', 'reaction_role_entries']),
+  GIVEAWAYS: Object.freeze(['giveaways', 'giveaway_entries']),
+  SCHEDULE: Object.freeze(['stream_schedule', 'schedule_settings']),
+  EMBEDS: Object.freeze(['custom_embeds', 'social_links']),
+  LEVELING: Object.freeze(['user_xp', 'level_rewards', 'leveling_settings']),
+  STREAMS: Object.freeze(['stream_notifications']),
+  FANART: Object.freeze(['fanart_settings', 'fanart_submissions', 'fanart_votes']),
+  ANALYTICS: Object.freeze(['daily_stats', 'channel_activity']),
+});
+
+export const ALL_DATABASE_TABLES = Object.freeze(Object.values(DATABASE_TABLES).flat());
+export const REQUIRED_DATABASE_TABLES = Object.freeze([
+  'guild_settings',
+  'automod_filters',
+  'tickets',
+  'warnings',
+  'audit_logs',
+  'stream_notifications',
+  'stream_schedule',
+  'voice_settings',
+  'leveling_settings',
+  'fanart_settings',
+]);
+
 export const DISCORD_SNOWFLAKE_PATTERN = '^\\d{17,20}$';
 export const DASHBOARD_VALIDATION_LIMITS = Object.freeze({
   ticketMaxOpen: { min: 1, max: 5 },

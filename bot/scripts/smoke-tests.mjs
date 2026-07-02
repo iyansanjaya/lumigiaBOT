@@ -7,8 +7,10 @@ import test from 'node:test';
 import {
   AUTOMOD_ACTIONS,
   AUTOMOD_FILTER_KEYS,
+  ALL_DATABASE_TABLES,
   DEFAULT_WARN_ESCALATION_JSON,
   GUILD_SETTINGS_DEFAULTS,
+  REQUIRED_DATABASE_TABLES,
   SCHEDULE_DAY_NAMES,
   SCHEDULE_DAY_ORDER,
   isValidAutomodAction,
@@ -71,6 +73,8 @@ test('shared contracts keep bot and dashboard values aligned', () => {
   assert.ok(isValidAutomodAction('ban'));
   assert.ok(AUTOMOD_FILTER_KEYS.every((filter) => isValidAutomodFilter(filter)));
   assert.equal(isValidAutomodFilter('unknown'), false);
+  assert.ok(ALL_DATABASE_TABLES.includes('guild_settings'));
+  assert.ok(REQUIRED_DATABASE_TABLES.every((table) => ALL_DATABASE_TABLES.includes(table)));
 
   assert.deepEqual(validateGuildSettingValue('language', 'en'), { ok: true, value: 'en-US' });
   assert.deepEqual(validateGuildSettingValue('ticket_auto_close_hours', '24'), { ok: true, value: 24 });
@@ -95,16 +99,7 @@ test('database migrations and core repositories can read and write', (t) => {
       .map((row) => row.name),
   );
 
-  for (const table of [
-    'guild_settings',
-    'automod_filters',
-    'automod_whitelist',
-    'stream_schedule',
-    'schedule_settings',
-    'leveling_settings',
-    'fanart_settings',
-    'daily_stats',
-  ]) {
+  for (const table of ALL_DATABASE_TABLES) {
     assert.ok(tables.has(table), `expected table ${table}`);
   }
 
