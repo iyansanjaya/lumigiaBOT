@@ -44,9 +44,9 @@ export default function PrivacyPolicyPage() {
           <div>
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#f0f6fc', marginBottom: '16px' }}>3. Retensi dan Penghapusan Data</h2>
             <p>
-              Kami menyimpan konfigurasi server dan riwayat moderasi selama bot berada di server Anda. 
-              Jika Anda mengeluarkan (kick) bot dari server Anda, sebagian besar data konfigurasi yang terkait dengan server tersebut dapat dihapus dari database kami. 
-              Anda juga dapat meminta penghapusan seluruh data (Right to be Forgotten) dengan menghubungi tim developer.
+              Kami menyimpan konfigurasi server, riwayat moderasi, dan data operasional fitur selama bot berada di server Anda.
+              Jika Anda mengeluarkan (kick) bot dari server Anda, data operasional aktif yang terkait dengan server tersebut dan folder transcript terkait akan dibersihkan dari database aplikasi.
+              Backup database yang sudah dibuat secara terpisah mengikuti kebijakan penyimpanan operasional. Anda juga dapat meminta penghapusan seluruh data (Right to be Forgotten) dengan menghubungi tim developer.
             </p>
           </div>
 
@@ -54,13 +54,13 @@ export default function PrivacyPolicyPage() {
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#f0f6fc', marginBottom: '16px' }}>4. Keamanan Data</h2>
             <p>
               Kami menerapkan standar keamanan industri untuk melindungi database kami dari akses tidak sah. 
-              Token otentikasi dienkripsi dengan aman dan tidak pernah dipaparkan kepada publik.
+              Token otentikasi dilindungi oleh secret aplikasi dan tidak pernah dipaparkan kepada publik.
             </p>
           </div>
 
           <div style={{ marginTop: '40px', padding: '24px', background: '#161b22', border: '1px solid #30363d', borderRadius: '12px' }}>
             <p style={{ fontSize: '14px' }}>
-              Terakhir diperbarui: <strong>26 Juni 2026</strong>. Membutuhkan penjelasan lebih lanjut? Kunjungi server support kami atau buka tiket bantuan.
+              Terakhir diperbarui: <strong>2 Juli 2026</strong>. Membutuhkan penjelasan lebih lanjut? Kunjungi server support kami atau buka tiket bantuan.
             </p>
           </div>
         </div>

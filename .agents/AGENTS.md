@@ -38,6 +38,7 @@ BotClient (extends discord.js Client)
 - `Database.js` → buat koneksi SQLite, jalankan migrasi, instantiate semua repository
 - Migrasi: `database/migrations/001_xxx.sql` ... `014_xxx.sql` (CREATE TABLE IF NOT EXISTS & ALTER TABLE)
 - Akses: `client.db.<repoName>.<method>()` — contoh: `client.db.warnings.add(guildId, userId, ...)`
+- Lifecycle cleanup: `client.db.deleteGuildData(guildId)` menghapus data operasional guild secara transaksional saat bot keluar dari server. Jika tabel guild-scoped baru ditambahkan, masukkan juga ke cleanup ini dan smoke test terkait.
 
 #### Repositories (14 total)
 
@@ -55,7 +56,7 @@ BotClient (extends discord.js Client)
 | CustomEmbedRepo   | `client.db.customEmbeds`  | `custom_embeds`, `social_links`                 |
 | LevelingRepo      | `client.db.leveling`      | `user_xp`, `level_rewards`, `leveling_settings` |
 | StreamNotifRepo   | `client.db.streamNotif`   | `stream_notifications`                          |
-| FanArtRepo        | `client.db.fanArt`        | `fanart_settings`, `fanart_submissions`         |
+| FanArtRepo        | `client.db.fanArt`        | `fanart_settings`, `fanart_submissions`, `fanart_votes` |
 | AnalyticsRepo     | `client.db.analytics`     | `daily_stats`, `channel_activity`               |
 
 ### Command Structure
@@ -103,6 +104,9 @@ modules/
 - `events/guild/guildMemberAdd.js` — Welcome + anti-raid + analytics
 - `events/guild/guildMemberRemove.js` — Analytics
 - `events/guild/voiceStateUpdate.js` — Join-to-create voice channels
+
+- `events/guild/guildCreate.js` - init default guild settings + structured lifecycle log
+- `events/guild/guildDelete.js` - centralized guild data cleanup + transcript directory cleanup
 
 ### Import Convention
 
@@ -154,7 +158,7 @@ app/
 
 1. **Page** (Server Component): Fetch data dari database → pass ke Client Component
 2. **Client Component** (`'use client'`): Form/toggle/select yang auto-save via fetch ke API route
-3. **API Route**: Auth check → guildId validation → permission check (`canManageGuild`) → whitelist → DB write → `{ ok: true }`
+3. **API Route**: Auth check → guildId validation → permission + bot presence check (`canManageGuild`) → whitelist → DB write → `{ ok: true }`
 
 ### Key Client Components (`components/dashboard/`)
 
@@ -165,14 +169,16 @@ app/
 - `VoiceSettingsForm.tsx`, `LevelingSettingsForm.tsx`, `FanArtSettingsForm.tsx`
 - `StreamAlertsManager.tsx`, `ScheduleManager.tsx` — CRUD components
 - `Sidebar.tsx` — Navigation menu (3 sections: Core, Streamer, Config)
+- `DiscordEntityLabel.tsx` - menampilkan nama user/channel/role sebagai label utama, dengan raw Discord ID kecil untuk audit/debugging
 
 ### Database Access (Web)
 
-`lib/database.ts` — Buka koneksi ke SQLite (`readonly: true` untuk read, normal untuk write). Semua write functions menggunakan field whitelist.
+`lib/database.ts` — Buka koneksi SQLite shared volume. Semua write functions menggunakan field whitelist, dan aggregate dashboard harus selalu scoped ke guild yang boleh dikelola user.
 
 ### Discord API Access (Web)
 
-- `lib/discord-api.ts` — `getUserGuilds(accessToken)`, `canManageGuild(accessToken, guildId)` via user OAuth2 token
+- `lib/discord-api.ts` — `getUserGuilds(accessToken)`, `getManageableBotGuilds(guilds)`, `isBotInGuild(guildId)`, `canManageGuild(accessToken, guildId)` via user OAuth2 token + Bot Token
+- `lib/discord-identity.ts` - resolve nama channel, role, dan member untuk halaman dashboard server-side
 - `lib/discord-events.ts` — `createDiscordScheduledEvent()`, `deleteDiscordScheduledEvent()` via Bot Token (REST API langsung ke Discord)
 - `api/discord-data/route.ts` — Fetch channels + roles via `DISCORD_TOKEN` (Bot Token) untuk dropdown picker
 
@@ -190,7 +196,7 @@ Dokumentasi resmi untuk pemilik server menggunakan Fumadocs.
 1. **Bahasa**: Semua UI label, hint, dan error message dalam Bahasa Indonesia
 2. **Dependency**: Minimalkan dependensi eksternal. Gunakan yang sudah ada sebelum tambah baru
 3. **Git**: JANGAN melakukan `git add`, `git commit`, atau `git push` — itu urusan developer
-4. **Keamanan**: Parameterized queries (`?` placeholder), field whitelist, permission checks, non-root Docker
+4. **Keamanan**: Parameterized queries (`?` placeholder), field whitelist, permission checks, bot presence checks, scoped dashboard stats, non-root Docker
 5. **Database**: Gunakan WAL mode, CREATE TABLE IF NOT EXISTS pada migrasi, repository pattern
 6. **Export**: Bot modules gunakan `export default class`, diakses via `import ClassName from '...'`
 7. **Env Variables**: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `AUTH_SECRET`, `AUTH_URL`, `DATABASE_PATH`, `DEFAULT_LANGUAGE`, `BOT_OWNER_ID`, `TWITCH_CLIENT_ID` (optional), `TWITCH_CLIENT_SECRET` (optional)

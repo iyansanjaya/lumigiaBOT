@@ -5,6 +5,8 @@ description: Kelola konfigurasi utama bot dari web dashboard
 
 Dashboard adalah control panel web untuk mengelola konfigurasi utama LumigiaBOT secara visual. Beberapa halaman sudah mendukung perubahan langsung dari web, sementara beberapa halaman lain berfungsi sebagai monitoring agar admin bisa membaca data server tanpa membuka database.
 
+Dashboard hanya menampilkan data untuk server yang benar-benar bisa kamu kelola: akun Discord kamu harus memiliki permission **Manage Server** atau **Administrator**, dan LumigiaBOT harus masih berada di server tersebut.
+
 ## Cara Akses
 
 <Steps>
@@ -25,7 +27,7 @@ Klik tombol **Login** dan autentikasi menggunakan akun Discord kamu. Dashboard m
 
 Setelah login, kamu akan melihat daftar server yang bisa kamu kelola. Pilih server yang ingin dikonfigurasi.
 
-Hanya server di mana kamu memiliki permission **Manage Server** yang akan muncul.
+Hanya server di mana kamu memiliki permission **Manage Server**/**Administrator** dan LumigiaBOT sudah berada di server tersebut yang akan muncul.
 </Step>
 </Steps>
 
@@ -121,11 +123,11 @@ Lihat statistik server secara visual (read-only):
 
 | Dashboard | Commands |
 |---|---|
-| Dropdown channel & role otomatis — tidak perlu copy-paste ID | Harus tahu ID channel atau mention manual |
+| Dropdown dan label nama channel/role/user otomatis — ID tetap tersedia kecil untuk audit | Harus tahu ID channel atau mention manual |
 | Auto-save perubahan setiap kali toggle atau pilih opsi | Harus ketik ulang command jika ada kesalahan |
 | Visual yang mudah dipahami dengan preview langsung | Output berupa teks di chat |
 | Konfigurasi inti dan monitoring server di satu tempat | Harus ingat berbagai command berbeda |
 
 <Callout type="info">
-Kamu harus memiliki permission **Manage Server** di Discord untuk bisa mengakses dan mengonfigurasi server melalui dashboard. Jika server tidak muncul di daftar, pastikan kamu memiliki permission yang cukup.
+Kamu harus memiliki permission **Manage Server**/**Administrator** di Discord dan LumigiaBOT harus masih berada di server tersebut. Jika server tidak muncul di daftar, pastikan permission akun cukup dan bot belum dikeluarkan dari server.
 </Callout>

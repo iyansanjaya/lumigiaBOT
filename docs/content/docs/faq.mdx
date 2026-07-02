@@ -46,9 +46,29 @@ LumigiaBOT mendukung **Bahasa Indonesia** dan **English**. Kamu bisa mengubah ba
 **Ya, data kamu aman.** Berikut langkah keamanan yang kami terapkan:
 
 - Setiap server terisolasi sepenuhnya — data satu server tidak bisa diakses oleh server lain.
-- Data disimpan di database terenkripsi.
+- Dashboard hanya menampilkan server yang kamu kelola dan masih ditempati LumigiaBOT.
+- Database tidak dipublikasikan; aksesnya dibatasi oleh server/container tempat LumigiaBOT berjalan.
 - Bot hanya menyimpan data yang diperlukan untuk fitur-fitur yang aktif.
 - Tidak ada data yang dibagikan ke pihak ketiga.
+
+---
+
+### Kenapa server saya tidak muncul di Dashboard?
+
+Server hanya muncul jika dua syarat terpenuhi:
+
+1. Akun Discord kamu memiliki permission **Manage Server** atau **Administrator** di server tersebut.
+2. LumigiaBOT sudah berada di server tersebut dan bisa diverifikasi oleh dashboard.
+
+Jika salah satu syarat tidak terpenuhi, server tidak akan muncul dan data server tersebut tidak dihitung di ringkasan dashboard.
+
+---
+
+### Apa yang terjadi jika LumigiaBOT dikeluarkan dari server?
+
+Saat LumigiaBOT keluar atau dikeluarkan dari server, data operasional aktif untuk server tersebut dibersihkan dari database, termasuk konfigurasi, warning, tiket, AutoMod, leveling, stream notification, analytics, dan folder transcript terkait.
+
+Backup database yang sudah dibuat secara terpisah mengikuti kebijakan penyimpanan operator/server.
 
 ---
 

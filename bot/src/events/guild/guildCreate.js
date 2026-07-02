@@ -1,18 +1,24 @@
 /**
- * LumigiaBOT — Event Bergabung Guild
+ * LumigiaBOT - Event Bergabung Guild
  * Dijalankan saat bot bergabung ke server baru.
  */
 
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
 
 export const name = 'guildCreate';
 export const once = false;
 
-export async function execute(guild, client) {
-  logger.info(`Joined new guild: ${guild.name} (${guild.id}) — ${guild.memberCount} members`);
+const serviceLog = createServiceLogger('guild-lifecycle');
 
-  // Inisialisasi pengaturan default untuk guild baru
+export async function execute(guild, client) {
+  serviceLog.info('guild_joined', {
+    guildId: guild.id,
+    guildName: guild.name,
+    memberCount: guild.memberCount,
+  });
+
   if (client.db) {
     client.db.guildSettings.ensureExists(guild.id);
+    serviceLog.info('guild_settings_initialized', { guildId: guild.id });
   }
 }

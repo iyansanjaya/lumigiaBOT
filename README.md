@@ -85,8 +85,8 @@ Dokumentasi terintegrasi menggunakan **Fumadocs** dan dapat di-deploy secara man
 | -------------- | ----------------------------------------------------------------- |
 | **Landing**    | Halaman marketing dengan animasi, fitur, daftar command           |
 | **Login**      | Discord OAuth2 — otomatis redirect ke dashboard setelah login     |
-| **Servers**    | Daftar server yang bisa dikelola (MANAGE_GUILD permission)        |
-| **Overview**   | Statistik server — total tiket, warnings, member                  |
+| **Servers**    | Daftar server yang bisa dikelola (Manage Server/Admin + bot berada di server) |
+| **Overview**   | Statistik server yang bisa dikelola — total tiket dan warning      |
 | **Moderation** | Lihat riwayat warning                                             |
 | **AutoMod**    | Toggle enable/disable filter + pilih action — langsung tersimpan  |
 | **Tickets**    | Statistik tiket, daftar status, dan link transkrip HTML untuk tiket closed |
@@ -312,14 +312,17 @@ lumigiabot/
 - **Field Whitelist** — hanya field yang terdaftar yang bisa diubah via dashboard API
 - **WAL Mode** — memungkinkan bot dan web mengakses database bersamaan tanpa lock
 - **Busy Timeout** — 5 detik timeout untuk menghindari deadlock
+- **Guild Lifecycle Cleanup** — saat bot keluar dari server, data operasional guild dan folder transcript terkait dibersihkan lewat cleanup transaksional
 
 ### Web Dashboard
 - **Discord OAuth2** — login hanya melalui akun Discord yang valid
-- **Permission Check** — setiap API request dicek ulang: user harus punya `MANAGE_GUILD` di server target
-- **3-Layer Security** pada API write:
+- **Permission Check** — setiap API request dicek ulang: user harus punya `MANAGE_GUILD`/Administrator dan LumigiaBOT masih berada di server target
+- **Bot Presence Check** — daftar server, ringkasan dashboard, halaman guild, dan API guard hanya menerima server yang masih ditempati LumigiaBOT
+- **4-Layer Security** pada API write:
   1. **Authentication** — session JWT harus valid
-  2. **Authorization** — verifikasi permission via Discord API
-  3. **Validation** — whitelist ketat pada field names, filter names, dan actions
+  2. **Guild Validation** — format ID Discord (17-20 digit) divalidasi sebelum query
+  3. **Authorization** — verifikasi permission user dan keberadaan bot via Discord API
+  4. **Validation** — whitelist ketat pada field names, filter names, dan actions
 - **Guild ID Validation** — format ID Discord (17-20 digit) divalidasi sebelum query
 - **Input Sanitization** — whitespace di-trim, string kosong dikonversi ke `null`
 - **Non-root Container** — container berjalan sebagai user `node` (UID 1000)
@@ -346,7 +349,7 @@ lumigiabot/
 
 1. Kunjungi URL dashboard Anda (contoh: `https://bot.lumigia.com`)
 2. Login dengan akun Discord
-3. Pilih server yang ingin dikonfigurasi
+3. Pilih server yang ingin dikonfigurasi. Server hanya muncul jika akun Anda punya **Manage Server**/**Administrator** dan LumigiaBOT masih berada di server tersebut.
 4. Gunakan halaman **Settings** untuk mengatur:
    - 🌐 Bahasa bot
    - 📢 Channel sambutan + pesan custom

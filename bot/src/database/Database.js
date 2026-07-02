@@ -29,6 +29,35 @@ import AnalyticsRepo from './repositories/AnalyticsRepo.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const GUILD_DATA_DELETE_STATEMENTS = Object.freeze([
+  ['fanart_votes', 'DELETE FROM fanart_votes WHERE submission_id IN (SELECT id FROM fanart_submissions WHERE guild_id = ?)'],
+  ['giveaway_entries', 'DELETE FROM giveaway_entries WHERE giveaway_id IN (SELECT id FROM giveaways WHERE guild_id = ?)'],
+  ['reaction_role_entries', 'DELETE FROM reaction_role_entries WHERE panel_id IN (SELECT id FROM reaction_role_panels WHERE guild_id = ?)'],
+  ['channel_activity', 'DELETE FROM channel_activity WHERE guild_id = ?'],
+  ['daily_stats', 'DELETE FROM daily_stats WHERE guild_id = ?'],
+  ['fanart_submissions', 'DELETE FROM fanart_submissions WHERE guild_id = ?'],
+  ['fanart_settings', 'DELETE FROM fanart_settings WHERE guild_id = ?'],
+  ['stream_notifications', 'DELETE FROM stream_notifications WHERE guild_id = ?'],
+  ['leveling_settings', 'DELETE FROM leveling_settings WHERE guild_id = ?'],
+  ['level_rewards', 'DELETE FROM level_rewards WHERE guild_id = ?'],
+  ['user_xp', 'DELETE FROM user_xp WHERE guild_id = ?'],
+  ['social_links', 'DELETE FROM social_links WHERE guild_id = ?'],
+  ['custom_embeds', 'DELETE FROM custom_embeds WHERE guild_id = ?'],
+  ['schedule_settings', 'DELETE FROM schedule_settings WHERE guild_id = ?'],
+  ['stream_schedule', 'DELETE FROM stream_schedule WHERE guild_id = ?'],
+  ['giveaways', 'DELETE FROM giveaways WHERE guild_id = ?'],
+  ['reaction_role_panels', 'DELETE FROM reaction_role_panels WHERE guild_id = ?'],
+  ['temp_channels', 'DELETE FROM temp_channels WHERE guild_id = ?'],
+  ['voice_settings', 'DELETE FROM voice_settings WHERE guild_id = ?'],
+  ['word_filter', 'DELETE FROM word_filter WHERE guild_id = ?'],
+  ['automod_whitelist', 'DELETE FROM automod_whitelist WHERE guild_id = ?'],
+  ['automod_filters', 'DELETE FROM automod_filters WHERE guild_id = ?'],
+  ['audit_logs', 'DELETE FROM audit_logs WHERE guild_id = ?'],
+  ['warnings', 'DELETE FROM warnings WHERE guild_id = ?'],
+  ['tickets', 'DELETE FROM tickets WHERE guild_id = ?'],
+  ['guild_settings', 'DELETE FROM guild_settings WHERE guild_id = ?'],
+]);
+
 export default class Database {
   /**
    * @param {string} dbPath - Path ke file database SQLite
@@ -96,5 +125,25 @@ export default class Database {
   close() {
     this.db.close();
     logger.info('Koneksi database ditutup.');
+  }
+
+  deleteGuildData(guildId) {
+    const cleanup = this.db.transaction((targetGuildId) => {
+      const deletedRowsByTable = {};
+      let totalDeletedRows = 0;
+
+      for (const [table, sql] of GUILD_DATA_DELETE_STATEMENTS) {
+        const result = this.db.prepare(sql).run(targetGuildId);
+        deletedRowsByTable[table] = result.changes;
+        totalDeletedRows += result.changes;
+      }
+
+      return {
+        totalDeletedRows,
+        deletedRowsByTable,
+      };
+    });
+
+    return cleanup(guildId);
   }
 }
