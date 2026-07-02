@@ -12,7 +12,11 @@ export default async function ServersPage() {
   let error: string | null = null;
 
   try {
-    const allGuilds = await getUserGuilds(session?.accessToken as string);
+    if (!session?.accessToken) {
+      throw new Error('Missing Discord access token');
+    }
+
+    const allGuilds = await getUserGuilds(session.accessToken);
     guilds = getManageableGuilds(allGuilds);
   } catch {
     error = 'Gagal mengambil daftar server. Sesi Anda mungkin sudah kedaluwarsa. Coba keluar lalu login kembali.';
@@ -85,6 +89,7 @@ export default async function ServersPage() {
 
                 <Link
                   href={`/dashboard/servers/${guild.id}`}
+                  prefetch={false}
                   className="w-full rounded-lg bg-primary px-4 py-2 text-center text-sm font-medium text-white hover:bg-primary-hover transition-colors"
                 >
                   Kelola

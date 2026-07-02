@@ -6,13 +6,59 @@ export interface DiscordGuild {
   permissions: string;
 }
 
-const MANAGE_GUILD = 0x20;
+const ADMINISTRATOR = BigInt(0x8);
+const MANAGE_GUILD = BigInt(0x20);
+const USER_GUILDS_CACHE_TTL_MS = 30_000;
+
+const userGuildsCache = new Map<string, { guilds: DiscordGuild[]; expires: number }>();
+const userGuildsInflight = new Map<string, Promise<DiscordGuild[]>>();
+
+function hasGuildManagementPermission(guild: DiscordGuild) {
+  if (guild.owner) return true;
+
+  try {
+    const permissions = BigInt(guild.permissions);
+    return (
+      (permissions & MANAGE_GUILD) === MANAGE_GUILD ||
+      (permissions & ADMINISTRATOR) === ADMINISTRATOR
+    );
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Fetch user guilds dari Discord API.
  * Versi tanpa Next.js cache — untuk dipakai di Route Handlers / API routes.
  */
 export async function getUserGuilds(accessToken: string): Promise<DiscordGuild[]> {
+  if (!accessToken) throw new Error('Discord access token is missing');
+
+  const cached = userGuildsCache.get(accessToken);
+  if (cached && Date.now() < cached.expires) {
+    return cached.guilds;
+  }
+
+  const pending = userGuildsInflight.get(accessToken);
+  if (pending) return pending;
+
+  const request = fetchUserGuilds(accessToken)
+    .then((guilds) => {
+      userGuildsCache.set(accessToken, {
+        guilds,
+        expires: Date.now() + USER_GUILDS_CACHE_TTL_MS,
+      });
+      return guilds;
+    })
+    .finally(() => {
+      userGuildsInflight.delete(accessToken);
+    });
+
+  userGuildsInflight.set(accessToken, request);
+  return request;
+}
+
+async function fetchUserGuilds(accessToken: string): Promise<DiscordGuild[]> {
   const res = await fetch('https://discord.com/api/v10/users/@me/guilds', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -33,9 +79,7 @@ export async function getUserGuilds(accessToken: string): Promise<DiscordGuild[]
  * Menggunakan bitwise check pada permissions field.
  */
 export function getManageableGuilds(guilds: DiscordGuild[]): DiscordGuild[] {
-  return guilds.filter(
-    (guild) => (parseInt(guild.permissions) & MANAGE_GUILD) === MANAGE_GUILD || guild.owner
-  );
+  return guilds.filter(hasGuildManagementPermission);
 }
 
 /**

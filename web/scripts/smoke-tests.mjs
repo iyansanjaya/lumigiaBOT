@@ -69,6 +69,23 @@ test('dashboard guild pages require page-level guild access guard', () => {
   assert.match(source, /redirect\('\/dashboard\/servers'\)/, 'invalid or forbidden guilds must leave the page');
 });
 
+test('server picker avoids prefetching protected guild routes', () => {
+  const source = read('src/app/(dashboard)/dashboard/servers/page.tsx');
+
+  assert.match(source, /prefetch=\{false\}/, 'guild manage links must not prefetch protected guild routes');
+  assert.match(source, /session\?\.accessToken/, 'server picker must require a Discord access token before fetching guilds');
+});
+
+test('discord guild permissions are cached and checked with full bitfields', () => {
+  const source = read('src/lib/discord-api.ts');
+
+  assert.match(source, /userGuildsCache/, 'user guild fetches should be cached briefly');
+  assert.match(source, /userGuildsInflight/, 'concurrent user guild fetches should be deduped');
+  assert.match(source, /BigInt\(guild\.permissions\)/, 'permission checks should support Discord permission bitfields safely');
+  assert.match(source, /ADMINISTRATOR/, 'Administrator permission should allow dashboard management');
+  assert.match(source, /MANAGE_GUILD/, 'Manage Guild permission should allow dashboard management');
+});
+
 test('health endpoint checks env, database, schema, and runtime metadata', () => {
   const source = read('src/app/api/health/route.ts');
 
