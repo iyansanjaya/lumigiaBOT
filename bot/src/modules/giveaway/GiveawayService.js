@@ -4,7 +4,7 @@
  */
 
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
 
 /** Warna embed giveaway */
 const COLORS = {
@@ -13,6 +13,7 @@ const COLORS = {
   ERROR: 0xF04747,
   INFO: 0x5865F2,
 };
+const log = createServiceLogger('giveaway-service');
 
 export default class GiveawayService {
   /**
@@ -54,7 +55,15 @@ export default class GiveawayService {
     // Simpan message_id untuk referensi nanti
     client.db.giveaways.setMessageId(giveawayId, message.id);
 
-    logger.info(`Giveaway #${giveawayId} created by ${interaction.user.tag} — prize: "${prize}"`);
+    log.info('created', {
+      guildId: interaction.guildId,
+      giveawayId,
+      channelId: channel.id,
+      hostId: interaction.user.id,
+      winnersCount,
+      durationMs: duration,
+      requiredRole,
+    });
 
     return client.db.giveaways.get(giveawayId);
   }
@@ -103,10 +112,22 @@ export default class GiveawayService {
         }
       }
     } catch (error) {
-      logger.error(`Failed to send giveaway #${giveaway.id} winner announcement:`, error);
+      log.error('winner_announcement_failed', {
+        guildId: giveaway.guild_id,
+        giveawayId: giveaway.id,
+        channelId: giveaway.channel_id,
+        entries: entries.length,
+        winners: winners.length,
+      }, error);
     }
 
-    logger.info(`Giveaway #${giveaway.id} ended — ${winners.length} winner(s)`);
+    log.info('ended', {
+      guildId: giveaway.guild_id,
+      giveawayId: giveaway.id,
+      channelId: giveaway.channel_id,
+      entries: entries.length,
+      winners: winners.length,
+    });
   }
 
   /**
@@ -145,10 +166,22 @@ export default class GiveawayService {
         );
       }
     } catch (error) {
-      logger.error(`Failed to send giveaway #${giveaway.id} reroll announcement:`, error);
+      log.error('reroll_announcement_failed', {
+        guildId: giveaway.guild_id,
+        giveawayId: giveaway.id,
+        channelId: giveaway.channel_id,
+        entries: entries.length,
+        winners: winners.length,
+      }, error);
     }
 
-    logger.info(`Giveaway #${giveaway.id} rerolled — ${winners.length} new winner(s)`);
+    log.info('rerolled', {
+      guildId: giveaway.guild_id,
+      giveawayId: giveaway.id,
+      channelId: giveaway.channel_id,
+      entries: entries.length,
+      winners: winners.length,
+    });
   }
 
   /**
@@ -220,11 +253,28 @@ export default class GiveawayService {
    */
   static async _updateGiveawayMessage(client, giveaway, entriesCount, isEnded, winners) {
     try {
-      const channel = await client.channels.fetch(giveaway.channel_id);
-      if (!channel) return;
+      const channel = await client.channels.fetch(giveaway.channel_id).catch(() => null);
+      if (!channel) {
+        log.warn('message_update_skipped', {
+          guildId: giveaway.guild_id,
+          giveawayId: giveaway.id,
+          channelId: giveaway.channel_id,
+          reason: 'channel_missing',
+        });
+        return;
+      }
 
-      const message = await channel.messages.fetch(giveaway.message_id);
-      if (!message) return;
+      const message = await channel.messages.fetch(giveaway.message_id).catch(() => null);
+      if (!message) {
+        log.warn('message_update_skipped', {
+          guildId: giveaway.guild_id,
+          giveawayId: giveaway.id,
+          channelId: giveaway.channel_id,
+          messageId: giveaway.message_id,
+          reason: 'message_missing',
+        });
+        return;
+      }
 
       const embed = GiveawayService.buildGiveawayEmbed(giveaway, entriesCount, isEnded, winners);
 
@@ -245,7 +295,12 @@ export default class GiveawayService {
         await message.edit({ embeds: [embed], components: [row] });
       }
     } catch (error) {
-      logger.error(`Failed to update giveaway #${giveaway.id} message:`, error);
+      log.error('message_update_failed', {
+        guildId: giveaway.guild_id,
+        giveawayId: giveaway.id,
+        channelId: giveaway.channel_id,
+        messageId: giveaway.message_id,
+      }, error);
     }
   }
 }

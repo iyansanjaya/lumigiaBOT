@@ -12,8 +12,10 @@
 import { AntiRaidDefaults } from '../../config/constants.js';
 import { createEmbed } from '../../utils/EmbedBuilder.js';
 import { t } from '../../i18n/helpers.js';
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
 import LockdownManager from './LockdownManager.js';
+
+const log = createServiceLogger('anti-raid');
 
 export default class AntiRaidEngine {
   /**
@@ -68,7 +70,10 @@ export default class AntiRaidEngine {
       // 5. Periksa umur akun
       await this._checkAccountAge(member, settings);
     } catch (error) {
-      logger.error('AntiRaid processing error:', error);
+      log.error('member_join_processing_failed', {
+        guildId: member.guild?.id,
+        userId: member.id,
+      }, error);
     }
   }
 
@@ -82,17 +87,32 @@ export default class AntiRaidEngine {
    */
   async _triggerAlert(guild, count, seconds) {
     try {
-      logger.warn(`Raid detected in ${guild.name}: ${count} joins in ${seconds}s`);
+      log.warn('raid_detected', { guildId: guild.id, count, seconds });
 
       // Aktifkan lockdown server
-      await LockdownManager.lockAll(guild, 'Anti-raid lockdown');
+      const lockedChannels = await LockdownManager.lockAll(guild, 'Anti-raid lockdown');
 
       // Kirim peringatan ke channel log moderasi
       const settings = this.client.db.guildSettings.get(guild.id);
-      if (!settings?.mod_log_channel) return;
+      if (!settings?.mod_log_channel) {
+        log.warn('alert_log_skipped', {
+          guildId: guild.id,
+          reason: 'mod_log_channel_missing',
+          lockedChannels,
+        });
+        return;
+      }
 
       const channel = await guild.channels.fetch(settings.mod_log_channel).catch(() => null);
-      if (!channel) return;
+      if (!channel) {
+        log.warn('alert_log_skipped', {
+          guildId: guild.id,
+          channelId: settings.mod_log_channel,
+          reason: 'mod_log_channel_unavailable',
+          lockedChannels,
+        });
+        return;
+      }
 
       const embed = createEmbed('error')
         .setTitle(t(this.client, guild.id, 'antiraid.alert_title'))
@@ -110,7 +130,7 @@ export default class AntiRaidEngine {
         `Raid detected: ${count} joins in ${seconds}s — lockdown activated`,
       );
     } catch (error) {
-      logger.error('Failed to trigger raid alert:', error);
+      log.error('raid_alert_failed', { guildId: guild.id, count, seconds }, error);
     }
   }
 
@@ -129,10 +149,25 @@ export default class AntiRaidEngine {
 
       if (accountAgeDays < minAgeDays) {
         // Catat peringatan ke channel moderasi
-        if (!settings?.mod_log_channel) return;
+        if (!settings?.mod_log_channel) {
+          log.debug('young_account_log_skipped', {
+            guildId: member.guild.id,
+            userId: member.id,
+            reason: 'mod_log_channel_missing',
+          });
+          return;
+        }
 
         const channel = await member.guild.channels.fetch(settings.mod_log_channel).catch(() => null);
-        if (!channel) return;
+        if (!channel) {
+          log.warn('young_account_log_skipped', {
+            guildId: member.guild.id,
+            userId: member.id,
+            channelId: settings.mod_log_channel,
+            reason: 'mod_log_channel_unavailable',
+          });
+          return;
+        }
 
         const embed = createEmbed('warning')
           .setDescription(
@@ -147,9 +182,19 @@ export default class AntiRaidEngine {
           );
 
         await channel.send({ embeds: [embed] });
+        log.info('young_account_reported', {
+          guildId: member.guild.id,
+          userId: member.id,
+          channelId: channel.id,
+          accountAgeDays: Math.floor(accountAgeDays),
+          minAgeDays,
+        });
       }
     } catch (error) {
-      logger.error('Account age check failed:', error);
+      log.error('account_age_check_failed', {
+        guildId: member.guild?.id,
+        userId: member.id,
+      }, error);
     }
   }
 }

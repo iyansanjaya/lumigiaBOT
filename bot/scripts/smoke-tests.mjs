@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -68,6 +68,10 @@ function createTempDb() {
     dir,
     dbPath: join(dir, 'lumigiabot.db'),
   };
+}
+
+function readSource(relPath) {
+  return readFileSync(join(botDir, relPath), 'utf8');
 }
 
 test('shared contracts keep bot and dashboard values aligned', () => {
@@ -248,4 +252,28 @@ test('service logger formats context and redacts sensitive values', () => {
   assert.match(lines[0], /authToken="\[redacted\]"/);
   assert.doesNotMatch(lines[0], /super-secret-token/);
   assert.doesNotMatch(lines[0], /ignored=/);
+});
+
+test('high-value background services use structured service loggers', () => {
+  const serviceFiles = {
+    'src/events/client/ready.js': 'startup',
+    'src/modules/giveaway/GiveawayScheduler.js': 'giveaway-scheduler',
+    'src/modules/giveaway/GiveawayService.js': 'giveaway-service',
+    'src/modules/streaming/StreamNotifService.js': 'stream-notifications',
+    'src/modules/automod/AutoModEngine.js': 'automod',
+    'src/modules/automod/PhishingService.js': 'phishing-service',
+    'src/modules/antiraid/AntiRaidEngine.js': 'anti-raid',
+    'src/modules/antiraid/LockdownManager.js': 'lockdown-manager',
+    'src/modules/analytics/AnalyticsService.js': 'analytics-service',
+  };
+
+  for (const [relPath, serviceName] of Object.entries(serviceFiles)) {
+    const source = readSource(relPath);
+    assert.match(source, /createServiceLogger/, `${relPath} must use createServiceLogger`);
+    assert.match(source, new RegExp(`createServiceLogger\\(['"]${serviceName}['"]\\)`));
+  }
+
+  const scheduleCommand = readSource('src/commands/streaming/schedule.js');
+  assert.match(scheduleCommand, /createServiceLogger\(['"]schedule-command['"]\)/);
+  assert.doesNotMatch(scheduleCommand, /console\.error/);
 });

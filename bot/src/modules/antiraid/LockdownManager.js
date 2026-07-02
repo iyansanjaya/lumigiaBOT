@@ -5,7 +5,9 @@
  */
 
 import { ChannelType } from 'discord.js';
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
+
+const log = createServiceLogger('lockdown-manager');
 
 export default class LockdownManager {
   /**
@@ -30,11 +32,20 @@ export default class LockdownManager {
         }, { reason });
         locked++;
       } catch (error) {
-        logger.error(`Failed to lock channel ${channel.name}:`, error);
+        log.error('channel_lock_failed', {
+          guildId: guild.id,
+          channelId: channel.id,
+          reason,
+        }, error);
       }
     }
 
-    logger.info(`Locked ${locked}/${textChannels.size} channels in ${guild.name}`);
+    log.info('lock_completed', {
+      guildId: guild.id,
+      locked,
+      total: textChannels.size,
+      reason,
+    });
     return locked;
   }
 
@@ -60,11 +71,20 @@ export default class LockdownManager {
         }, { reason });
         unlocked++;
       } catch (error) {
-        logger.error(`Failed to unlock channel ${channel.name}:`, error);
+        log.error('channel_unlock_failed', {
+          guildId: guild.id,
+          channelId: channel.id,
+          reason,
+        }, error);
       }
     }
 
-    logger.info(`Unlocked ${unlocked}/${textChannels.size} channels in ${guild.name}`);
+    log.info('unlock_completed', {
+      guildId: guild.id,
+      unlocked,
+      total: textChannels.size,
+      reason,
+    });
     return unlocked;
   }
 }

@@ -16,12 +16,14 @@ import {
   GuildScheduledEventEntityType,
 } from 'discord.js';
 import { successEmbed, errorEmbed } from '../../utils/EmbedBuilder.js';
-import { logger } from '../../utils/Logger.js';
+import { createServiceLogger } from '../../utils/Logger.js';
 import ScheduleService from '../../modules/schedule/ScheduleService.js';
 import {
   DEFAULT_SCHEDULE_TIMEZONE,
   getNextScheduleOccurrenceIso,
 } from '../../../../shared/contracts.js';
+
+const log = createServiceLogger('schedule-command');
 
 /**
  * Helper mendapatkan Date berikutnya untuk hari & jam tertentu.
@@ -163,7 +165,11 @@ export async function execute(interaction, client) {
           });
           eventId = createdEvent.id;
         } catch (err) {
-          console.error('[Schedule] Failed to create event:', err);
+          log.error('discord_event_create_failed', {
+            guildId: interaction.guildId,
+            dayOfWeek,
+            time,
+          }, err);
         }
 
         // Simpan ke database
@@ -219,7 +225,12 @@ export async function execute(interaction, client) {
             try {
               await interaction.guild.scheduledEvents.delete(entry.event_id);
             } catch (err) {
-              console.error('[Schedule] Failed to delete event:', err);
+              log.error('discord_event_delete_failed', {
+                guildId: interaction.guildId,
+                eventId: entry.event_id,
+                dayOfWeek,
+                time,
+              }, err);
             }
           }
 
@@ -316,9 +327,17 @@ export async function execute(interaction, client) {
       }
     }
 
-    logger.info(`Schedule "${subcommand}" executed by ${interaction.user.tag} in ${interaction.guild.name}`);
+    log.info('command_executed', {
+      guildId: interaction.guildId,
+      userId: interaction.user.id,
+      subcommand,
+    });
   } catch (error) {
-    logger.error('schedule command error:', error);
+    log.error('command_failed', {
+      guildId: interaction.guildId,
+      userId: interaction.user.id,
+      subcommand,
+    }, error);
     await interaction.reply({
       embeds: [errorEmbed('❌ Terjadi kesalahan saat memproses perintah jadwal.')],
       ephemeral: true,
