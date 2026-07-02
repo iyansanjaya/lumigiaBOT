@@ -195,6 +195,7 @@ Selesai! Bot dan dashboard berjalan otomatis.
 
 - **Bot**: Berjalan di background
 - **Dashboard**: `http://localhost:3412` (atau melalui reverse proxy)
+- **Healthcheck**: container web dipantau via `/api/health` dan akan menjadi `unhealthy` jika env, database, atau schema bermasalah
 
 ### 2B. Jalankan Lokal (Pengembangan)
 
@@ -203,7 +204,11 @@ Selesai! Bot dan dashboard berjalan otomatis.
 cd bot && npm install && npm run dev
 
 # Terminal 2 — Dashboard
-cd web && npm install && npm run dev
+cd web
+corepack enable
+corepack prepare pnpm@11.7.0 --activate
+pnpm install
+pnpm dev
 ```
 
 ### 3. Daftarkan Slash Command

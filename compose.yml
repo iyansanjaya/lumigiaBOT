@@ -29,6 +29,14 @@ services:
     env_file: .env
     environment:
       DATABASE_PATH: /app/data/lumigiabot.db
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'node -e "fetch(''http://127.0.0.1:3412/api/health'').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"'
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     networks:
       - lumigiabot-network
 

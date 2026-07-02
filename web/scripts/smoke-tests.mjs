@@ -138,6 +138,15 @@ test('health endpoint checks env, database, schema, and runtime metadata', () =>
   assert.match(source, /Cache-Control': 'no-store'/, 'health response must not be cached');
 });
 
+test('docker compose wires the web container healthcheck to the health endpoint', () => {
+  const compose = read('../compose.yml');
+
+  assert.match(compose, /healthcheck:/, 'web service must define a Docker healthcheck');
+  assert.match(compose, /\/api\/health/, 'web healthcheck must call the dashboard health endpoint');
+  assert.match(compose, /response\.ok/, 'web healthcheck must fail on non-2xx health responses');
+  assert.match(compose, /start_period:\s*20s/, 'web healthcheck must allow a startup grace period');
+});
+
 test('web contracts re-export the shared contract source of truth', async () => {
   const webContracts = read('src/lib/contracts.ts');
 
