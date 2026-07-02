@@ -1,23 +1,20 @@
+import {
+  DEFAULT_SCHEDULE_TIMEZONE,
+  getNextScheduleOccurrenceIso,
+} from '@/lib/contracts';
+
 const DISCORD_API_URL = 'https://discord.com/api/v10';
 const TOKEN = process.env.DISCORD_TOKEN;
 
 /**
  * dayOfWeek follows JavaScript Date.getDay(): 0=Sunday, 1=Monday, ..., 6=Saturday.
  */
-function getNextOccurrenceISO(dayOfWeek: number, timeStr: string): string {
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  const now = new Date();
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-
-  const currentDay = date.getDay();
-  let daysToAdd = dayOfWeek - currentDay;
-  if (daysToAdd < 0 || (daysToAdd === 0 && date < now)) {
-    daysToAdd += 7;
-  }
-  
-  date.setDate(date.getDate() + daysToAdd);
-  return date.toISOString();
+function getNextOccurrenceISO(
+  dayOfWeek: number,
+  timeStr: string,
+  timezone = DEFAULT_SCHEDULE_TIMEZONE,
+): string | null {
+  return getNextScheduleOccurrenceIso(dayOfWeek, timeStr, timezone);
 }
 
 /**
@@ -38,14 +35,20 @@ export async function createDiscordScheduledEvent(
   title: string,
   description: string | null,
   dayOfWeek: number,
-  timeStr: string
+  timeStr: string,
+  timezone = DEFAULT_SCHEDULE_TIMEZONE,
 ): Promise<string | null> {
   if (!TOKEN) {
     console.error('[discord-events] DISCORD_TOKEN is missing');
     return null;
   }
 
-  const startTime = getNextOccurrenceISO(dayOfWeek, timeStr);
+  const startTime = getNextOccurrenceISO(dayOfWeek, timeStr, timezone);
+  if (!startTime) {
+    console.error('[discord-events] Invalid scheduled event time:', { dayOfWeek, timeStr, timezone });
+    return null;
+  }
+
   const endTime = getEndTimeISO(startTime);
 
   const payload = {

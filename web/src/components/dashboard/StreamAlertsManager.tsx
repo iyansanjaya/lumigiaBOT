@@ -40,18 +40,25 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
   const [discordChannels, setDiscordChannels] = useState<{id: string; name: string; type: number}[]>([]);
   const [discordRoles, setDiscordRoles] = useState<{id: string; name: string; color: number}[]>([]);
   const [loadingDiscord, setLoadingDiscord] = useState(true);
+  const [discordDataError, setDiscordDataError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
 
     setLoadingDiscord(true);
+    setDiscordDataError("");
     getGuildDiscordData(guildId)
       .then(({ channels, roles }) => {
         if (cancelled) return;
         setDiscordChannels(channels.filter((c) => c.type === 0 || c.type === 5));
         setDiscordRoles(roles);
       })
-      .catch(() => {})
+      .catch((error) => {
+        if (cancelled) return;
+        setDiscordChannels([]);
+        setDiscordRoles([]);
+        setDiscordDataError(getDashboardErrorMessage(error, "Gagal memuat channel dan role Discord."));
+      })
       .finally(() => {
         if (!cancelled) setLoadingDiscord(false);
       });
@@ -225,6 +232,11 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
             mulai live.
           </p>
           <form onSubmit={handleAdd} className="space-y-4">
+            {discordDataError && (
+              <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                {discordDataError}
+              </p>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Platform Select */}
               <div className="flex flex-col gap-1.5">
@@ -275,10 +287,16 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
                 <select
                   value={notifyChannel}
                   onChange={(e) => setNotifyChannel(e.target.value)}
-                  disabled={loadingDiscord}
+                  disabled={loadingDiscord || Boolean(discordDataError)}
                   className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
                 >
-                  <option value="">{loadingDiscord ? 'Memuat channel...' : '— Pilih channel —'}</option>
+                  <option value="">
+                    {loadingDiscord
+                      ? 'Memuat channel...'
+                      : discordDataError
+                        ? 'Channel tidak tersedia'
+                        : '— Pilih channel —'}
+                  </option>
                   {discordChannels.map(ch => (
                     <option key={ch.id} value={ch.id}># {ch.name}</option>
                   ))}
@@ -291,10 +309,16 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
                 <select
                   value={pingRole}
                   onChange={(e) => setPingRole(e.target.value)}
-                  disabled={loadingDiscord}
+                  disabled={loadingDiscord || Boolean(discordDataError)}
                   className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50"
                 >
-                  <option value="">{loadingDiscord ? 'Memuat role...' : '— Tidak ada —'}</option>
+                  <option value="">
+                    {loadingDiscord
+                      ? 'Memuat role...'
+                      : discordDataError
+                        ? 'Role tidak tersedia'
+                        : '— Tidak ada —'}
+                  </option>
                   {discordRoles.map(r => (
                     <option key={r.id} value={r.id}>@ {r.name}</option>
                   ))}

@@ -18,6 +18,10 @@ import {
 import { successEmbed, errorEmbed } from '../../utils/EmbedBuilder.js';
 import { logger } from '../../utils/Logger.js';
 import ScheduleService from '../../modules/schedule/ScheduleService.js';
+import {
+  DEFAULT_SCHEDULE_TIMEZONE,
+  getNextScheduleOccurrenceIso,
+} from '../../../../shared/contracts.js';
 
 /**
  * Helper mendapatkan Date berikutnya untuk hari & jam tertentu.
@@ -26,19 +30,8 @@ import ScheduleService from '../../modules/schedule/ScheduleService.js';
  * @returns {Date}
  */
 function getNextDateForDay(dayOfWeek, timeStr) {
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  const now = new Date();
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-
-  const currentDay = date.getDay();
-  let daysToAdd = dayOfWeek - currentDay;
-  if (daysToAdd < 0 || (daysToAdd === 0 && date < now)) {
-    daysToAdd += 7;
-  }
-  
-  date.setDate(date.getDate() + daysToAdd);
-  return date;
+  const iso = getNextScheduleOccurrenceIso(dayOfWeek, timeStr, DEFAULT_SCHEDULE_TIMEZONE);
+  return iso ? new Date(iso) : new Date();
 }
 
 /** Pilihan hari: label Indonesia, value Inggris */
@@ -178,7 +171,7 @@ export async function execute(interaction, client) {
           interaction.guildId,
           dayOfWeek,
           time,
-          'Asia/Jakarta',
+          DEFAULT_SCHEDULE_TIMEZONE,
           title,
           description,
           eventId

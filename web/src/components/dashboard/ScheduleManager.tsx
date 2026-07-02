@@ -11,7 +11,15 @@ import {
   Loader2,
 } from "lucide-react";
 import type { StreamScheduleEntry } from "@/types/streamer";
-import { SCHEDULE_DAY_NAMES, SCHEDULE_DAY_OPTIONS, SCHEDULE_DAY_ORDER } from "@/lib/contracts";
+import {
+  DEFAULT_SCHEDULE_TIMEZONE,
+  SCHEDULE_DAY_NAMES,
+  SCHEDULE_DAY_OPTIONS,
+  SCHEDULE_DAY_ORDER,
+  SCHEDULE_TIMEZONE_OPTIONS,
+  getScheduleTimezoneLabel,
+  isValidScheduleTime,
+} from "@/lib/contracts";
 import { dashboardRequest, getDashboardErrorMessage } from "./dashboardApi";
 
 // ─── Props ───
@@ -41,7 +49,7 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
   // Form fields
   const [dayOfWeek, setDayOfWeek] = useState("1");
   const [time, setTime] = useState("");
-  const [timezone, setTimezone] = useState("");
+  const [timezone, setTimezone] = useState(DEFAULT_SCHEDULE_TIMEZONE);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -66,8 +74,9 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
   // ─── Add handler ───
   async function handleAdd() {
     // Validate
-    if (!time || !/^\d{2}:\d{2}$/.test(time)) {
-      setAddError("Format waktu harus HH:MM (contoh: 20:00)");
+    const normalizedTime = time.trim();
+    if (!isValidScheduleTime(normalizedTime)) {
+      setAddError("Format waktu harus HH:MM dalam rentang 00:00-23:59 (contoh: 20:00).");
       return;
     }
     if (!timezone.trim()) {
@@ -89,7 +98,7 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           day_of_week: Number(dayOfWeek),
-          time: time.trim(),
+          time: normalizedTime,
           timezone: timezone.trim(),
           title: title.trim(),
           description: description.trim() || null,
@@ -98,7 +107,7 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
 
       setAddState("saved");
       setTime("");
-      setTimezone("");
+      setTimezone(DEFAULT_SCHEDULE_TIMEZONE);
       setTitle("");
       setDescription("");
       setDayOfWeek("1");
@@ -172,7 +181,7 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
                             )}
                           </div>
                           <span className="text-sm font-mono text-foreground-muted flex-shrink-0">
-                            {entry.time} {entry.timezone}
+                            {entry.time} {getScheduleTimezoneLabel(entry.timezone)}
                           </span>
                           <button
                             onClick={() => handleDelete(entry.id)}
@@ -248,7 +257,7 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
                     Format 24 jam HH:MM
                   </p>
                   <input
-                    type="text"
+                    type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                     placeholder="20:00"
@@ -260,15 +269,19 @@ export function ScheduleManager({ guildId, initialSchedule }: Props) {
                 <div className="flex flex-col gap-1.5">
                   <label className="text-foreground-muted text-sm">Timezone</label>
                   <p className="text-xs text-foreground-muted/70">
-                    Zona waktu, contoh: WIB, WITA, WIT, UTC
+                    Zona waktu yang dipakai untuk menghitung Discord Scheduled Event.
                   </p>
-                  <input
-                    type="text"
+                  <select
                     value={timezone}
                     onChange={(e) => setTimezone(e.target.value)}
-                    placeholder="WIB"
                     className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  />
+                  >
+                    {SCHEDULE_TIMEZONE_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Judul */}

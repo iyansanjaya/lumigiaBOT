@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireGuildManager } from '@/lib/api-guard';
-import { SCHEDULE_DAY_NAMES } from '@/lib/contracts';
+import {
+  SCHEDULE_DAY_NAMES,
+  isValidScheduleTime,
+  normalizeScheduleTimezone,
+} from '@/lib/contracts';
 import { addScheduleEntry, deleteScheduleEntry } from '@/lib/database';
 import { createDiscordScheduledEvent, deleteDiscordScheduledEvent } from '@/lib/discord-events';
 
@@ -32,11 +36,13 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     ) {
       return NextResponse.json({ error: 'Hari harus 0 (Minggu) - 6 (Sabtu)' }, { status: 400 });
     }
-    if (!body.time || !/^\d{2}:\d{2}$/.test(body.time)) {
-      return NextResponse.json({ error: 'Format waktu harus HH:MM' }, { status: 400 });
+    const time = typeof body.time === 'string' ? body.time.trim() : '';
+    if (!isValidScheduleTime(time)) {
+      return NextResponse.json({ error: 'Format waktu harus HH:MM (00:00-23:59)' }, { status: 400 });
     }
-    if (!body.timezone || typeof body.timezone !== 'string') {
-      return NextResponse.json({ error: 'Timezone wajib diisi' }, { status: 400 });
+    const timezone = normalizeScheduleTimezone(body.timezone);
+    if (!timezone) {
+      return NextResponse.json({ error: 'Timezone tidak valid' }, { status: 400 });
     }
     if (!body.title || typeof body.title !== 'string') {
       return NextResponse.json({ error: 'Judul wajib diisi' }, { status: 400 });
@@ -47,14 +53,15 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       body.title,
       body.description || null,
       body.day_of_week,
-      body.time,
+      time,
+      timezone,
     );
 
     const success = addScheduleEntry(
       guard.guildId,
       body.day_of_week,
-      body.time.trim(),
-      body.timezone.trim(),
+      time,
+      timezone,
       body.title.trim(),
       body.description?.trim() || null,
       eventId,

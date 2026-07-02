@@ -144,6 +144,30 @@ export const SCHEDULE_DAY_OPTIONS = Object.freeze(
   })),
 );
 
+export const DEFAULT_SCHEDULE_TIMEZONE = 'Asia/Jakarta';
+export const SCHEDULE_TIME_PATTERN = '^([01]\\d|2[0-3]):([0-5]\\d)$';
+export const SCHEDULE_TIMEZONES = Object.freeze({
+  'Asia/Jakarta': Object.freeze({ label: 'WIB (UTC+7)', offsetMinutes: 7 * 60 }),
+  'Asia/Makassar': Object.freeze({ label: 'WITA (UTC+8)', offsetMinutes: 8 * 60 }),
+  'Asia/Jayapura': Object.freeze({ label: 'WIT (UTC+9)', offsetMinutes: 9 * 60 }),
+  UTC: Object.freeze({ label: 'UTC', offsetMinutes: 0 }),
+});
+export const SCHEDULE_TIMEZONE_ALIASES = Object.freeze({
+  WIB: 'Asia/Jakarta',
+  WITA: 'Asia/Makassar',
+  WIT: 'Asia/Jayapura',
+  'ASIA/JAKARTA': 'Asia/Jakarta',
+  'ASIA/MAKASSAR': 'Asia/Makassar',
+  'ASIA/JAYAPURA': 'Asia/Jayapura',
+  UTC: 'UTC',
+});
+export const SCHEDULE_TIMEZONE_OPTIONS = Object.freeze(
+  Object.entries(SCHEDULE_TIMEZONES).map(([value, config]) => ({
+    value,
+    label: config.label,
+  })),
+);
+
 export const STREAM_PLATFORMS = Object.freeze(['twitch', 'youtube']);
 
 export const WARN_ESCALATION_PRESETS = Object.freeze([
@@ -201,7 +225,9 @@ export const DASHBOARD_VALIDATION_LIMITS = Object.freeze({
 });
 
 const DISCORD_SNOWFLAKE_RE = new RegExp(DISCORD_SNOWFLAKE_PATTERN);
+const SCHEDULE_TIME_RE = new RegExp(SCHEDULE_TIME_PATTERN);
 const WARN_ESCALATION_ACTIONS = Object.freeze(['mute', 'kick', 'ban']);
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
  * @template T
@@ -377,6 +403,69 @@ export function isValidAutomodAction(action) {
 
 export function isValidStreamPlatform(platform) {
   return STREAM_PLATFORMS.includes(platform);
+}
+
+export function isValidScheduleTime(timeStr) {
+  return typeof timeStr === 'string' && SCHEDULE_TIME_RE.test(timeStr.trim());
+}
+
+export function normalizeScheduleTimezone(value, fallback = null) {
+  if (value === null || value === undefined || value === '') return fallback;
+  if (typeof value !== 'string') return fallback;
+
+  const trimmed = value.trim();
+  if (Object.prototype.hasOwnProperty.call(SCHEDULE_TIMEZONES, trimmed)) return trimmed;
+
+  const alias = SCHEDULE_TIMEZONE_ALIASES[trimmed.toUpperCase()];
+  return alias || fallback;
+}
+
+export function isValidScheduleTimezone(value) {
+  return normalizeScheduleTimezone(value) !== null;
+}
+
+export function getScheduleTimezoneLabel(value) {
+  const timezone = normalizeScheduleTimezone(value, DEFAULT_SCHEDULE_TIMEZONE);
+  return SCHEDULE_TIMEZONES[timezone]?.label ?? SCHEDULE_TIMEZONES[DEFAULT_SCHEDULE_TIMEZONE].label;
+}
+
+export function getNextScheduleOccurrenceIso(dayOfWeek, timeStr, timezone = DEFAULT_SCHEDULE_TIMEZONE, now = new Date()) {
+  if (
+    typeof dayOfWeek !== 'number' ||
+    !Object.prototype.hasOwnProperty.call(SCHEDULE_DAY_NAMES, dayOfWeek) ||
+    !isValidScheduleTime(timeStr)
+  ) {
+    return null;
+  }
+
+  const normalizedTimezone = normalizeScheduleTimezone(timezone, DEFAULT_SCHEDULE_TIMEZONE);
+  const offsetMinutes = SCHEDULE_TIMEZONES[normalizedTimezone].offsetMinutes;
+  const offsetMs = offsetMinutes * 60 * 1000;
+  const [hours, minutes] = timeStr.trim().split(':').map(Number);
+  const nowMs = now instanceof Date ? now.getTime() : new Date(now).getTime();
+
+  if (!Number.isFinite(nowMs)) return null;
+
+  const localNow = new Date(nowMs + offsetMs);
+  const currentLocalDay = localNow.getUTCDay();
+  let daysToAdd = dayOfWeek - currentLocalDay;
+
+  const targetLocalMs = Date.UTC(
+    localNow.getUTCFullYear(),
+    localNow.getUTCMonth(),
+    localNow.getUTCDate(),
+    hours,
+    minutes,
+    0,
+    0,
+  );
+
+  let targetUtcMs = targetLocalMs + daysToAdd * ONE_DAY_MS - offsetMs;
+  if (daysToAdd < 0 || targetUtcMs <= nowMs) {
+    targetUtcMs += 7 * ONE_DAY_MS;
+  }
+
+  return new Date(targetUtcMs).toISOString();
 }
 
 export function validateGuildSettingValue(field, value) {

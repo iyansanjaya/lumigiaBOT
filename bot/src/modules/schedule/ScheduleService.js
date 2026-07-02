@@ -5,7 +5,11 @@
  */
 
 import { EmbedBuilder } from 'discord.js';
-import { SCHEDULE_DAY_NAMES, SCHEDULE_DAY_ORDER } from '../../../../shared/contracts.js';
+import {
+  SCHEDULE_DAY_NAMES,
+  SCHEDULE_DAY_ORDER,
+  isValidScheduleTime,
+} from '../../../../shared/contracts.js';
 
 /** Warna embed jadwal (#9B59B6) */
 const SCHEDULE_COLOR = 0x9B59B6;
@@ -34,9 +38,6 @@ const DAY_MAP = new Map([
   ['friday', 5],
   ['saturday', 6],
 ]);
-
-/** Regex untuk validasi format waktu HH:MM (00:00 – 23:59) */
-const TIME_REGEX = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 export default class ScheduleService {
   /**
@@ -123,7 +124,6 @@ export default class ScheduleService {
    * @returns {boolean} True jika format valid
    */
   static validateTime(timeStr) {
-    if (!timeStr || typeof timeStr !== 'string') return false;
-    return TIME_REGEX.test(timeStr);
+    return isValidScheduleTime(timeStr);
   }
 }

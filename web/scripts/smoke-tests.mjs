@@ -88,11 +88,16 @@ test('web contracts re-export the shared contract source of truth', async () => 
   assert.match(webContracts, /validateVoiceSettingValue/);
   assert.match(webContracts, /validateLevelingSettingValue/);
   assert.match(webContracts, /validateFanArtSettingValue/);
+  assert.match(webContracts, /isValidScheduleTime/);
+  assert.match(webContracts, /normalizeScheduleTimezone/);
   assert.match(webContracts, /ALL_DATABASE_TABLES/);
   assert.match(webContracts, /REQUIRED_DATABASE_TABLES/);
 
   const shared = await import('../../shared/contracts.js');
   assert.deepEqual(shared.SCHEDULE_DAY_ORDER, [1, 2, 3, 4, 5, 6, 0]);
+  assert.equal(shared.normalizeScheduleTimezone('WIB'), 'Asia/Jakarta');
+  assert.equal(shared.isValidScheduleTime('23:59'), true);
+  assert.equal(shared.isValidScheduleTime('24:00'), false);
   assert.ok(shared.AUTOMOD_ACTIONS.includes('ban'));
   assert.ok(shared.ALL_DATABASE_TABLES.includes('guild_settings'));
   assert.ok(shared.ALL_DATABASE_TABLES.includes('fanart_votes'));
@@ -103,6 +108,14 @@ test('web contracts re-export the shared contract source of truth', async () => 
   assert.deepEqual(shared.validateVoiceSettingValue('default_limit', '25'), { ok: true, value: 25 });
   assert.deepEqual(shared.validateLevelingSettingValue('multiplier', '2.5'), { ok: true, value: 2.5 });
   assert.equal(shared.validateFanArtSettingValue('vote_emoji', '').value, '\u2b50');
+});
+
+test('schedule API validates time and timezone through shared contracts', () => {
+  const source = read('src/app/api/guilds/[guildId]/schedule/route.ts');
+
+  assert.match(source, /isValidScheduleTime/, 'schedule route must validate HH:MM through shared contracts');
+  assert.match(source, /normalizeScheduleTimezone/, 'schedule route must normalize timezone through shared contracts');
+  assert.doesNotMatch(source, /\/\\\^\\d\{2\}:\\d\{2\}\\\$\/\.test/, 'schedule route must not use loose local HH:MM regex');
 });
 
 test('dashboard write routes validate values before database updates', () => {

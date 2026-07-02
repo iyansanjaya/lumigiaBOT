@@ -14,10 +14,16 @@ import {
   DEFAULT_WARN_ESCALATION_JSON,
   GUILD_SETTINGS_DEFAULTS,
   REQUIRED_DATABASE_TABLES,
+  DEFAULT_SCHEDULE_TIMEZONE,
   SCHEDULE_DAY_NAMES,
   SCHEDULE_DAY_ORDER,
+  SCHEDULE_TIMEZONE_OPTIONS,
+  getNextScheduleOccurrenceIso,
+  getScheduleTimezoneLabel,
   isValidAutomodAction,
   isValidAutomodFilter,
+  isValidScheduleTime,
+  normalizeScheduleTimezone,
   normalizeLanguage,
   validateFanArtSettingValue,
   validateGuildSettingValue,
@@ -73,6 +79,23 @@ test('shared contracts keep bot and dashboard values aligned', () => {
   assert.deepEqual(SCHEDULE_DAY_ORDER, [1, 2, 3, 4, 5, 6, 0]);
   assert.equal(SCHEDULE_DAY_NAMES[0], 'Minggu');
   assert.equal(SCHEDULE_DAY_NAMES[1], 'Senin');
+  assert.equal(DEFAULT_SCHEDULE_TIMEZONE, 'Asia/Jakarta');
+  assert.ok(SCHEDULE_TIMEZONE_OPTIONS.some((option) => option.value === 'Asia/Jakarta'));
+  assert.equal(normalizeScheduleTimezone('WIB'), 'Asia/Jakarta');
+  assert.equal(normalizeScheduleTimezone('wita'), 'Asia/Makassar');
+  assert.equal(getScheduleTimezoneLabel('Asia/Jayapura'), 'WIT (UTC+9)');
+  assert.equal(isValidScheduleTime('00:00'), true);
+  assert.equal(isValidScheduleTime('23:59'), true);
+  assert.equal(isValidScheduleTime('24:00'), false);
+  assert.equal(isValidScheduleTime('99:99'), false);
+  assert.equal(
+    getNextScheduleOccurrenceIso(1, '20:00', 'Asia/Jakarta', new Date('2026-07-06T10:00:00.000Z')),
+    '2026-07-06T13:00:00.000Z',
+  );
+  assert.equal(
+    getNextScheduleOccurrenceIso(1, '20:00', 'Asia/Jakarta', new Date('2026-07-06T14:00:00.000Z')),
+    '2026-07-13T13:00:00.000Z',
+  );
 
   assert.ok(AUTOMOD_ACTIONS.includes('ban'));
   assert.ok(isValidAutomodAction('ban'));
