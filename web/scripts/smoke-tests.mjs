@@ -77,6 +77,22 @@ test('server picker avoids prefetching protected guild routes', () => {
   assert.match(source, /getManageableBotGuilds/, 'server picker must only show guilds where the bot is installed');
 });
 
+test('dashboard auth refreshes expired Discord access tokens', () => {
+  const authSource = read('src/lib/auth.ts');
+  const typeSource = read('src/types/next-auth.d.ts');
+  const layoutSource = read('src/app/(dashboard)/layout.tsx');
+
+  assert.match(authSource, /refreshDiscordAccessToken/, 'auth must refresh expired provider tokens');
+  assert.match(authSource, /DISCORD_TOKEN_ENDPOINT/, 'auth must use the Discord OAuth token endpoint');
+  assert.match(authSource, /grant_type: 'refresh_token'/, 'auth must use OAuth refresh_token grant');
+  assert.match(authSource, /accessTokenExpiresAt/, 'auth must store access token expiry in the JWT/session');
+  assert.match(authSource, /RefreshTokenError/, 'auth must expose refresh failures to the session');
+  assert.match(typeSource, /error\?: AuthSessionError/, 'session type must expose auth refresh errors');
+  assert.match(typeSource, /accessTokenExpiresAt\?: number/, 'session and JWT types must include token expiry');
+  assert.match(layoutSource, /session\.error === 'RefreshTokenError'/, 'dashboard layout must detect failed token refresh');
+  assert.match(layoutSource, /await signIn\('discord'/, 'dashboard layout must force Discord re-authentication');
+});
+
 test('dashboard overview scopes aggregate stats to manageable bot guilds', () => {
   const page = read('src/app/(dashboard)/dashboard/page.tsx');
 

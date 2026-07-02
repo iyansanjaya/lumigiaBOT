@@ -116,7 +116,7 @@ Semua module menggunakan `export default class` → import dengan `import ClassN
 
 ### Auth Flow
 
-Auth.js v5 → Discord OAuth2 → JWT strategy → `session.accessToken` (user Bearer token).
+Auth.js v5 → Discord OAuth2 → JWT strategy → `session.accessToken` (user Bearer token). Expired Discord access tokens are refreshed through the OAuth refresh token; failed refresh sets `session.error = 'RefreshTokenError'` and the dashboard forces Discord re-authentication.
 
 ### Route Structure
 

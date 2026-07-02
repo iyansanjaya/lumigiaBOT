@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth';
+import { auth, signIn } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { Topbar } from '@/components/dashboard/Topbar';
@@ -6,6 +6,9 @@ import { Topbar } from '@/components/dashboard/Topbar';
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session) redirect('/');
+  if (session.error === 'RefreshTokenError') {
+    await signIn('discord', { redirectTo: '/dashboard' });
+  }
 
   return (
     <div className="flex h-screen bg-background">

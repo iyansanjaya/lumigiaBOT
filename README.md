@@ -84,7 +84,7 @@ Dokumentasi terintegrasi menggunakan **Fumadocs** dan dapat di-deploy secara man
 | Halaman        | Deskripsi                                                         |
 | -------------- | ----------------------------------------------------------------- |
 | **Landing**    | Halaman marketing dengan animasi, fitur, daftar command           |
-| **Login**      | Discord OAuth2 — otomatis redirect ke dashboard setelah login     |
+| **Login**      | Discord OAuth2 — otomatis redirect ke dashboard setelah login, token di-refresh saat kedaluwarsa |
 | **Servers**    | Daftar server yang bisa dikelola (Manage Server/Admin + bot berada di server) |
 | **Overview**   | Statistik server yang bisa dikelola — total tiket dan warning      |
 | **Moderation** | Lihat riwayat warning                                             |
@@ -316,6 +316,7 @@ lumigiabot/
 
 ### Web Dashboard
 - **Discord OAuth2** — login hanya melalui akun Discord yang valid
+- **Session Refresh** — access token Discord di-refresh otomatis; refresh yang gagal akan memaksa login ulang
 - **Permission Check** — setiap API request dicek ulang: user harus punya `MANAGE_GUILD`/Administrator dan LumigiaBOT masih berada di server target
 - **Bot Presence Check** — daftar server, ringkasan dashboard, halaman guild, dan API guard hanya menerima server yang masih ditempati LumigiaBOT
 - **4-Layer Security** pada API write:
