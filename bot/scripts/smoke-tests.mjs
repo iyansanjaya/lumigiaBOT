@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import SQLite from 'better-sqlite3';
 
 import {
   AUTOMOD_ACTIONS,
@@ -24,6 +27,8 @@ import {
 import { getDataDir, getDatabasePath } from '../src/config/env.js';
 
 process.env.LOG_LEVEL = 'ERROR';
+
+const botDir = dirname(dirname(fileURLToPath(import.meta.url)));
 
 const { default: BotDatabase } = await import('../src/database/Database.js');
 const { createServiceLogger } = await import('../src/utils/Logger.js');
@@ -139,6 +144,48 @@ test('database path helpers support the Docker shared volume path', () => {
       assert.equal(getDataDir(), '/app/data');
     },
   );
+});
+
+test('backup script creates a verified readable backup', (t) => {
+  const tempDb = createTempDb();
+  const backupPath = join(tempDb.dir, 'verified-backup.db');
+  const guildId = '123456789012345678';
+
+  const db = new BotDatabase(tempDb.dbPath);
+  db.guildSettings.set(guildId, 'language', 'id');
+  db.close();
+
+  t.after(() => {
+    rmSync(tempDb.dir, { recursive: true, force: true });
+  });
+
+  const output = execFileSync(
+    process.execPath,
+    [join(botDir, 'scripts', 'backup-db.mjs'), `--output=${backupPath}`],
+    {
+      cwd: botDir,
+      env: {
+        ...process.env,
+        DATABASE_PATH: tempDb.dbPath,
+        LOG_LEVEL: 'ERROR',
+      },
+      encoding: 'utf8',
+    },
+  );
+
+  assert.ok(existsSync(backupPath), 'backup file should be created');
+  assert.match(output, /Database backup created:/);
+  assert.match(output, /Database backup verified:/);
+
+  const backup = new SQLite(backupPath, { readonly: true, fileMustExist: true });
+  try {
+    const settings = backup
+      .prepare('SELECT language FROM guild_settings WHERE guild_id = ?')
+      .get(guildId);
+    assert.equal(settings.language, 'id');
+  } finally {
+    backup.close();
+  }
 });
 
 test('stored timestamp parser supports sqlite and ISO timestamps', () => {

@@ -224,6 +224,29 @@ docker compose build --no-cache
 docker compose down && docker compose up -d
 ```
 
+### 5. Backup Database
+
+Database SQLite dipakai bersama oleh bot dan dashboard, jadi buat backup sebelum update besar atau migrasi VPS.
+
+```bash
+# Dengan Docker, backup dibuat ke /app/data/backups dan terlihat di ./data/backups host
+docker exec lumigiabot node scripts/backup-db.mjs
+
+# Lokal, dengan output manual
+cd bot
+npm run backup -- --output=../data/backups/manual-backup.db
+```
+
+Script backup otomatis memverifikasi hasil backup dengan `PRAGMA integrity_check` dan mengecek tabel penting aplikasi.
+
+Untuk restore, hentikan service dulu agar SQLite tidak sedang ditulis:
+
+```bash
+docker compose down
+cp data/backups/manual-backup.db data/lumigiabot.db
+docker compose up -d
+```
+
 ---
 
 ## 📁 Struktur Proyek
