@@ -9,6 +9,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getReactionRolePanels, getReactionRoleEntries } from '@/lib/database';
+import { getGuildIdentityMaps } from '@/lib/discord-identity';
+import { DiscordEntityLabel } from '@/components/dashboard/DiscordEntityLabel';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -34,6 +36,10 @@ export default async function RolesPage({ params }: PageProps) {
       // Gunakan nilai cadangan
     }
     return { ...panel, entryCount: entries.length };
+  });
+
+  const identities = await getGuildIdentityMaps(guildId, {
+    channelIds: panelsWithCounts.map((panel) => panel.channel_id),
   });
 
   const modeLabels: Record<string, string> = {
@@ -97,7 +103,13 @@ export default async function RolesPage({ params }: PageProps) {
                       </span>
                     </TableCell>
                     <TableCell>{panel.entryCount}</TableCell>
-                    <TableCell className="font-mono text-xs">{panel.channel_id}</TableCell>
+                    <TableCell>
+                      <DiscordEntityLabel
+                        id={panel.channel_id}
+                        name={identities.channels.get(panel.channel_id)?.name}
+                        type="channel"
+                      />
+                    </TableCell>
                     <TableCell>
                       {panel.message_id ? (
                         <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400">

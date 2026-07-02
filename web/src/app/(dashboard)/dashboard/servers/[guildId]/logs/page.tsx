@@ -10,6 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getGuildAuditLogs } from '@/lib/database';
+import { getGuildIdentityMaps } from '@/lib/discord-identity';
+import { DiscordEntityLabel } from '@/components/dashboard/DiscordEntityLabel';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -25,6 +27,10 @@ export default async function LogsPage({ params }: PageProps) {
   } catch {
     // Gunakan nilai cadangan
   }
+
+  const identities = await getGuildIdentityMaps(guildId, {
+    userIds: auditLogs.flatMap((log) => [log.moderator_id, log.target_id]),
+  });
 
   return (
     <div className="space-y-8">
@@ -64,8 +70,20 @@ export default async function LogsPage({ params }: PageProps) {
                     <TableCell>
                       <Badge variant="default">{log.action}</Badge>
                     </TableCell>
-                    <TableCell className="font-mono text-xs">{log.moderator_id}</TableCell>
-                    <TableCell className="font-mono text-xs">{log.target_id}</TableCell>
+                    <TableCell>
+                      <DiscordEntityLabel
+                        id={log.moderator_id}
+                        name={identities.users.get(log.moderator_id)?.name}
+                        type="user"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <DiscordEntityLabel
+                        id={log.target_id}
+                        name={log.target_id ? identities.users.get(log.target_id)?.name : null}
+                        type="user"
+                      />
+                    </TableCell>
                     <TableCell className="max-w-[300px] truncate">
                       {log.reason ?? 'Tidak ada alasan'}
                     </TableCell>

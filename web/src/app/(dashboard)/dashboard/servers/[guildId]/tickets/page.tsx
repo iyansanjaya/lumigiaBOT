@@ -15,6 +15,8 @@ import { getDataDir } from '@/lib/env';
 import { TicketChart } from '@/components/dashboard/TicketChart';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { getGuildIdentityMaps } from '@/lib/discord-identity';
+import { DiscordEntityLabel } from '@/components/dashboard/DiscordEntityLabel';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -62,6 +64,11 @@ export default async function TicketsPage({ params }: PageProps) {
   } catch {
     // Gunakan nilai cadangan
   }
+
+  const identities = await getGuildIdentityMaps(guildId, {
+    userIds: tickets.map((ticket) => ticket.user_id),
+    channelIds: tickets.map((ticket) => ticket.channel_id),
+  });
 
   const statCards = [
     { label: 'Total Tiket', value: ticketStats.total },
@@ -116,6 +123,7 @@ export default async function TicketsPage({ params }: PageProps) {
                 <TableRow>
                   <TableHead>ID</TableHead>
                   <TableHead>User</TableHead>
+                  <TableHead>Channel</TableHead>
                   <TableHead>Kategori</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Dibuat</TableHead>
@@ -130,7 +138,21 @@ export default async function TicketsPage({ params }: PageProps) {
                   return (
                     <TableRow key={ticket.id}>
                       <TableCell className="font-mono text-xs">{ticket.id}</TableCell>
-                      <TableCell className="font-mono text-xs">{ticket.user_id}</TableCell>
+                      <TableCell>
+                        <DiscordEntityLabel
+                          id={ticket.user_id}
+                          name={identities.users.get(ticket.user_id)?.name}
+                          type="user"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <DiscordEntityLabel
+                          id={ticket.channel_id}
+                          name={ticket.channel_id ? identities.channels.get(ticket.channel_id)?.name : null}
+                          type="channel"
+                          emptyLabel="Tidak ada"
+                        />
+                      </TableCell>
                       <TableCell>{ticket.category ?? '—'}</TableCell>
                       <TableCell>
                         <Badge variant={getStatusVariant(ticket.status)}>

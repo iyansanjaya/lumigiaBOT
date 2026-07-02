@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/table';
 import { getLevelingSettings, getLeaderboard, getLevelRewards } from '@/lib/database';
 import { LevelingSettingsForm } from '@/components/dashboard/LevelingSettingsForm';
+import { getGuildIdentityMaps } from '@/lib/discord-identity';
+import { DiscordEntityLabel } from '@/components/dashboard/DiscordEntityLabel';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -29,6 +31,11 @@ export default async function LevelingPage({ params }: PageProps) {
   } catch {
     // Gunakan nilai cadangan
   }
+
+  const identities = await getGuildIdentityMaps(guildId, {
+    userIds: leaderboard.map((user) => user.user_id),
+    roleIds: rewards.map((reward) => reward.role_id),
+  });
 
   return (
     <div className="space-y-8">
@@ -54,7 +61,7 @@ export default async function LevelingPage({ params }: PageProps) {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Rank</TableHead>
-                    <TableHead>User ID</TableHead>
+                    <TableHead>User</TableHead>
                     <TableHead>Level</TableHead>
                     <TableHead>XP</TableHead>
                     <TableHead>Pesan</TableHead>
@@ -68,7 +75,13 @@ export default async function LevelingPage({ params }: PageProps) {
                           {index + 1}
                         </span>
                       </TableCell>
-                      <TableCell className="font-mono text-xs">{user.user_id}</TableCell>
+                      <TableCell>
+                        <DiscordEntityLabel
+                          id={user.user_id}
+                          name={identities.users.get(user.user_id)?.name}
+                          type="user"
+                        />
+                      </TableCell>
                       <TableCell className="font-semibold">{user.level}</TableCell>
                       <TableCell>{user.xp.toLocaleString()}</TableCell>
                       <TableCell>{user.messages.toLocaleString()}</TableCell>
@@ -103,9 +116,12 @@ export default async function LevelingPage({ params }: PageProps) {
                     </span>
                     <span className="text-sm text-foreground">Level {reward.level}</span>
                   </div>
-                  <span className="font-mono text-xs text-foreground-muted">
-                    Role: {reward.role_id}
-                  </span>
+                  <DiscordEntityLabel
+                    id={reward.role_id}
+                    name={identities.roles.get(reward.role_id)?.name}
+                    type="role"
+                    className="items-end text-right"
+                  />
                 </div>
               ))}
             </div>

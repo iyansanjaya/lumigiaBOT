@@ -11,6 +11,8 @@ import {
 import { getFanArtSettings, getFanArtGallery, getFanArtPending } from '@/lib/database';
 import { FanArtSettingsForm } from '@/components/dashboard/FanArtSettingsForm';
 import { DeleteFanArtButton } from '@/components/dashboard/DeleteFanArtButton';
+import { getGuildIdentityMaps } from '@/lib/discord-identity';
+import { DiscordEntityLabel } from '@/components/dashboard/DiscordEntityLabel';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -30,6 +32,10 @@ export default async function FanArtPage({ params }: PageProps) {
   } catch {
     // Gunakan nilai cadangan
   }
+
+  const identities = await getGuildIdentityMaps(guildId, {
+    userIds: gallery.map((submission) => submission.user_id),
+  });
 
   return (
     <div className="space-y-8">
@@ -112,7 +118,13 @@ export default async function FanArtPage({ params }: PageProps) {
                       <TableCell className="font-medium max-w-[200px] truncate">
                         {submission.title ?? 'Tanpa judul'}
                       </TableCell>
-                      <TableCell className="font-mono text-xs">{submission.user_id}</TableCell>
+                      <TableCell>
+                        <DiscordEntityLabel
+                          id={submission.user_id}
+                          name={identities.users.get(submission.user_id)?.name}
+                          type="user"
+                        />
+                      </TableCell>
                       <TableCell>
                         <span className="inline-flex items-center gap-1 text-sm">
                           {settings?.vote_emoji ?? '⭐'} {submission.votes}

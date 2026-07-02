@@ -76,6 +76,25 @@ test('server picker avoids prefetching protected guild routes', () => {
   assert.match(source, /session\?\.accessToken/, 'server picker must require a Discord access token before fetching guilds');
 });
 
+test('dashboard overview scopes aggregate stats to manageable guilds', () => {
+  const page = read('src/app/(dashboard)/dashboard/page.tsx');
+
+  assert.match(page, /await auth\(\)/, 'dashboard overview must read the active session');
+  assert.match(page, /session\?\.accessToken/, 'dashboard overview must require the Discord access token');
+  assert.match(page, /getUserGuilds/, 'dashboard overview must fetch guilds for the current user');
+  assert.match(page, /getManageableGuilds/, 'dashboard overview must filter by Manage Guild permission');
+  assert.match(page, /getDashboardStatsForGuilds/, 'dashboard overview must use scoped stats');
+  assert.doesNotMatch(page, /getDashboardStats\(/, 'dashboard overview must not read global stats');
+
+  const database = read('src/lib/database.ts');
+  assert.match(database, /export function getDashboardStatsForGuilds/, 'database must expose scoped dashboard stats');
+  assert.match(database, /uniqueValidGuildIds/, 'scoped dashboard stats must validate guild ids');
+  assert.match(database, /WHERE guild_id IN/, 'ticket and warning counts must be scoped by guild id');
+  assert.doesNotMatch(database, /export function getDashboardStats\(\)/, 'global dashboard stats must not be exported');
+  assert.doesNotMatch(database, /SELECT COUNT\(\*\) as count FROM tickets'\)\.get\(\)/, 'ticket stats must not count all guilds globally');
+  assert.doesNotMatch(database, /SELECT COUNT\(\*\) as count FROM warnings'\)\.get\(\)/, 'warning stats must not count all guilds globally');
+});
+
 test('discord guild permissions are cached and checked with full bitfields', () => {
   const source = read('src/lib/discord-api.ts');
 
@@ -168,6 +187,45 @@ test('dashboard discord data loading is deduped and reused by channel and role c
     const source = read(rel);
     assert.match(source, /getGuildDiscordData/, `${rel} must use shared discord data helper`);
   }
+});
+
+test('dashboard entity-heavy views render Discord names before raw ids', () => {
+  const identityHelper = read('src/lib/discord-identity.ts');
+  assert.match(identityHelper, /getGuildIdentityMaps/, 'server pages must share one Discord identity resolver');
+  assert.match(identityHelper, /getGuildChannels/, 'identity resolver must fetch guild channel names');
+  assert.match(identityHelper, /getGuildRoles/, 'identity resolver must fetch guild role names');
+  assert.match(identityHelper, /getGuildUsers/, 'identity resolver must fetch guild member names');
+  assert.match(identityHelper, /USER_LOOKUP_BATCH_SIZE/, 'member lookups should be batched');
+
+  const label = read('src/components/dashboard/DiscordEntityLabel.tsx');
+  assert.match(label, /FALLBACK_LABEL/, 'entity labels must have readable fallbacks');
+  assert.match(label, /ID: \{id\}/, 'entity labels must keep the raw id available for audit/debugging');
+
+  for (const rel of [
+    'src/app/(dashboard)/dashboard/servers/[guildId]/analytics/page.tsx',
+    'src/app/(dashboard)/dashboard/servers/[guildId]/logs/page.tsx',
+    'src/app/(dashboard)/dashboard/servers/[guildId]/moderation/page.tsx',
+    'src/app/(dashboard)/dashboard/servers/[guildId]/tickets/page.tsx',
+    'src/app/(dashboard)/dashboard/servers/[guildId]/giveaways/page.tsx',
+    'src/app/(dashboard)/dashboard/servers/[guildId]/roles/page.tsx',
+    'src/app/(dashboard)/dashboard/servers/[guildId]/leveling/page.tsx',
+    'src/app/(dashboard)/dashboard/servers/[guildId]/fanart/page.tsx',
+    'src/components/dashboard/StreamAlertsManager.tsx',
+  ]) {
+    const source = read(rel);
+    assert.match(source, /DiscordEntityLabel/, `${rel} must render entity labels instead of raw ids`);
+  }
+
+  assert.doesNotMatch(
+    read('src/app/(dashboard)/dashboard/servers/[guildId]/analytics/page.tsx'),
+    />Channel ID</,
+    'analytics table should label channels by name',
+  );
+  assert.doesNotMatch(
+    read('src/app/(dashboard)/dashboard/servers/[guildId]/leveling/page.tsx'),
+    />User ID</,
+    'leveling table should label users by name',
+  );
 });
 
 test('dashboard save components use the shared dashboard API error helper', () => {

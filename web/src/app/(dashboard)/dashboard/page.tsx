@@ -1,20 +1,30 @@
 import Link from 'next/link';
-import { Server, Ticket, AlertTriangle } from 'lucide-react';
+import { Server, Ticket, AlertTriangle, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { getDashboardStats } from '@/lib/database';
+import { auth } from '@/lib/auth';
+import { getManageableGuilds, getUserGuilds } from '@/lib/discord-api';
+import { getDashboardStatsForGuilds, type DashboardStats } from '@/lib/database';
 
 export default async function DashboardPage() {
-  let stats = { totalGuilds: 0, totalTickets: 0, totalWarnings: 0 };
+  let stats: DashboardStats = { totalGuilds: 0, totalTickets: 0, totalWarnings: 0 };
+  let overviewError: string | null = null;
 
   try {
-    stats = await getDashboardStats();
+    const session = await auth();
+    if (!session?.accessToken) throw new Error('Missing Discord access token');
+
+    const allGuilds = await getUserGuilds(session.accessToken);
+    const manageableGuilds = getManageableGuilds(allGuilds);
+    stats = getDashboardStatsForGuilds(manageableGuilds.map((guild) => guild.id));
   } catch {
-    // Gunakan statistik cadangan
+    overviewError = 'Gagal memuat ringkasan server. Sesi Anda mungkin sudah kedaluwarsa. Coba keluar lalu login kembali.';
   }
+
+  const hasManageableGuilds = stats.totalGuilds > 0;
 
   const statCards = [
     {
-      label: 'Total Server',
+      label: 'Server Bisa Dikelola',
       value: stats.totalGuilds,
       icon: Server,
     },
@@ -35,9 +45,18 @@ export default async function DashboardPage() {
       <div>
         <h1 className="text-3xl font-bold text-foreground">Ringkasan Dashboard</h1>
         <p className="mt-1 text-foreground-muted">
-          Selamat datang kembali. Berikut ringkasan aktivitas server Anda.
+          Selamat datang kembali. Berikut ringkasan aktivitas server yang bisa Anda kelola.
         </p>
       </div>
+
+      {overviewError && (
+        <Card>
+          <CardContent className="flex items-center gap-4 text-destructive">
+            <AlertCircle className="h-6 w-6 shrink-0" />
+            <p className="text-sm">{overviewError}</p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Kartu Statistik */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -62,9 +81,13 @@ export default async function DashboardPage() {
       {/* Bagian Selamat Datang */}
       <Card>
         <CardContent className="space-y-4">
-          <h2 className="text-xl font-semibold text-foreground">Mulai Kelola Server</h2>
+          <h2 className="text-xl font-semibold text-foreground">
+            {hasManageableGuilds ? 'Mulai Kelola Server' : 'Belum Ada Server yang Bisa Dikelola'}
+          </h2>
           <p className="text-foreground-muted">
-            Kelola server Discord, konfigurasi moderasi, dan pantau aktivitas dari satu tempat.
+            {hasManageableGuilds
+              ? 'Kelola server Discord, konfigurasi moderasi, dan pantau aktivitas dari satu tempat.'
+              : 'Akun ini belum memiliki permission Manage Server di server mana pun yang dapat dibuka lewat dashboard.'}
           </p>
           <Link
             href="/dashboard/servers"

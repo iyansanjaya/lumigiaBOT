@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -15,6 +15,7 @@ import { Trash2, Plus, Loader2, Radio } from "lucide-react";
 import type { StreamNotification } from "@/types/streamer";
 import { dashboardRequest, getDashboardErrorMessage } from "./dashboardApi";
 import { getGuildDiscordData } from "./discordDataClient";
+import { DiscordEntityLabel } from "@/components/dashboard/DiscordEntityLabel";
 
 interface Props {
   guildId: string;
@@ -41,6 +42,14 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
   const [discordRoles, setDiscordRoles] = useState<{id: string; name: string; color: number}[]>([]);
   const [loadingDiscord, setLoadingDiscord] = useState(true);
   const [discordDataError, setDiscordDataError] = useState("");
+  const channelNames = useMemo(
+    () => new Map(discordChannels.map((channel) => [channel.id, channel.name])),
+    [discordChannels],
+  );
+  const roleNames = useMemo(
+    () => new Map(discordRoles.map((role) => [role.id, role.name])),
+    [discordRoles],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -174,11 +183,20 @@ export function StreamAlertsManager({ guildId, initialNotifications }: Props) {
                       <TableCell className="font-medium">
                         {notif.platform_user}
                       </TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {notif.notify_channel}
+                      <TableCell>
+                        <DiscordEntityLabel
+                          id={notif.notify_channel}
+                          name={channelNames.get(notif.notify_channel) ?? (loadingDiscord ? "Memuat channel..." : null)}
+                          type="channel"
+                        />
                       </TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {notif.ping_role ?? "None"}
+                      <TableCell>
+                        <DiscordEntityLabel
+                          id={notif.ping_role}
+                          name={notif.ping_role ? roleNames.get(notif.ping_role) ?? (loadingDiscord ? "Memuat role..." : null) : null}
+                          type="role"
+                          emptyLabel="Tidak ada"
+                        />
                       </TableCell>
                       <TableCell>
                         {notif.is_live === 1 ? (

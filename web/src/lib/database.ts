@@ -3,6 +3,7 @@ import { getDatabasePath } from '@/lib/env';
 import {
   AUTOMOD_ACTIONS,
   AUTOMOD_FILTER_KEYS,
+  DISCORD_SNOWFLAKE_PATTERN,
   FANART_SETTINGS_FIELDS,
   GUILD_SETTINGS_FIELDS,
   LEVELING_SETTINGS_FIELDS,
@@ -21,6 +22,13 @@ import type {
 } from '@/types/streamer';
 
 const DB_PATH = getDatabasePath();
+const DISCORD_SNOWFLAKE_RE = new RegExp(DISCORD_SNOWFLAKE_PATTERN);
+
+export interface DashboardStats {
+  totalGuilds: number;
+  totalTickets: number;
+  totalWarnings: number;
+}
 
 let db: Database.Database | null = null;
 
@@ -92,14 +100,34 @@ export function getAutoModWhitelist(guildId: string): AutoModWhitelistEntry[] {
   } catch { return []; }
 }
 
-export function getDashboardStats(): { totalGuilds: number; totalTickets: number; totalWarnings: number } {
+function getEmptyDashboardStats(): DashboardStats {
+  return { totalGuilds: 0, totalTickets: 0, totalWarnings: 0 };
+}
+
+function uniqueValidGuildIds(guildIds: string[]) {
+  return [...new Set(guildIds.filter((id) => DISCORD_SNOWFLAKE_RE.test(id)))];
+}
+
+export function getDashboardStatsForGuilds(guildIds: string[]): DashboardStats {
+  const allowedGuildIds = uniqueValidGuildIds(guildIds);
+  if (allowedGuildIds.length === 0) return getEmptyDashboardStats();
+
   try {
     const db = getDb();
-    const guilds = db.prepare('SELECT COUNT(*) as count FROM guild_settings').get() as { count: number };
-    const tickets = db.prepare('SELECT COUNT(*) as count FROM tickets').get() as { count: number };
-    const warnings = db.prepare('SELECT COUNT(*) as count FROM warnings').get() as { count: number };
-    return { totalGuilds: guilds.count, totalTickets: tickets.count, totalWarnings: warnings.count };
-  } catch { return { totalGuilds: 0, totalTickets: 0, totalWarnings: 0 }; }
+    const placeholders = allowedGuildIds.map(() => '?').join(', ');
+    const tickets = db
+      .prepare(`SELECT COUNT(*) as count FROM tickets WHERE guild_id IN (${placeholders})`)
+      .get(...allowedGuildIds) as { count: number };
+    const warnings = db
+      .prepare(`SELECT COUNT(*) as count FROM warnings WHERE guild_id IN (${placeholders})`)
+      .get(...allowedGuildIds) as { count: number };
+
+    return {
+      totalGuilds: allowedGuildIds.length,
+      totalTickets: tickets.count,
+      totalWarnings: warnings.count,
+    };
+  } catch { return getEmptyDashboardStats(); }
 }
 
 // ═══════════════════════════ STREAMER READ ═══════════════════════════

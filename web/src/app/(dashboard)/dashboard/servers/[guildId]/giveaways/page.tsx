@@ -9,6 +9,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getGuildGiveaways } from '@/lib/database';
+import { getGuildIdentityMaps } from '@/lib/discord-identity';
+import { DiscordEntityLabel } from '@/components/dashboard/DiscordEntityLabel';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -24,6 +26,11 @@ export default async function GiveawaysPage({ params }: PageProps) {
   } catch {
     // Gunakan nilai cadangan
   }
+
+  const identities = await getGuildIdentityMaps(guildId, {
+    userIds: giveaways.map((giveaway) => giveaway.host_id),
+    channelIds: giveaways.map((giveaway) => giveaway.channel_id),
+  });
 
   const activeCount = giveaways.filter((g) => g.ended === 0).length;
   const endedCount = giveaways.filter((g) => g.ended === 1).length;
@@ -104,8 +111,20 @@ export default async function GiveawaysPage({ params }: PageProps) {
                       {giveaway.prize}
                     </TableCell>
                     <TableCell>{giveaway.winners_count}</TableCell>
-                    <TableCell className="font-mono text-xs">{giveaway.host_id}</TableCell>
-                    <TableCell className="font-mono text-xs">{giveaway.channel_id}</TableCell>
+                    <TableCell>
+                      <DiscordEntityLabel
+                        id={giveaway.host_id}
+                        name={identities.users.get(giveaway.host_id)?.name}
+                        type="user"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <DiscordEntityLabel
+                        id={giveaway.channel_id}
+                        name={identities.channels.get(giveaway.channel_id)?.name}
+                        type="channel"
+                      />
+                    </TableCell>
                     <TableCell className="text-foreground-muted whitespace-nowrap">
                       {new Date(giveaway.ends_at).toLocaleDateString('id-ID', {
                         year: 'numeric',

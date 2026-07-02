@@ -9,6 +9,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getGuildWarnings } from '@/lib/database';
+import { getGuildIdentityMaps } from '@/lib/discord-identity';
+import { DiscordEntityLabel } from '@/components/dashboard/DiscordEntityLabel';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -24,6 +26,10 @@ export default async function ModerationPage({ params }: PageProps) {
   } catch {
     // Gunakan nilai cadangan
   }
+
+  const identities = await getGuildIdentityMaps(guildId, {
+    userIds: warnings.flatMap((warning) => [warning.user_id, warning.moderator_id]),
+  });
 
   return (
     <div className="space-y-8">
@@ -63,8 +69,8 @@ export default async function ModerationPage({ params }: PageProps) {
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
-                  <TableHead>User ID</TableHead>
-                  <TableHead>Moderator ID</TableHead>
+                  <TableHead>User</TableHead>
+                  <TableHead>Moderator</TableHead>
                   <TableHead>Alasan</TableHead>
                   <TableHead>Tanggal</TableHead>
                 </TableRow>
@@ -73,8 +79,20 @@ export default async function ModerationPage({ params }: PageProps) {
                 {warnings.map((warning) => (
                   <TableRow key={warning.id}>
                     <TableCell className="font-mono text-xs">{warning.id}</TableCell>
-                    <TableCell className="font-mono text-xs">{warning.user_id}</TableCell>
-                    <TableCell className="font-mono text-xs">{warning.moderator_id}</TableCell>
+                    <TableCell>
+                      <DiscordEntityLabel
+                        id={warning.user_id}
+                        name={identities.users.get(warning.user_id)?.name}
+                        type="user"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <DiscordEntityLabel
+                        id={warning.moderator_id}
+                        name={identities.users.get(warning.moderator_id)?.name}
+                        type="user"
+                      />
+                    </TableCell>
                     <TableCell className="max-w-[300px] truncate">
                       {warning.reason ?? 'Tidak ada alasan'}
                     </TableCell>

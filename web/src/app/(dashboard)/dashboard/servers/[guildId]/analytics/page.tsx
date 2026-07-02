@@ -9,6 +9,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getDailyAnalytics, getTopChannels } from '@/lib/database';
+import { getGuildIdentityMaps } from '@/lib/discord-identity';
+import { DiscordEntityLabel } from '@/components/dashboard/DiscordEntityLabel';
 
 interface PageProps {
   params: Promise<{ guildId: string }>;
@@ -28,6 +30,10 @@ export default async function AnalyticsPage({ params }: PageProps) {
   } catch {
     // Gunakan nilai cadangan
   }
+
+  const identities = await getGuildIdentityMaps(guildId, {
+    channelIds: topChannels.map((channel) => channel.channel_id),
+  });
 
   // Aggregate last 7 days
   const totals = dailyStats.reduce(
@@ -140,7 +146,7 @@ export default async function AnalyticsPage({ params }: PageProps) {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Rank</TableHead>
-                        <TableHead>Channel ID</TableHead>
+                        <TableHead>Channel</TableHead>
                         <TableHead>Pesan</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -152,7 +158,13 @@ export default async function AnalyticsPage({ params }: PageProps) {
                               {index + 1}
                             </span>
                           </TableCell>
-                          <TableCell className="font-mono text-xs">{channel.channel_id}</TableCell>
+                          <TableCell>
+                            <DiscordEntityLabel
+                              id={channel.channel_id}
+                              name={identities.channels.get(channel.channel_id)?.name}
+                              type="channel"
+                            />
+                          </TableCell>
                           <TableCell>{channel.total_messages.toLocaleString()}</TableCell>
                         </TableRow>
                       ))}
